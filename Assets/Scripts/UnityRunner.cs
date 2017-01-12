@@ -65,7 +65,7 @@ public class UnityRunner : MonoBehaviour
     protected int totalCachedColors;
 
     // We'll use this field to store a reference to our PixelVisionEngine class. 
-    protected IEngine engine { get; set; }
+    public IEngine engine { get; set; }
 
     /// <summary>
     ///     We'll use the Start method to configure our PixelVisionEngin and load a game.
