@@ -21,7 +21,17 @@ using UnityEngine;
 public class DemoRunner : UnityRunner
 {
 
-    private readonly int defaultDemoID = 0;
+    public enum Demos
+    {
+        DrawSprite,
+        Font,
+        Controller,
+        Mouse,
+        SpriteStressTest,
+        TileMap
+    }
+
+    private readonly Demos defaultDemoID = Demos.DrawSprite;
     protected MouseInput mouseInput;
 
     public override void LoadGame()
@@ -29,32 +39,53 @@ public class DemoRunner : UnityRunner
         // Demos
         GameChip gameChip = null;
 
-        // Source code for these demos are part of the DLLs/PixelVision8Demos-v1.0.0.dll file.
+        // Source code for these demos are part of the DLLs/PixelVision8Demos.dll file.
         switch (defaultDemoID)
         {
-            case 0:
+            case Demos.DrawSprite:
                 gameChip = new DrawSpriteDemo();
                 break;
-            case 1:
+            case Demos.Font:
                 gameChip = new FontDemo();
                 break;
-            case 2:
+            case Demos.Controller:
                 gameChip = new ControllerDemo();
                 break;
-            case 3:
+            case Demos.Mouse:
                 gameChip = new MouseDemo();
                 break;
-            case 4:
+            case Demos.SpriteStressTest:
                 gameChip = new SpriteStressTestDemo();
+                break;
+            case Demos.TileMap:
+                gameChip = new TilemapDemo();
                 break;
         }
 
-        ImportUtil.ImportColorsFromTexture(Resources.Load<Texture2D>("colors"), engine);
-        ImportUtil.ImportSpritesFromTexture(Resources.Load<Texture2D>("sprites"), engine);
-        ImportUtil.ImportFontFromTexture(Resources.Load<Texture2D>("large-font"), engine, "large-font");
-        ImportUtil.ImportFontFromTexture(Resources.Load<Texture2D>("small-font"), engine, "small-font");
-        ResetResolution(256, 240);
+        // Make sure we load the correct resources for the default demo. You'll need to set all of the Resources to Read/Write 
+        // in Unity for this to work.
+        if (defaultDemoID == Demos.TileMap)
+        {
+            // This demo uses a custom resolution and different files
+            ImportUtil.ImportColorsFromTexture(Resources.Load<Texture2D>("TileMapDemo/colors"), engine);
+            ImportUtil.ImportFontFromTexture(Resources.Load<Texture2D>("TileMapDemo/message-font"), engine, "message-font");
+            
+            // The engine will automatically add sprites from tile maps into the SpriteChip so we only load this image.
+            ImportUtil.ImportTileMapFromTexture(Resources.Load<Texture2D>("TileMapDemo/tilemap"), engine);
 
+            ResetResolution(256, 240);
+        }
+        else
+        {
+            // For all other demos, use the default file
+            ImportUtil.ImportColorsFromTexture(Resources.Load<Texture2D>("colors"), engine);
+            ImportUtil.ImportSpritesFromTexture(Resources.Load<Texture2D>("sprites"), engine);
+            ImportUtil.ImportFontFromTexture(Resources.Load<Texture2D>("large-font"), engine, "large-font");
+            ImportUtil.ImportFontFromTexture(Resources.Load<Texture2D>("small-font"), engine, "small-font");
+            ResetResolution(256, 240);
+        }
+
+        // Configure the input
         ConfigureInput();
 
         // With everything configured, it's time to load the game into memory. The LoadGame() method sets the GameChip instance 
