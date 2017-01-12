@@ -1,0 +1,6 @@
+[submodule "Assets/PixelVisionSDK"]
+	path = Assets/PixelVisionSDK
+	url = git@gitlab.com:PixelVision8/SDK.git
+[submodule "Assets/Demos"]
+	path = Assets/Demos
+	url = git@gitlab.com:PixelVision8/Demos.git
