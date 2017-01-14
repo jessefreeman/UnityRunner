@@ -14,7 +14,7 @@
 // Shawn Rakowski - @shwany
 // 
 
-using PixelVisionSDK.Engine.Chips.IO.Controller;
+using PixelVisionSDK;
 using UnityEngine;
 
 public class KeyInput : IKeyInput

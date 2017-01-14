@@ -16,15 +16,12 @@
 
 using System;
 using System.Collections.Generic;
-using PixelVisionSDK.Engine.Chips;
-using PixelVisionSDK.Engine.Chips.Data;
-using PixelVisionSDK.Engine.Chips.Graphics.Colors;
-using PixelVisionSDK.Engine.Chips.Graphics.Sprites;
+using PixelVisionSDK.Chips;
 using UnityEngine;
 
 //TODO this class will be moved into the core SDK, legacy Unity importer
 
-namespace PixelVisionSDK.Engine.Utils
+namespace PixelVisionSDK.Utils
 {
 
     public class ImportUtil

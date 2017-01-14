@@ -14,9 +14,9 @@
 // Shawn Rakowski - @shwany
 // 
 
-using PixelVisionSDK.Engine.Chips.Game;
-using PixelVisionSDK.Engine.Chips.IO.Controller;
-using PixelVisionSDK.Engine.Utils;
+using PixelVisionSDK;
+using PixelVisionSDK.Chips;
+using PixelVisionSDK.Utils;
 using UnityEngine;
 
 public class DemoRunner : UnityRunner

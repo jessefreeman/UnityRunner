@@ -14,7 +14,7 @@
 // Shawn Rakowski - @shwany
 // 
 
-using PixelVisionSDK.Engine.Chips.Game;
+using PixelVisionSDK.Chips;
 
 public class LuaGameChip : GameChip
 {

@@ -2,7 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Text;
-using PixelVisionSDK.Engine.Chips;
+using PixelVisionSDK.Chips;
 using UnityEditor;
 using UnityEngine;
 

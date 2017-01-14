@@ -15,13 +15,9 @@
 // 
 
 using System;
-using PixelVisionSDK.Engine;
-using PixelVisionSDK.Engine.Chips.Game;
-using PixelVisionSDK.Engine.Chips.Graphics.Colors;
-using PixelVisionSDK.Engine.Chips.Graphics.Display;
-using PixelVisionSDK.Engine.Chips.Graphics.Sprites;
-using PixelVisionSDK.Engine.Chips.IO.Controller;
-using PixelVisionSDK.Engine.Utils;
+using PixelVisionSDK;
+using PixelVisionSDK.Chips;
+using PixelVisionSDK.Utils;
 using UnityEngine;
 using UnityEngine.UI;
 

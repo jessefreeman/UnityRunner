@@ -17,9 +17,7 @@
 using System;
 using MoonSharp.Interpreter;
 using PixelVisionSDK;
-using PixelVisionSDK.Engine.Chips;
-using PixelVisionSDK.Engine.Chips.Data;
-using PixelVisionSDK.Engine.Chips.Game;
+using PixelVisionSDK.Chips;
 
 [MoonSharpUserData]
 public class LuaBridge : IAPIBridge, IGameLoop

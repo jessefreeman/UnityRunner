@@ -16,8 +16,8 @@
 
 using System;
 using MoonSharp.Interpreter;
-using PixelVisionSDK.Engine.Chips.IO.Controller;
-using PixelVisionSDK.Engine.Utils;
+using PixelVisionSDK;
+using PixelVisionSDK.Utils;
 using UnityEngine;
 
 public class LuaDemoRunner : UnityRunner
@@ -120,7 +120,7 @@ public class LuaDemoRunner : UnityRunner
 
         UserData.RegisterType<LuaBridge>();
         script = new Script();
-        script.Globals["LuaBridge"] = new Func<LuaBridge>(() => this.bridge);
+        script.Globals["LuaBridge"] = new Func<LuaBridge>(() => bridge);
 
         script.DoString(luaScript);
         OnLuaReady();
@@ -161,8 +161,8 @@ public class LuaDemoRunner : UnityRunner
         var total = keys1.Length;
         for (var i = 0; i < total; i++)
         {
-            controllerChip.UpdateControllerKey(0, new KeyboardButtonInput((Buttons)i, (int)keys1[i]));
-            controllerChip.UpdateControllerKey(1, new KeyboardButtonInput((Buttons)i, (int)keys2[i]));
+            controllerChip.UpdateControllerKey(0, new KeyboardButtonInput((Buttons) i, (int) keys1[i]));
+            controllerChip.UpdateControllerKey(1, new KeyboardButtonInput((Buttons) i, (int) keys2[i]));
         }
 
         // Register mouse input
