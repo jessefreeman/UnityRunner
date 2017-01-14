@@ -1,0 +1,96 @@
+--  
+-- Copyright (c) Jesse Freeman. All rights reserved.  
+-- 
+-- Licensed under the Microsoft Public License (MS-PL) License. 
+-- See LICENSE file in the project root for full license information. 
+-- 
+-- Contributors
+-- --------------------------------------------------------
+-- This is the official list of Pixel Vision 8 contributors:
+--  
+-- Jesse Freeman - @JesseFreeman
+-- Christer Kaitila - @McFunkypants
+-- Pedro Medeiros - @saint11
+-- Shawn Rakowski - @shwany
+--
+
+-- The API Bridge allows you're Lua game to talk to the core PV8 APIs
+local apiBridge = LuaBridge()
+
+-- Before we can display the input, we'll want to track each button state. These Boolean Arrays will 
+-- help us track if each button is down (false) or up (true).
+local player1States = {}
+local player2States = {}
+
+-- We'll use these values to help lay out the button state text.
+local pos = {x = 1, y = 3, xOffset = 10}
+
+-- Pixel Vision 8 supports 8 unique buttons: Up, Down, Left, Right, A, B, Select and Start.
+local totalButtons = 8
+
+-- The Init() method is part of the game's lifecycle and called a game starts. We are going to
+-- use this method to configure background color, ScreenBufferChip and draw some text to the display.
+function Init()
+
+	-- Before we start, we need to set a background color and rebuild the ScreenBufferChip. The screen buffer
+	-- allows us to draw our fonts into the background layer to save on draw calls.
+	apiBridge:ChangeBackgroundColor(32)
+	apiBridge:RebuildScreenBuffer()
+
+	-- We need to display some default text for our demo explaining what is going on. This text will just be 
+	-- drawn into the screen buffer.
+	apiBridge:DrawFontToBuffer("CONTROLLER TEST", pos.x , pos.y - 2, "large-font", 0)
+	local text = "    UP:\n  DOWN:\n RIGHT:\n  LEFT:\n     A:\n     B:\nSELECT:\n START:\n"
+	apiBridge:DrawFontToBuffer("PLAYER ONE\n"..text, pos.x, pos.y, "small-font", -4)
+	apiBridge:DrawFontToBuffer("PLAYER TWO\n"..text, pos.x + pos.xOffset, pos.y, "small-font", -4)
+
+end
+
+-- The Update() method is part of the game's life cycle. The engine
+-- calls Update() on every frame before the Draw() method. It accepts
+-- one argument, timeDelta, which is the difference in milliseconds
+-- since the last frame. We are going to track each player's button state.
+function Update()
+	
+	-- We'll need to loop through each of the buttons. We can use the totalButtons to limit the for loop and
+	-- we'll move through each controller's button states at the same time.
+	for i=1,totalButtons do
+
+		-- The ButtonDown() method returns true when a button is down and false if the player is not pressing it.
+		-- We'll save this value into our player1States and player2States Arrays.
+		player1States[i] = apiBridge:ButtonDown(i-1, 0)
+		player2States[i] = apiBridge:ButtonDown(i-1, 1)
+
+	end
+
+end
+
+-- The Draw() method is part of the game's life cycle. It is called after Update() and
+-- is where all of our draw calls should go. We'll be using this to render font characters to the display.
+function Draw()
+
+	-- It's important to clear the display on each frame. There are two ways to do this. Here 
+	-- we are going to use the DrawScreenBuffer() way to copy over the existing buffer and clear
+	-- all of the previous pixel data.
+	apiBridge:DrawScreenBuffer()
+
+	-- This resets the x and y values we use to draw the fonts to the display.
+	local x = 0
+	local y = 0
+
+	-- In this loop, we set up the X and Y positions for our text then draw the font to the display to show the
+	-- current state of each button.
+	for i=1,totalButtons do
+		x = (pos.x + 8) * 4
+		y = (( i + pos.y) * 8) + pos.y 
+		apiBridge:DrawFont(player1States[i] == true and "1" or "0", x, y - 3, "small-font", -4)
+	end
+
+	-- We'll do the same thing for player two but adjust for the text being in the second column by adding the xOffset the x value.
+	for i=1,totalButtons do
+		x = (pos.x + (pos.xOffset * 2) + 8) * 4
+		y = (( i + pos.y) * 8) + pos.y 
+		apiBridge:DrawFont(player2States[i] == true and "1" or "0", x, y - 3, "small-font", -4)
+	end
+	
+end
