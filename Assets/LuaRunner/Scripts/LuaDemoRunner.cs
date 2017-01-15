@@ -55,22 +55,22 @@ public class LuaDemoRunner : UnityRunner
         switch (defaultDemoID)
         {
             case Demos.DrawSprite:
-                luaScript = Resources.Load<TextAsset>("DrawSpriteDemo").text;
+                luaScript = Resources.Load<TextAsset>("LuaScripts/DrawSpriteDemo").text;
                 break;
             case Demos.Font:
-                luaScript = Resources.Load<TextAsset>("FontDemo").text;
+                luaScript = Resources.Load<TextAsset>("LuaScripts/FontDemo").text;
                 break;
             case Demos.Controller:
-                luaScript = Resources.Load<TextAsset>("ControllerDemo").text;
+                luaScript = Resources.Load<TextAsset>("LuaScripts/ControllerDemo").text;
                 break;
             case Demos.Mouse:
-                luaScript = Resources.Load<TextAsset>("MouseDemo").text;
+                luaScript = Resources.Load<TextAsset>("LuaScripts/MouseDemo").text;
                 break;
             case Demos.SpriteStressTest:
-                luaScript = Resources.Load<TextAsset>("SpriteStressDemo").text;
+                luaScript = Resources.Load<TextAsset>("LuaScripts/SpriteStressTestDemo").text;
                 break;
             case Demos.Tilemap:
-                luaScript = Resources.Load<TextAsset>("TilemapDemo").text;
+                luaScript = Resources.Load<TextAsset>("LuaScripts/TilemapDemo").text;
                 break;
         }
 
