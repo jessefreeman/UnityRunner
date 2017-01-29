@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using PixelVisionSDK.Chips;
 using UnityEngine;
 
+
 //TODO this class will be moved into the core SDK, legacy Unity importer
 
 namespace PixelVisionSDK.Utils
@@ -75,7 +76,7 @@ namespace PixelVisionSDK.Utils
                 }
                 else
                 {
-                    Debug.Log("Duplicate color " + ColorUtility.ToHtmlStringRGB(tmpColor));
+                    Debug.Log("Duplicate color " + ColorData.ColorToHex(tmpColor.r, tmpColor.g, tmpColor.b));
                 }
             }
 
@@ -302,8 +303,8 @@ namespace PixelVisionSDK.Utils
             var sWidth = spriteChip.width;
             var sHeight = spriteChip.height;
 
-            var width = Mathf.CeilToInt(src.width / sWidth);
-            var height = Mathf.CeilToInt(src.height / sHeight);
+            var width = MathUtil.CeilToInt(src.width / sWidth);
+            var height = MathUtil.CeilToInt(src.height / sHeight);
 
             // Make sure index is in range or create a new screen block
             tileMapChip.Resize(width, height);
@@ -350,8 +351,8 @@ namespace PixelVisionSDK.Utils
             var sWidth = spriteChip.width;
             var sHeight = spriteChip.height;
 
-            var columns = Mathf.CeilToInt(src.width / sWidth);
-            var rows = Mathf.CeilToInt(src.height / sHeight);
+            var columns = MathUtil.CeilToInt(src.width / sWidth);
+            var rows = MathUtil.CeilToInt(src.height / sHeight);
 
             if (columns != tileMap.columns || rows != tileMap.rows)
             {
@@ -424,8 +425,8 @@ namespace PixelVisionSDK.Utils
             var sWidth = spriteChip.width;
             var sHeight = spriteChip.height;
 
-            var width = Mathf.CeilToInt(src.width / sWidth);
-            var height = Mathf.CeilToInt(src.height / sHeight);
+            var width = MathUtil.CeilToInt(src.width / sWidth);
+            var height = MathUtil.CeilToInt(src.height / sHeight);
 
             var totalTiles = width * height;
             var totalPixels = sWidth * sHeight;

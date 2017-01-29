@@ -100,7 +100,7 @@ public class UnityRunner : MonoBehaviour
             typeof(DisplayChip).FullName
         };
 
-        // Pixel Vision 8 has a built in the JSON serializer/deserializer. It allows chips to be dynamically 
+        // Pixel Vision 8 has a built in the JSON serialize/de-serialize. It allows chips to be dynamically 
         // loaded by their full class name. Above we are using typeof() along with the FullName property to 
         // get the string values for each chip. The engine will parse this string and automatically create 
         // the chip then register it with the ChipManager. You can manually instantiate chips but its best 
@@ -126,9 +126,9 @@ public class UnityRunner : MonoBehaviour
 
         // Pixel Vision 8's Unity Demo Project contains helper classes for working with Unity. Here we are leveraging the 
         // Import Utility to convert Unity Texture2D data into a format that the Color, Sprite and Font chips can use.
-        ImportUtil.ImportColorsFromTexture(Resources.Load<Texture2D>("DrawSpriteDemo/colors"), engine);
-        ImportUtil.ImportSpritesFromTexture(Resources.Load<Texture2D>("DrawSpriteDemo/sprites"), engine);
-        ImportUtil.ImportFontFromTexture(Resources.Load<Texture2D>("DrawSpriteDemo/large-font"), engine, "large-font");
+        ImportUtil.ImportColorsFromTexture(Resources.Load<Texture2D>("colors"), engine);
+        ImportUtil.ImportSpritesFromTexture(Resources.Load<Texture2D>("sprites"), engine);
+        ImportUtil.ImportFontFromTexture(Resources.Load<Texture2D>("large-font"), engine, "large-font");
 
         // Before we run the game we'll need to set the resolution. Doing this is specific to Unity and our custom ResetResolution() 
         // method will make sure that the RawImage has the correct aspect ratio.
@@ -189,7 +189,7 @@ public class UnityRunner : MonoBehaviour
     ///     It's important that we call the PixelVision8's Update() method on each frame. To do this, we'll use the
     ///     GameObject's own Update() call.
     /// </summary>
-    public void Update()
+    public virtual void Update()
     {
 
         // Before trying to update the PixelVisionEngine instance, we need to make sure it exists. The guard clause protects us from throwing an 
@@ -209,7 +209,7 @@ public class UnityRunner : MonoBehaviour
     ///     In Unity we can use the LateUpdate() method on the MonoBehavior class to synchronize when the PixelVision8 engine
     ///     should draw.
     /// </summary>
-    public void LateUpdate()
+    public virtual void LateUpdate()
     {
 
         // Just like before, we use a guard clause to keep the Runner from throwing errors if no PixelVision8 engine exists.
@@ -246,7 +246,7 @@ public class UnityRunner : MonoBehaviour
         }
 
         // At this point, we have all the color data we need to update the renderTexture. We'll set the cachedPixels on the renderTexture and call 
-        // Apply() to rerender the Texture.
+        // Apply() to re-render the Texture.
         renderTexture.SetPixels(cachedPixels);
         renderTexture.Apply();
 

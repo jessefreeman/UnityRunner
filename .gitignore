@@ -16,6 +16,11 @@
 *.pidb
 *.booproj
 
+#hide Rider files
+.idea/*
+Assets/Plugins/JetBrains/*
+Assets/Plugins/JetBrains.meta
+
 # Unity3D generated meta files
 *.pidb.meta
 

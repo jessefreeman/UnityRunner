@@ -15,6 +15,7 @@
 // 
 
 using PixelVisionSDK;
+using PixelVisionSDK.Chips;
 using UnityEngine;
 
 /// <summary>

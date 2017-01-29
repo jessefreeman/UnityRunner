@@ -22,7 +22,10 @@ public class KeyInput : IKeyInput
 
     public string inputString
     {
-        get { return Input.inputString; }
+        get
+        {
+            return Input.inputString;
+        }
     }
 
     public bool GetKey(int key)

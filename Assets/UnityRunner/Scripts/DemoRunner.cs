@@ -14,7 +14,6 @@
 // Shawn Rakowski - @shwany
 // 
 
-using PixelVisionSDK;
 using PixelVisionSDK.Chips;
 using PixelVisionSDK.Utils;
 using UnityEngine;

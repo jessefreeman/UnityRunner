@@ -14,13 +14,12 @@
 // Shawn Rakowski - @shwany
 // 
 
-using System;
 using MoonSharp.Interpreter;
-using PixelVisionSDK;
+using PixelVisionSDK.Chips;
 using PixelVisionSDK.Utils;
 using UnityEngine;
 
-public class LuaDemoRunner : UnityRunner
+public class LuaDemoRunner : UnityRunner, ILuaRunner
 {
 
     public enum Demos
@@ -38,44 +37,39 @@ public class LuaDemoRunner : UnityRunner
     private readonly Demos defaultDemoID = Demos.DrawSprite;
 
     // Lua Layer
-    public LuaBridge bridge;
-    public string luaScript;
     protected MouseInput mouseInput;
 
     // MoonSharp script
-    public Script script;
+    public Script script { get; set; }
 
     public override void LoadGame()
     {
         // Demos
-        LuaGameChip gameChip = null;
-
+        LuaGameChip gameChip = new LuaGameChip();
 
         // Source code for these demos are part of the DLLs/PixelVision8Demos.dll file.
         switch (defaultDemoID)
         {
             case Demos.DrawSprite:
-                luaScript = Resources.Load<TextAsset>("LuaScripts/DrawSpriteDemo").text;
+                gameChip.script = Resources.Load<TextAsset>("LuaScripts/DrawSpriteDemo").text;
                 break;
             case Demos.Font:
-                luaScript = Resources.Load<TextAsset>("LuaScripts/FontDemo").text;
+                gameChip.script = Resources.Load<TextAsset>("LuaScripts/FontDemo").text;
                 break;
             case Demos.Controller:
-                luaScript = Resources.Load<TextAsset>("LuaScripts/ControllerDemo").text;
+                gameChip.script = Resources.Load<TextAsset>("LuaScripts/ControllerDemo").text;
                 break;
             case Demos.Mouse:
-                luaScript = Resources.Load<TextAsset>("LuaScripts/MouseDemo").text;
+                gameChip.script = Resources.Load<TextAsset>("LuaScripts/MouseDemo").text;
                 break;
             case Demos.SpriteStressTest:
-                luaScript = Resources.Load<TextAsset>("LuaScripts/SpriteStressTestDemo").text;
+                gameChip.script = Resources.Load<TextAsset>("LuaScripts/SpriteStressTestDemo").text;
                 break;
             case Demos.Tilemap:
-                luaScript = Resources.Load<TextAsset>("LuaScripts/TilemapDemo").text;
+                gameChip.script = Resources.Load<TextAsset>("LuaScripts/TilemapDemo").text;
                 break;
         }
-
-        gameChip = new LuaGameChip();
-
+        
         // Make sure we load the correct resources for the default demo. You'll need to set all of the Resources to Read/Write 
         // in Unity for this to work.
         if (defaultDemoID == Demos.Tilemap)
@@ -102,8 +96,7 @@ public class LuaDemoRunner : UnityRunner
             ResetResolution(256, 240);
         }
 
-        // Configure the input
-        ConfigureInput();
+        
 
         // With everything configured, it's time to load the game into memory. The LoadGame() method sets the GameChip instance 
         // as the active game and also registers it with the ChipManager.
@@ -115,20 +108,16 @@ public class LuaDemoRunner : UnityRunner
 
     public virtual void RunGame()
     {
-        bridge = new LuaBridge();
-        LuaBridge.runner = this;
 
-        UserData.RegisterType<LuaBridge>();
-        script = new Script();
-        script.Globals["LuaBridge"] = new Func<LuaBridge>(() => bridge);
+        // Configure the input
+        ConfigureInput();
 
-        script.DoString(luaScript);
-        OnLuaReady();
+        // Configure Lua Service
+        var luaService = new LuaService();
+        luaService.RegisterType("apiBridge", new LuaBridge(engine.apiBridge));
 
-    }
-
-    public virtual void OnLuaReady()
-    {
+        // Register Lua Service
+        engine.chipManager.AddService(typeof(LuaService).FullName, luaService);
 
         // After loading the game, we are ready to run it.
         engine.RunGame();
