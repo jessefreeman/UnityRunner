@@ -14,7 +14,7 @@
 // Shawn Rakowski - @shwany
 // 
 
-using MoonSharp.Interpreter;
+using PixelVisionSDK;
 using PixelVisionSDK.Chips;
 using PixelVisionSDK.Utils;
 using UnityEngine;
@@ -34,13 +34,12 @@ public class LuaDemoRunner : UnityRunner, ILuaRunner
 
     }
 
-    private readonly Demos defaultDemoID = Demos.DrawSprite;
+    private readonly Demos defaultDemoID = Demos.Tilemap;
 
     // Lua Layer
     protected MouseInput mouseInput;
 
     // MoonSharp script
-    public Script script { get; set; }
 
     public override void LoadGame()
     {
@@ -51,22 +50,22 @@ public class LuaDemoRunner : UnityRunner, ILuaRunner
         switch (defaultDemoID)
         {
             case Demos.DrawSprite:
-                gameChip.script = Resources.Load<TextAsset>("LuaScripts/DrawSpriteDemo").text;
+                gameChip.AddScript("DrawSpriteDemo", Resources.Load<TextAsset>("LuaScripts /DrawSpriteDemo").text);
                 break;
             case Demos.Font:
-                gameChip.script = Resources.Load<TextAsset>("LuaScripts/FontDemo").text;
+                gameChip.AddScript("FontDemo", Resources.Load<TextAsset>("LuaScripts/FontDemo").text);
                 break;
             case Demos.Controller:
-                gameChip.script = Resources.Load<TextAsset>("LuaScripts/ControllerDemo").text;
+                gameChip.AddScript("ControllerDemo", Resources.Load<TextAsset>("LuaScripts/ControllerDemo").text);
                 break;
             case Demos.Mouse:
-                gameChip.script = Resources.Load<TextAsset>("LuaScripts/MouseDemo").text;
+                gameChip.AddScript("MouseDemo", Resources.Load<TextAsset>("LuaScripts/MouseDemo").text);
                 break;
             case Demos.SpriteStressTest:
-                gameChip.script = Resources.Load<TextAsset>("LuaScripts/SpriteStressTestDemo").text;
+                gameChip.AddScript("SpriteStressTestDemo", Resources.Load<TextAsset>("LuaScripts/SpriteStressTestDemo").text);
                 break;
             case Demos.Tilemap:
-                gameChip.script = Resources.Load<TextAsset>("LuaScripts/TilemapDemo").text;
+                gameChip.AddScript("TilemapDemo", Resources.Load<TextAsset>("LuaScripts/TilemapDemo").text);
                 break;
         }
         
@@ -114,7 +113,8 @@ public class LuaDemoRunner : UnityRunner, ILuaRunner
 
         // Configure Lua Service
         var luaService = new LuaService();
-        luaService.RegisterType("apiBridge", new LuaBridge(engine.apiBridge));
+        var apiBridge = new APIBridge(engine);
+        luaService.RegisterType("apiBridge", apiBridge);
 
         // Register Lua Service
         engine.chipManager.AddService(typeof(LuaService).FullName, luaService);

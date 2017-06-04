@@ -20,14 +20,6 @@ using UnityEngine;
 public class KeyInput : IKeyInput
 {
 
-    public string inputString
-    {
-        get
-        {
-            return Input.inputString;
-        }
-    }
-
     public bool GetKey(int key)
     {
         return Input.GetKey((KeyCode) key);
@@ -41,6 +33,11 @@ public class KeyInput : IKeyInput
     public bool GetKeyUp(int key)
     {
         return Input.GetKeyUp((KeyCode) key);
+    }
+
+    public string ReadInputString()
+    {
+        return Input.inputString;
     }
 
 }

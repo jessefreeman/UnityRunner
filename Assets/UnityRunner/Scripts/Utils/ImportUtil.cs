@@ -54,29 +54,29 @@ namespace PixelVisionSDK.Utils
             // Loop through each color and find the unique ones
             for (var i = 0; i < total; i++)
             {
-                PosUtil.CalculatePosition(i, width, out x, out y);
+                //PosUtil.CalculatePosition(i, width, out x, out y);
+
+                x = i % width;
+                y = i / width;
 
                 y = height - y - 1;
 
                 // Get the current color
                 tmpColor = src.GetPixel(x, y); //pixels[i]);
 
+                if (tmpColor.a < 1 && !ignoreTransparent)
+                {
+                    tmpColor = Color.magenta;
+                }
+
                 // Look to see if the color is already in the list
                 if (!colors.Contains(tmpColor) && unique)
                 {
-                    if (!(tmpColor.a < 1) && !ignoreTransparent)
-                    {
-                        // Add the color to the list
-                        colors.Add(tmpColor);
-                    }
-                    else
-                    {
-                        colors.Add(Color.magenta);
-                    }
+                    colors.Add(tmpColor);
                 }
-                else
+                else if(unique == false)
                 {
-                    Debug.Log("Duplicate color " + ColorData.ColorToHex(tmpColor.r, tmpColor.g, tmpColor.b));
+                    colors.Add(tmpColor);
                 }
             }
 
@@ -97,11 +97,12 @@ namespace PixelVisionSDK.Utils
             var colorChip = chips.colorChip;
 
             // Get the unique colors from a texture
-            var indexedColors = IndexColorsFromTexture(src, true, false);
+            var indexedColors = IndexColorsFromTexture(src, false, false);
 
             // Get the total colors loaded
             var total = indexedColors.Length;
 
+            //Debug.Log("Total Colors Imported "+ total);
             // Clear the colors first
             colorChip.Clear();
 
@@ -116,6 +117,9 @@ namespace PixelVisionSDK.Utils
 
                 colorChip.UpdateColorAt(i, hex);
             }
+
+            // Update supported colors based on what was imported
+            colorChip.RecalculateSupportedColors();
         }
 
         /// <summary>
@@ -131,6 +135,9 @@ namespace PixelVisionSDK.Utils
         public static void ImportSpritesFromTexture(Texture2D src, IEngineChips chips, bool resizeRam = false,
             bool unique = true)
         {
+
+            src.filterMode = FilterMode.Point;
+
             var spriteChip = chips.spriteChip;
             var sWidth = spriteChip.width;
             var sHeight = spriteChip.height;
@@ -149,10 +156,8 @@ namespace PixelVisionSDK.Utils
                 colorData = chips.colorChip.colors;
             }
 
-
             var colors = new Color[colorData.Length];
             ApplyColors(ref colors, colorData);
-
 
             // Calculate values needed to cut out sprites
             var srcWidth = src.width;
@@ -184,7 +189,7 @@ namespace PixelVisionSDK.Utils
 
                 if (spritesAdded < maxSprites)
                 {
-                    if (!SpriteChip.IsEmpty(spriteData))
+                    if (!SpriteChipUtil.IsEmpty(spriteData))
                     {
                         if (unique)
                         {
@@ -290,7 +295,7 @@ namespace PixelVisionSDK.Utils
             )
         {
             var spriteChip = chips.spriteChip;
-            var tileMapChip = chips.tileMapChip;
+            var tileMapChip = chips.tilemapChip;
 
             // Set up colors array
 
@@ -334,7 +339,9 @@ namespace PixelVisionSDK.Utils
                     spriteChip.UpdateSpriteAt(id, colorRefs);
                 }
 
-                PosUtil.CalculatePosition(i, width, out x, out y);
+                //PosUtil.CalculatePosition(i, width, out x, out y);
+                x = i % width;
+                y = i / width;
                 tileMapChip.UpdateTileAt(id, x, y);
             }
         }
@@ -342,7 +349,7 @@ namespace PixelVisionSDK.Utils
         public static void ImportFlagsFromTexture(Texture2D src, IEngineChips chips)
         {
             var spriteChip = chips.spriteChip;
-            var tileMap = chips.tileMapChip;
+            var tileMap = chips.tilemapChip;
 
             //TODO need to remap these since they are bottom left aligned
 
@@ -356,20 +363,22 @@ namespace PixelVisionSDK.Utils
 
             if (columns != tileMap.columns || rows != tileMap.rows)
             {
-                Debug.Log("ERROR: Flag Texture doesn't match screen block size!");
+                //Debug.Log("ERROR: Flag Texture doesn't match screen block size!");
                 return;
             }
 
             var total = SpriteChipUtil.CalcualteTotalSprites(src.width, src.height, sWidth, sHeight);
             int x, y;
+            var tmpWidth = tileMap.columns;
 
             for (var i = 0; i < total; i++)
             {
                 var pixels = CutOutSpriteFromTexture2D(i, src, sWidth, sHeight);
                 var color = pixels[0];
 
-                PosUtil.CalculatePosition(i, tileMap.columns, out x, out y);
-
+                //PosUtil.CalculatePosition(i, tileMap.columns, out x, out y);
+                x = i % tmpWidth;
+                y = i / tmpWidth;
                 //Debug.Log(color.r);
                 var flag = color.a == 1 ? (int) (color.r * 256) / tileMap.totalFlags : -1;
 

@@ -14,11 +14,10 @@
 // Shawn Rakowski - @shwany
 // 
 
-using MoonSharp.Interpreter;
 using PixelVisionSDK;
 
 public interface ILuaRunner
 {
-    Script script { get; set; }
+
     IEngine engine { get; set; }
 }

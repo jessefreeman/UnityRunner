@@ -184,7 +184,9 @@ namespace MoonSharp.Interpreter.Debugging
 
 			if (script.Options.UseLuaErrorLocations || forceClassicFormat)
 			{
-				return string.Format("{0}:{1}", sc.Name, this.FromLine);
+                var mess = string.Format("{0}:{1}", sc.Name, this.FromLine);
+			    return mess;
+
 			}
 			else if (this.FromLine == this.ToLine)
 			{

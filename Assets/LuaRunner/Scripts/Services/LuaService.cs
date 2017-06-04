@@ -16,6 +16,8 @@
 
 using System.Collections.Generic;
 using MoonSharp.Interpreter;
+using MoonSharp.Interpreter.Loaders;
+using PixelVisionOS;
 using PixelVisionSDK.Services;
 
 
@@ -29,10 +31,15 @@ public class LuaService : AbstractService
         get
         {
             if (_script == null)
-                _script = new Script();
+                _script = new Script(CoreModules.Preset_SoftSandbox);
 
             return _script;
         }
+    }
+
+    public void ClearScript()
+    {
+        _script = null;
     }
 
     public override bool Execute(string command, Dictionary<string, object> data)

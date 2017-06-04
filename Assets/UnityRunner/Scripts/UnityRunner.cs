@@ -31,7 +31,7 @@ public class UnityRunner : MonoBehaviour
 
     // We are going to use these fields to store cached color information to optimize converting the 
     // DisplayChip's pixel data into color pixels our renderTexture can use.
-    protected Color[] cachedColors;
+    protected Color[] cachedColors = new Color[0];
     protected Color[] cachedPixels = new Color[0];
     protected Color cacheTransparentColor;
 
@@ -93,8 +93,7 @@ public class UnityRunner : MonoBehaviour
         {
             typeof(ColorChip).FullName,
             typeof(SpriteChip).FullName,
-            typeof(ScreenBufferChip).FullName,
-            typeof(TileMapChip).FullName,
+            typeof(TilemapChip).FullName,
             typeof(FontChip).FullName,
             typeof(ControllerChip).FullName,
             typeof(DisplayChip).FullName
@@ -141,9 +140,6 @@ public class UnityRunner : MonoBehaviour
         // After loading the game, we are ready to run it.
         engine.RunGame();
 
-        // This method handles caching the colors from the ColorChip to help speed up rendering.
-        CacheColors();
-
     }
 
     /// <summary>
@@ -153,7 +149,7 @@ public class UnityRunner : MonoBehaviour
     ///     Texture2D
     ///     can display.
     /// </summary>
-    protected void CacheColors()
+    public void CacheColors()
     {
 
         // The ColorChip can return an array of ColorData. ColorData is an internal data structure that Pixel Vision 8 uses to store 
@@ -163,7 +159,9 @@ public class UnityRunner : MonoBehaviour
         // To improve performance, we'll save a reference to the total cashed colors directly to the Runner's totalCachedColors field. 
         // Also, we'll create a new array to store native Unity Color classes.
         totalCachedColors = colorsData.Length;
-        cachedColors = new Color[totalCachedColors];
+
+        if(cachedColors.Length != totalCachedColors)
+            Array.Resize(ref cachedColors, totalCachedColors);
 
         // Now it's time to loop through each of the colors and convert them from ColorData to Color instances. 
         for (var i = 0; i < totalCachedColors; i++)
@@ -171,17 +169,12 @@ public class UnityRunner : MonoBehaviour
             // Converting ColorData to Unity Colors is relatively straight forward by simply passing the ColorData's RGB properties into 
             // the Unity Color class's constructor and saving it  to the cachedColors array.
             var colorData = colorsData[i];
-            cachedColors[i] = new Color(colorData.r, colorData.g, colorData.b);
+
+            if (colorData.flag != 0)
+            {
+                cachedColors[i] = new Color(colorData.r, colorData.g, colorData.b);
+            }
         }
-
-        // We also want to cache the ScreenBufferChip's background color. The background color is an ID that references one of the ColorChip's colors.
-        var bgColor = engine.screenBufferChip.backgroundColor;
-
-
-        // The cachedTransparentColor is what shows when a color ID is out of range. Pixel Vision 8 doesn't support transparency, so this 
-        // color shows instead. Here we test to see if the bgColor is an ID within the length of the bgColor variable. If not, we set it to 
-        // Unity's default magenta color. If the bgColor is within range, we'll use that for transparency.
-        cacheTransparentColor = bgColor > cachedColors.Length || bgColor < 0 ? Color.magenta : cachedColors[engine.screenBufferChip.backgroundColor];
 
     }
 
@@ -227,8 +220,24 @@ public class UnityRunner : MonoBehaviour
 
         // The first part of rendering Pixel Vision 8's DisplayChip is to get all of the current pixel data during the current frame. Each 
         // Integer in this Array contains an ID we can use to match up to the cached colors we created when setting up the Runner.
-        var pixelData = engine.displayChip.displayPixelData;
+        var pixelData = engine.displayChip.displayPixels;//.displayPixelData;
         var total = pixelData.Length;
+        int colorRef;
+
+        // Need to make sure we are using the latest colors.
+        if (engine.colorChip.invalid)
+        {
+            // This method handles caching the colors from the ColorChip to help speed up rendering.
+            CacheColors();
+        }
+
+        // We also want to cache the ScreenBufferChip's background color. The background color is an ID that references one of the ColorChip's colors.
+        var bgColor = engine.colorChip.backgroundColor;
+
+        // The cachedTransparentColor is what shows when a color ID is out of range. Pixel Vision 8 doesn't support transparency, so this 
+        // color shows instead. Here we test to see if the bgColor is an ID within the length of the bgColor variable. If not, we set it to 
+        // Unity's default magenta color. If the bgColor is within range, we'll use that for transparency.
+        cacheTransparentColor = bgColor > cachedColors.Length || bgColor < 0 ? Color.magenta : cachedColors[engine.colorChip.backgroundColor];
 
         // Now it's time to loop through all of the DisplayChip's pixel data.
         for (var i = 0; i < total; i++)
@@ -236,7 +245,14 @@ public class UnityRunner : MonoBehaviour
 
             // Here we get a reference to the color we are trying to look up from the pixelData array. Then we compare that ID to what we 
             // have in the cachedPixels. If the color is out of range, we use the cachedTransparentColor. If the color exists in the cache we use that.
-            var colorRef = pixelData[i];
+            colorRef = pixelData[i];
+
+            // Replace transparent colors with bg for next pass
+            if (colorRef == -1)
+            {
+                pixelData[i] = bgColor;
+            }
+
             cachedPixels[i] = colorRef < 0 || colorRef >= totalCachedColors ? cacheTransparentColor : cachedColors[colorRef];
 
             // As you can see, we are using a protected field called cachedPixels. When we call ResetResolution, we resize this array to make sure that 
@@ -295,6 +311,11 @@ public class UnityRunner : MonoBehaviour
             {
                 cachedPixels[i].a = 1;
             }
+
+            var overscanXPixels = (width - engine.displayChip.overscanXPixels) / (float)width;
+            var overscanYPixels = (height - engine.displayChip.overscanYPixels) / (float)height;
+            var offsetY = 1 - overscanYPixels;
+            displayTarget.uvRect = new UnityEngine.Rect(0, offsetY, overscanXPixels, overscanYPixels);
 
             // When copying over the DisplayChip's pixel data to the cachedPixels, we only focus on the RGB value. While we could reset the 
             // alpha during that step, it would also slow down the renderer. Since Pixel Vision 8 simply ignores the alpha value of a color, 

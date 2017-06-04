@@ -81,16 +81,16 @@ namespace MoonSharp.Interpreter
 			{
 				if (DoNotDecorateMessage)
 				{
-					this.DecoratedMessage = this.Message;
+					this.DecoratedMessage = base.Message;
 					return;
 				}
 				else if (sref != null)
 				{
-					this.DecoratedMessage = string.Format("{0}: {1}", sref.FormatLocation(script), this.Message);
+					this.DecoratedMessage = string.Format("{0}: {1}", sref.FormatLocation(script), base.Message);
 				}
 				else
 				{
-					this.DecoratedMessage = string.Format("bytecode:{0}: {1}", ip, this.Message);
+					this.DecoratedMessage = string.Format("bytecode:{0}: {1}", ip, base.Message);
 				}
 			}
 		}
@@ -104,6 +104,10 @@ namespace MoonSharp.Interpreter
 		{
 		}
 
+	    public override string Message
+	    {
+	        get { return DecoratedMessage; }
+	    }
 
 
 	}

@@ -29,9 +29,9 @@ public class KeyboardButtonInput : ButtonState
 
     protected int keyCode;
 
-    public KeyboardButtonInput(Buttons button, int keyCode)
+    public KeyboardButtonInput(Buttons buttons, int keyCode)
     {
-        this.button = button;
+        this.buttons = buttons;
         mapping = keyCode;
         this.keyCode = keyCode;
     }

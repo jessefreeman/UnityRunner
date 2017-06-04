@@ -33,7 +33,7 @@ public class DemoRunner : UnityRunner
 
     }
 
-    private readonly Demos defaultDemoID = Demos.DrawSprite;
+    private readonly Demos defaultDemoID = Demos.Tilemap;
     protected MouseInput mouseInput;
 
     public override void LoadGame()
