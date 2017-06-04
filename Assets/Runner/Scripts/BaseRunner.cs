@@ -26,7 +26,7 @@ using UnityEngine.UI;
 ///     we can attach the runner to a GameObject in the scene and leverage its own lifecycle
 ///     to run Pixel Vision 8.
 /// </summary>
-public class UnityRunner : MonoBehaviour
+public class BaseRunner : MonoBehaviour
 {
 
     // We are going to use these fields to store cached color information to optimize converting the 
