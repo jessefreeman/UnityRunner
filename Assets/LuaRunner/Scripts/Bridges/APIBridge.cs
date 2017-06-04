@@ -16,7 +16,6 @@
 
 using System;
 using MoonSharp.Interpreter;
-using PixelVisionOS;
 using PixelVisionSDK.Chips;
 using PixelVisionSDK.Services;
 using PixelVisionSDK.Utils;
