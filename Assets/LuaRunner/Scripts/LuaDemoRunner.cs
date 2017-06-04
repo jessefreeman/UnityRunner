@@ -19,7 +19,7 @@ using PixelVisionSDK.Chips;
 using PixelVisionSDK.Utils;
 using UnityEngine;
 
-public class LuaDemoRunner : UnityRunner, ILuaRunner
+public class LuaDemoRunner : UnityRunner
 {
 
     public enum Demos
