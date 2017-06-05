@@ -4,10 +4,13 @@ using PixelVisionOS;
 using PixelVisionSDK.Services;
 using PixelVisionRunner.Parsers;
 using PixelVisionSDK;
-using System.Diagnostics;
+using System.IO;
+using System.Security.Cryptography;
+using UnityEngine;
 
 namespace PixelVisionRunner.Services
 {
+    
     public class LoadService : AbstractService
     {
         private readonly List<AbstractParser> parsers = new List<AbstractParser>();
@@ -20,6 +23,13 @@ namespace PixelVisionRunner.Services
 
         protected IEngine targetEngine;
         private int totalParsers;
+
+        public List<string> validExtensions = new List<string>()
+        {
+            ".lua",
+            ".png",
+            ".json"
+        };
 
         public LoadService(IFileSystem fileSystem)
         {
@@ -40,18 +50,56 @@ namespace PixelVisionRunner.Services
         {
             parsers.Clear();
 
-            AbstractParser parser;
+            var files = new Dictionary<string, byte[]>();
 
-            // Remove the current game
-//            if (engine.gameChip != null)
-//                engine.gameChip.Deactivate();
+            var paths = fileSystem.GetFiles(path);
 
-            // Save the engine so we can work with it during loading
+            foreach (var filePath in paths)
+            {
+                var fileType = Path.GetExtension(filePath);
+                if (validExtensions.IndexOf(fileType) != -1)
+                {
+                    var fileName = Path.GetFileName(filePath);
+                    var data = File.ReadAllBytes(filePath);
+
+                    files.Add(fileName, data);
+                }
+            }
+
+            ParseFiles(path, files, engine, saveFlags);
+        }
+
+        public void ReadFromZip(string path, IEngine engine, SaveFlags saveFlags)
+        {
+            //TODO need to create custom logic to explore a zip, using file system for now.
+            ReadGameFiles(path, engine, saveFlags);
+
+//            // Open an existing zip file for reading
+//            ZipStorer zip = ZipStorer.Open(@"c:\data\sample.zip", FileAccesss.Read);
+//
+//            // Read the central directory collection
+//            List<ZipStorer.ZipFileEntry> dir = zip.ReadCentralDir();
+//
+//            // Look for the desired file
+//            foreach (ZipStorer.ZipFileEntry entry in dir)
+//            {
+//                if (Path.GetFileName(entry.FilenameInZip) == "sample.jpg")
+//                {
+//                    // File found, extract it
+//                    zip.ExtractStoredFile(entry, @"c:\data\sample.jpg"); <- can get byte[] data
+//                    break;
+//                }
+//            }
+//            zip.Close();
+        }
+
+        public void ParseFiles(string path, Dictionary<string, byte[]> files, IEngine engine, SaveFlags saveFlags) { 
+        // Save the engine so we can work with it during loading
             targetEngine = engine;
 
             // Step 1. Load the system snapshot
             if ((saveFlags & SaveFlags.System) == SaveFlags.System)
-                LoadSystem(path);
+                LoadSystem(files);
 
             // Step 2 (optional). Load up the Lua script
             if ((saveFlags & SaveFlags.Code) == SaveFlags.Code)
@@ -63,7 +111,7 @@ namespace PixelVisionRunner.Services
             // Step 3 (optional). Look for new colors
             if ((saveFlags & SaveFlags.Colors) == SaveFlags.Colors)
             {
-                parser = LoadColors(path);
+                parser = LoadColors(files);
                 if (parser != null)
                     parsers.Add(parser);
             }
@@ -71,7 +119,7 @@ namespace PixelVisionRunner.Services
             // Step 4 (optional). Look for color map for sprites and tile map
             if ((saveFlags & SaveFlags.ColorMap) == SaveFlags.ColorMap)
             {
-                parser = LoadColorMap(path);
+                parser = LoadColorMap(files);
                 if (parser != null)
                     parsers.Add(parser);
             }
@@ -79,7 +127,7 @@ namespace PixelVisionRunner.Services
             // Step 5 (optional). Look for new sprites
             if ((saveFlags & SaveFlags.Sprites) == SaveFlags.Sprites)
             {
-                parser = LoadSprites(path);
+                parser = LoadSprites(files);
                 if (parser != null)
                     parsers.Add(parser);
             }
@@ -87,7 +135,7 @@ namespace PixelVisionRunner.Services
             // Step 6 (optional). Look for tile map to load
             if ((saveFlags & SaveFlags.TileMap) == SaveFlags.TileMap)
             {
-                parser = LoadTilemap(path);
+                parser = LoadTilemap(files);
                 if (parser != null)
                     parsers.Add(parser);
             }
@@ -95,7 +143,7 @@ namespace PixelVisionRunner.Services
             // Step 7 (optional). Look for tile map flags to load
             if ((saveFlags & SaveFlags.TileMapFlags) == SaveFlags.TileMapFlags)
             {
-                parser = LoadTilemapFlags(path);
+                parser = LoadTilemapFlags(files);
                 if (parser != null)
                     parsers.Add(parser);
             }
@@ -120,7 +168,7 @@ namespace PixelVisionRunner.Services
             // Step 9 (optional). Look for meta data and override the game
             if ((saveFlags & SaveFlags.Meta) == SaveFlags.Meta)
             {
-                parser = LoadMetaData(path);
+                parser = LoadMetaData(files);
                 if (parser != null)
                     parsers.Add(parser);
             }
@@ -131,14 +179,10 @@ namespace PixelVisionRunner.Services
 
         public void LoadAll()
         {
-            //var watch = Stopwatch.StartNew();
 
             while (completed == false)
                 NextParser();
-            //UnityEngine.Debug.Log("Percent " + (int)(percent * 100));
-            //watch.Stop();
-
-            //UnityEngine.Debug.Log("New Loader - Time Elapsed " + watch.Elapsed.Milliseconds + " ms");
+            
         }
 
 
@@ -149,10 +193,7 @@ namespace PixelVisionRunner.Services
 
             var parser = parsers[currentParserID];
 
-
-            var watch = Stopwatch.StartNew();
-
-            var parserName = parser.GetType();
+            //var watch = Stopwatch.StartNew();
 
             if (microSteps)
             {
@@ -169,43 +210,38 @@ namespace PixelVisionRunner.Services
                 currentParserID++;
             }
 
-            watch.Stop();
+            //watch.Stop();
 
-            //UnityEngine.Debug.Log(parserName + " - Time Elapsed " + watch.Elapsed.Milliseconds + " ms");
-
-
-            //if(parser.completed)
         }
 
-        private AbstractParser LoadMetaData(string path)
+        private AbstractParser LoadMetaData(Dictionary<string, byte[]> files)
         {
-            var metaDataPath = path + "info.json";
+            var fileName = "data.json";
 
-            // Test to see if file exists
-            if (fileSystem.FileExists(metaDataPath))
+            if (files.ContainsKey(fileName))
             {
-                //Debug.Log("FileIO: Meta Data Found " + metaDataPath);
 
-                // Load Texture
-                var tex = fileSystem.ReadTextFromFile(metaDataPath);
+                var fileContents = System.Text.Encoding.Default.GetString(files[fileName]);
 
-                return new ParseMetaData(tex, targetEngine);
-//                var parseMetaData = new ParseMetaData(tex, targetEngine);
-//
-//                while (parseMetaData.completed == false)
-//                {
-//                    parseMetaData.NextStep();
-//                }
-
-                //                var jsonData = Json.Deserialize(tex) as Dictionary<string, object>;
-                //
-                //                foreach (var data in jsonData)
-                //                {
-                //                    targetEngine.SetMetaData(data.Key, data.Value as string);
-                //                }
-
-                //engine.currentGame.LoadMetaData(jsonData);
+                return new ParseMetaData(fileContents, targetEngine);
             }
+//            else
+//            {
+//                throw new Exception("Can't find 'data.json' file");
+//            }
+
+//            var metaDataPath = path + "info.json";
+//
+//            // Test to see if file exists
+//            if (fileSystem.FileExists(metaDataPath))
+//            {
+//           
+//                // Load Texture
+//                var tex = fileSystem.ReadTextFromFile(metaDataPath);
+//
+//                return new ParseMetaData(tex, targetEngine);
+//
+//            }
 
             return null;
         }
@@ -217,134 +253,80 @@ namespace PixelVisionRunner.Services
             fontName = fontName.Substring(0, fontName.Length - 5);
 
             return new FontParser(tex, targetEngine, fontName);
-//                    var fontparser = new FontParser(tex, targetEngine, fontName);
-//
-//                    while (fontparser.completed == false)
-//                    {
-//                        fontparser.NextStep();
-//                    }
 
-            //ImportUtil.ImportFontFromTexture(tex, targetEngine, fontName.Substring(0, fontName.Length - 5));
-
-//                }
-//            }
-
-            //return null;
         }
 
-        private AbstractParser LoadTilemapFlags(string path)
+        private AbstractParser LoadTilemapFlags(Dictionary<string, byte[]> files)
         {
-            var flagPath = path + "tilemap-flags.png";
+            var fileName = "tilemap-flags.png";
 
-            // Test to see if file exists
-            if (fileSystem.FileExists(flagPath))
+            if (files.ContainsKey(fileName))
             {
-                //Debug.Log("FileIO: Tile Map Flag PNG Found " + flagPath);
-
-                // Load Texture
-                var tex = fileSystem.ReadTextureFromFile(flagPath);
-                //ImportUtil.ImportFlagsFromTexture(tex, targetEngine);
+                var tex = ReadTexture(files[fileName]);
 
                 return new TilemapFlagParser(tex, targetEngine);
-//                var tilemapFlagParser = new TilemapFlagParser(tex, targetEngine);
-//                while (tilemapFlagParser.completed == false)
-//                {
-//                    tilemapFlagParser.NextStep();
-//                }
+
             }
 
             return null;
         }
 
-        private AbstractParser LoadTilemap(string path)
+        private AbstractParser LoadTilemap(Dictionary<string, byte[]> files)
         {
-            var mapPath = path + "tilemap.png";
+            var fileName = "tilemap.png";
 
-            // Test to see if file exists
-            if (fileSystem.FileExists(mapPath))
+            if (files.ContainsKey(fileName))
             {
-                //Debug.Log("FileIO: Tile Map PNG Found " + mapPath);
-
-                // Load Texture
-                var tex = fileSystem.ReadTextureFromFile(mapPath);
+                var tex = ReadTexture(files[fileName]);
 
                 return new TilemapParser(tex, targetEngine);
-//                var tilemapParser = new TilemapParser(tex, targetEngine);
-//                while (tilemapParser.completed == false)
-//                {
-//                    tilemapParser.NextStep();
-//                }
-                //ImportUtil.ImportTileMapFromTexture(tex, targetEngine);
-            }
 
+            }
+            
             return null;
         }
 
-        private AbstractParser LoadSprites(string path)
+        private AbstractParser LoadSprites(Dictionary<string, byte[]> files)
         {
-// Get path to sprites
-            var spritePath = path + "sprites.png";
+            var fileName = "sprites.png";
 
-            // Test to see if file exists
-            if (fileSystem.FileExists(spritePath))
+            if (files.ContainsKey(fileName))
             {
-                //Debug.Log("FileIO: Sprites PNG Found " + spritePath);
-
-                // Load Texture
-                var tex = fileSystem.ReadTextureFromFile(spritePath);
+                var tex = ReadTexture(files[fileName]);
 
                 return new SpriteParser(tex, targetEngine);
 
-//                var spriteParser = new SpriteParser(tex, targetEngine);
-//                while (spriteParser.completed == false)
-//                {
-//                    spriteParser.NextStep();
-//                }
-
-                //ImportUtil.ImportSpritesFromTexture(tex, targetEngine);
             }
 
             return null;
         }
 
-        private AbstractParser LoadColorMap(string path)
+        private AbstractParser LoadColorMap(Dictionary<string, byte[]> files)
         {
-            // Get path to color file
-            var dataPath = path + "color-map.png";
 
-            // Test to see if file exists
-            if (fileSystem.FileExists(dataPath))
+            var fileName = "color-map.png";
+
+            if (files.ContainsKey(fileName))
             {
-                var tex = fileSystem.ReadTextureFromFile(dataPath);
+                var tex = ReadTexture(files[fileName]);
 
                 return new ColorMapParser(tex, targetEngine);
-//                var colorMapParser = new ColorMapParser(tex, targetEngine);
-//                while (colorMapParser.completed == false)
-//                {
-//                    colorMapParser.NextStep();
-//                }
+
             }
 
             return null;
         }
 
-        private AbstractParser LoadColors(string path)
+        private AbstractParser LoadColors(Dictionary<string, byte[]> files)
         {
-            // Get path to color file
-            var dataPath = path + "colors.png";
 
-            // Test to see if file exists
-            if (fileSystem.FileExists(dataPath))
+            var fileName = "colors.png";
+
+            if (files.ContainsKey(fileName))
             {
-                var tex = fileSystem.ReadTextureFromFile(dataPath);
+                var tex = ReadTexture(files[fileName]);
 
                 return new ColorParser(tex, targetEngine);
-                ;
-//                var colorParser = new ColorParser(tex, targetEngine);
-//                while (colorParser.completed == false)
-//                {
-//                    colorParser.NextStep();
-//                }
             }
 
             return null;
@@ -373,26 +355,38 @@ namespace PixelVisionRunner.Services
                         }
                     }
                 }
-            //var files = fileSystem.FilePathsInDir(path, new[] {".lua"});
         }
 
-        private void LoadSystem(string path)
+        private void LoadSystem(Dictionary<string, byte[]> files)
         {
-            var dataPath = path + "data.json";
 
-            if (fileSystem.FileExists(dataPath))
+            var fileName = "data.json";
+
+            if (files.ContainsKey(fileName))
             {
-                var fileContents = fileSystem.ReadTextFromFile(dataPath);
 
-//                return new JsonParser(fileContents, targetEngine as ILoad);
+                var fileContents = System.Text.Encoding.Default.GetString(files[fileName]);
+
                 var jsonParser = new JsonParser(fileContents, targetEngine as ILoad);
                 while (jsonParser.completed == false)
                     jsonParser.NextStep();
             }
             else
             {
-                throw new Exception("Can't find 'data.json' file at " + path);
+                throw new Exception("Can't find 'data.json' file");
             }
+        }
+
+        public Texture2D ReadTexture(byte[] data)
+        {
+            // Create a texture to store data in
+            var tex = new Texture2D(1, 1);
+
+            // Load bytes into texture
+            tex.LoadImage(data);
+
+            // Return texture
+            return tex;
         }
     }
 }
