@@ -1,7 +1,3 @@
 [submodule "Assets/PixelVisionSDK"]
 	path = Assets/PixelVisionSDK
 	url = https://github.com/PixelVision8/SDK.git
-[submodule "Assets/Demos"]
-	path = Assets/Demos
-	url = https://github.com/PixelVision8/Demos.git
-

@@ -14,16 +14,12 @@
 // Shawn Rakowski - @shwany
 // 
 
-using System.Collections.Generic;
-using System.IO;
 using PixelVision8.Services;
 using PixelVisionOS;
-using PixelVisionSDK;
 using PixelVisionSDK.Chips;
-using PixelVisionSDK.Services;
 using UnityEngine;
 
-public class LuaRunner : BaseRunner, IPixelVisionOS
+public class LuaRunner : BaseRunner
 {
 
     // Lua Layer
@@ -42,7 +38,7 @@ public class LuaRunner : BaseRunner, IPixelVisionOS
 
         var path = Application.dataPath + folder;
 
-        engine = new PixelVision8Engine(this);
+        engine.LoadGame(new LuaGameChip());
 
         var saveFlags = SaveFlags.System;
         saveFlags |= SaveFlags.Code;
@@ -56,9 +52,17 @@ public class LuaRunner : BaseRunner, IPixelVisionOS
 
         fileSystem = new UnityFileSystemService();
         loadService = new LoadService(fileSystem);
-        workspace = new UnityWorkspaceService(fileSystem, loadService);
+        var luaService = new LuaService();
+
+        luaService.script.Options.DebugPrint = s => Debug.Log(s);
+
+        // Register Lua Service
+        engine.chipManager.AddService(typeof(LuaService).FullName, luaService);
 
         loadService.ReadGameFiles(path, engine, saveFlags);
+
+        Debug.Log("HAS GAME " + (engine.gameChip != null));
+
         loadService.LoadAll();
 
         RunGame();
@@ -68,33 +72,6 @@ public class LuaRunner : BaseRunner, IPixelVisionOS
 
     public virtual void RunGame()
     {
-        var chipManager = engine.chipManager as PixelVision8ChipManager;
-        if (chipManager != null)
-        {
-
-            // Create a runner service that exposes core runner APIs to other chips and services
-            var runnerService = new RunnerService(this);
-            chipManager.AddService(typeof(IPixelVisionOS).FullName, runnerService);
-
-            chipManager.AddService(typeof(IFileSystem).FullName, fileSystem);
-
-            chipManager.AddService(typeof(IWorkspace).FullName, workspace);
-
-            //luaBridge = new LuaBridge(engine.apiBridge);
-
-            // Configure Lua Service
-            var luaService = new LuaService();
-
-            apiBridge = new APIBridge(engine);
-            luaService.RegisterType("apiBridge", apiBridge);
-
-            // Register Lua Service
-            chipManager.AddService(typeof(LuaService).FullName, luaService);
-
-            // Connect up Runner debug to the Lua service
-            luaService.script.Options.DebugPrint = s => Debug.Log(s);
-
-        }
 
         ResetResolution(engine.displayChip.width, engine.displayChip.height);
 
@@ -140,68 +117,4 @@ public class LuaRunner : BaseRunner, IPixelVisionOS
         controllerChip.RegisterMouseInput(new MouseInput(displayTarget.rectTransform));
     }
 
-    public IRecorder recorder { get; private set; }
-    public string productName { get; private set; }
-    public WorkspaceService workspace { get; private set; }
-    public RunnerMode mode { get; private set; }
-    public bool mute { get; set; }
-    public void BootDone()
-    {
-        throw new System.NotImplementedException();
-    }
-
-    public void StartPreloading()
-    {
-        throw new System.NotImplementedException();
-    }
-
-    public void LoadAndRun(string name, ProjectTypes types, RunnerMode mode, Dictionary<string, string> metaData = null, bool preload = true)
-    {
-        throw new System.NotImplementedException();
-    }
-
-    public string defaultTool { get; private set; }
-    public bool editMode { get; private set; }
-    public int volume { get; set; }
-    public void NewGame(string templateName, string fileName = "Untitled_Game", bool autoRun = true)
-    {
-        throw new System.NotImplementedException();
-    }
-
-    public void ChangeMode(RunnerMode value)
-    {
-        throw new System.NotImplementedException();
-    }
-
-    public void Reset(bool showBoot = true)
-    {
-        throw new System.NotImplementedException();
-    }
-
-    public void ToggleMode()
-    {
-        throw new System.NotImplementedException();
-    }
-
-    public void TakeScreenshot()
-    {
-        throw new System.NotImplementedException();
-    }
-
-    public void ToggleRecording()
-    {
-        throw new System.NotImplementedException();
-    }
-
-    public int PreloaderNextStep()
-    {
-        throw new System.NotImplementedException();
-    }
-
-    public void PreloaderComplete()
-    {
-        throw new System.NotImplementedException();
-    }
-
-    public APIBridge apiBridge { get; private set; }
 }
