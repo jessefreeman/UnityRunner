@@ -120,25 +120,18 @@ public class BaseRunner : MonoBehaviour
     public virtual void LoadGame()
     {
 
-        // For our game, we'll use the DrawSpriteDemo which covers the basics of rendering sprites and text to the display.
-        GameChip gameChip = new DrawSpriteDemo();
+        // Override this method and add your own game load logic.
 
-        // Pixel Vision 8's Unity Demo Project contains helper classes for working with Unity. Here we are leveraging the 
-        // Import Utility to convert Unity Texture2D data into a format that the Color, Sprite and Font chips can use.
-        ImportUtil.ImportColorsFromTexture(Resources.Load<Texture2D>("colors"), engine);
-        ImportUtil.ImportSpritesFromTexture(Resources.Load<Texture2D>("sprites"), engine);
-        ImportUtil.ImportFontFromTexture(Resources.Load<Texture2D>("large-font"), engine, "large-font");
+        ResetResolution(engine.displayChip.width, engine.displayChip.height);
 
-        // Before we run the game we'll need to set the resolution. Doing this is specific to Unity and our custom ResetResolution() 
-        // method will make sure that the RawImage has the correct aspect ratio.
-        ResetResolution(256, 240);
-
-        // With everything configured, it's time to load the game into memory. The LoadGame() method sets the GameChip instance 
-        // as the active game and also registers it with the ChipManager.
-        engine.LoadGame(gameChip);
+        // Configure the input
+        ConfigureInput();
 
         // After loading the game, we are ready to run it.
         engine.RunGame();
+
+        // This method handles caching the colors from the ColorChip to help speed up rendering.
+        CacheColors();
 
     }
 
@@ -176,6 +169,37 @@ public class BaseRunner : MonoBehaviour
             }
         }
 
+    }
+
+    protected void ConfigureInput()
+    {
+        var controllerChip = engine.chipManager.GetChip(typeof(ControllerChip).FullName) as ControllerChip;
+
+        // This allows the engine to access Unity keyboard input and the inputString
+        controllerChip.RegisterKeyInput(new KeyInput());
+
+        // Map Controller and Keyboard
+        var keys1 = new[]
+        {
+            KeyCode.UpArrow, KeyCode.DownArrow, KeyCode.LeftArrow, KeyCode.RightArrow, KeyCode.X, KeyCode.C,
+            KeyCode.A, KeyCode.S
+        };
+
+        var keys2 = new[]
+        {
+            KeyCode.I, KeyCode.K, KeyCode.J, KeyCode.L, KeyCode.Quote, KeyCode.Return,
+            KeyCode.Y, KeyCode.U
+        };
+
+        var total = keys1.Length;
+        for (var i = 0; i < total; i++)
+        {
+            controllerChip.UpdateControllerKey(0, new KeyboardButtonInput((Buttons)i, (int)keys1[i]));
+            controllerChip.UpdateControllerKey(1, new KeyboardButtonInput((Buttons)i, (int)keys2[i]));
+        }
+
+        // Register mouse input
+        controllerChip.RegisterMouseInput(new MouseInput(displayTarget.rectTransform));
     }
 
     /// <summary>

@@ -14,17 +14,18 @@
 // Shawn Rakowski - @shwany
 // 
 
-using PixelVision8.Services;
 using PixelVisionOS;
-using PixelVisionSDK.Chips;
+using PixelVisionRunner.Services;
 using UnityEngine;
 
 public class LuaRunner : BaseRunner
 {
+    public LoadService loadService;
 
     // Lua Layer
     protected MouseInput mouseInput;
-    public LoadService loadService;
+
+    public FileSystemService fileSystem { get; private set; }
 
     // MoonSharp script
 
@@ -32,9 +33,9 @@ public class LuaRunner : BaseRunner
     {
         var folder = "/StreamingAssets/Game/";
 
-        #if UNITY_EDITOR
+#if UNITY_EDITOR
         folder = "/UnityRunner/Assets" + folder;
-        #endif
+#endif
 
         var path = Application.dataPath + folder;
 
@@ -61,60 +62,8 @@ public class LuaRunner : BaseRunner
 
         loadService.ReadGameFiles(path, engine, saveFlags);
 
-        Debug.Log("HAS GAME " + (engine.gameChip != null));
-
         loadService.LoadAll();
 
-        RunGame();
-
+        base.LoadGame();
     }
-    public FileSystemService fileSystem { get; private set; }
-
-    public virtual void RunGame()
-    {
-
-        ResetResolution(engine.displayChip.width, engine.displayChip.height);
-
-        // Configure the input
-        ConfigureInput();
-
-        // After loading the game, we are ready to run it.
-        engine.RunGame();
-
-        // This method handles caching the colors from the ColorChip to help speed up rendering.
-        CacheColors();
-
-    }
-
-    private void ConfigureInput()
-    {
-        var controllerChip = engine.chipManager.GetChip(typeof(ControllerChip).FullName) as ControllerChip;
-
-        // This allows the engine to access Unity keyboard input and the inputString
-        controllerChip.RegisterKeyInput(new KeyInput());
-
-        // Map Controller and Keyboard
-        var keys1 = new[]
-        {
-            KeyCode.UpArrow, KeyCode.DownArrow, KeyCode.LeftArrow, KeyCode.RightArrow, KeyCode.X, KeyCode.C,
-            KeyCode.A, KeyCode.S
-        };
-
-        var keys2 = new[]
-        {
-            KeyCode.I, KeyCode.K, KeyCode.J, KeyCode.L, KeyCode.Quote, KeyCode.Return,
-            KeyCode.Y, KeyCode.U
-        };
-
-        var total = keys1.Length;
-        for (var i = 0; i < total; i++)
-        {
-            controllerChip.UpdateControllerKey(0, new KeyboardButtonInput((Buttons) i, (int) keys1[i]));
-            controllerChip.UpdateControllerKey(1, new KeyboardButtonInput((Buttons) i, (int) keys2[i]));
-        }
-
-        // Register mouse input
-        controllerChip.RegisterMouseInput(new MouseInput(displayTarget.rectTransform));
-    }
-
 }

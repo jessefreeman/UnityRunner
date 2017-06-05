@@ -1,0 +1,35 @@
+﻿//  
+// Copyright (c) Jesse Freeman. All rights reserved.  
+// 
+// Licensed under the Microsoft Public License (MS-PL) License. 
+// See LICENSE file in the project root for full license information. 
+// 
+// Contributors
+// --------------------------------------------------------
+// This is the official list of Pixel Vision 8 contributors:
+//  
+// Jesse Freeman - @JesseFreeman
+// Christer Kaitila - @McFunkypants
+// Pedro Medeiros - @saint11
+// Shawn Rakowski - @shwany
+// 
+
+using System;
+
+namespace PixelVisionOS
+{
+    [Flags]
+    public enum SaveFlags
+    {
+        System = 1,
+        Code = 2,
+        Colors = 4,
+        ColorMap = 8,
+        Sprites = 16,
+        TileMap = 32,
+        TileMapFlags = 64,
+        Fonts = 128,
+        Meta = 256,
+        Music = 512
+    }
+}
