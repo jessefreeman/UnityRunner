@@ -17,7 +17,6 @@
 //using PixelVisionSDK.Chips;
 using UnityEngine;
 using PixelVisionSDK.Chips;
-using FontChip = PixelVision8.Chips.FontChip;
 
 namespace PixelVisionRunner.Parsers
 {
@@ -32,7 +31,7 @@ namespace PixelVisionRunner.Parsers
 
         public FontParser(Texture2D tex, IEngineChips chips, string name = "Default", bool autoImport = true) : base(tex, chips)
         {
-            this.fontChip = chips.fontChip as FontChip;
+            this.fontChip = chips.fontChip;
             if (fontChip == null)
             {
                 // Create a new color map chip to store data
