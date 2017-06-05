@@ -5,6 +5,8 @@ using PixelVisionSDK.Services;
 using PixelVisionRunner.Parsers;
 using PixelVisionSDK;
 using System.IO;
+using System.IO.Compression;
+using System.Linq;
 using System.Security.Cryptography;
 using UnityEngine;
 
@@ -66,34 +68,38 @@ namespace PixelVisionRunner.Services
                 }
             }
 
-            ParseFiles(path, files, engine, saveFlags);
+            ParseFiles(files, engine, saveFlags);
         }
 
         public void ReadFromZip(string path, IEngine engine, SaveFlags saveFlags)
         {
             //TODO need to create custom logic to explore a zip, using file system for now.
-            ReadGameFiles(path, engine, saveFlags);
+//            ReadGameFiles(path, engine, saveFlags);
 
 //            // Open an existing zip file for reading
-//            ZipStorer zip = ZipStorer.Open(@"c:\data\sample.zip", FileAccesss.Read);
+            ZipStorer zip = ZipStorer.Open(path, FileAccess.Read);
 //
-//            // Read the central directory collection
-//            List<ZipStorer.ZipFileEntry> dir = zip.ReadCentralDir();
-//
-//            // Look for the desired file
-//            foreach (ZipStorer.ZipFileEntry entry in dir)
-//            {
-//                if (Path.GetFileName(entry.FilenameInZip) == "sample.jpg")
-//                {
-//                    // File found, extract it
-//                    zip.ExtractStoredFile(entry, @"c:\data\sample.jpg"); <- can get byte[] data
-//                    break;
-//                }
-//            }
-//            zip.Close();
+            // Read the central directory collection
+            List<ZipStorer.ZipFileEntry> dir = zip.ReadCentralDir();
+            
+            var files = new Dictionary<string, byte[]>();
+
+            // Look for the desired file
+            foreach (ZipStorer.ZipFileEntry entry in dir)
+            {
+
+                var fileBytes = new byte[0];
+                zip.ExtractFile(entry, out fileBytes);
+
+                files.Add(entry.ToString(), fileBytes);
+
+            }
+            zip.Close();
+
+            ParseFiles(files, engine, saveFlags);
         }
 
-        public void ParseFiles(string path, Dictionary<string, byte[]> files, IEngine engine, SaveFlags saveFlags) { 
+        public void ParseFiles(Dictionary<string, byte[]> files, IEngine engine, SaveFlags saveFlags) { 
         // Save the engine so we can work with it during loading
             targetEngine = engine;
 
@@ -104,8 +110,32 @@ namespace PixelVisionRunner.Services
             // Step 2 (optional). Load up the Lua script
             if ((saveFlags & SaveFlags.Code) == SaveFlags.Code)
             {
-                var scriptPaths = new[] {libPath, path};
-                LoadScripts(scriptPaths);
+                var scriptExtension = ".lua";
+
+                var paths = files.Keys.Where(s => s.EndsWith(scriptExtension)).ToList();
+
+                if (fileSystem.DirectoryExists(libPath))
+                {
+                    var libFiles = fileSystem.FilePathsInDir(libPath, new[] {".lua"});
+
+                    foreach (var libFile in libFiles)
+                    {
+                        //TODO this could be a bit cleaner
+                        var libFileName = Path.GetFileName(libFile);
+
+                        files.Add(libFileName, File.ReadAllBytes(libFile));
+
+                        paths.Insert(0, libFileName);
+                    }
+                }
+
+                foreach (var fileName in paths)
+                {
+
+                    parser = LoadScript(fileName, files[fileName]);
+                    parsers.Add(parser);
+                }
+
             }
 
             // Step 3 (optional). Look for new colors
@@ -148,21 +178,23 @@ namespace PixelVisionRunner.Services
                     parsers.Add(parser);
             }
 
-            // Step 8 (optional). Look for font to load
+            // Step 8 (optional). Look for fonts to load
             if ((saveFlags & SaveFlags.Fonts) == SaveFlags.Fonts)
             {
-                var fontFileFilter = new[] {".font.png"};
+                var fontExtension = ".font.png";
 
-                // Get all the files we want to save
-                var fontFiles = fileSystem.FilePathsInDir(path, fontFileFilter);
+                var paths = files.Keys.Where(s => s.EndsWith(fontExtension)).ToArray();
 
-                if (fontFiles.Length > 0)
-                    foreach (var file in fontFiles)
-                    {
-                        parser = LoadFonts(file);
-                        if (parser != null)
-                            parsers.Add(parser);
-                    }
+                foreach (var fileName in paths)
+                {
+
+                    var fontName = fileName.Split('.')[0];
+
+                    parser = LoadFont(fontName, files[fileName]);
+                    if (parser != null)
+                        parsers.Add(parser);
+                }
+
             }
 
             // Step 9 (optional). Look for meta data and override the game
@@ -246,11 +278,11 @@ namespace PixelVisionRunner.Services
             return null;
         }
 
-        private AbstractParser LoadFonts(string file)
+        private AbstractParser LoadFont(string fontName, byte[] data)
         {
-            var tex = fileSystem.ReadTextureFromFile(file);
-            var fontName = fileSystem.GetFileNameWithoutExtension(file);
-            fontName = fontName.Substring(0, fontName.Length - 5);
+            var tex = ReadTexture(data);
+            //var fontName = fileSystem.GetFileNameWithoutExtension(file);
+            //fontName = fontName.Substring(0, fontName.Length - 5);
 
             return new FontParser(tex, targetEngine, fontName);
 
@@ -332,29 +364,34 @@ namespace PixelVisionRunner.Services
             return null;
         }
 
-        private void LoadScripts(string[] paths)
+        private ScriptParser LoadScript(string fileName, byte[] data)
         {
-            foreach (var path in paths)
-                if (fileSystem.DirectoryExists(path))
-                {
-                    var files = fileSystem.FileNamesInDir(path, new[] {".lua"}, false);
-                    var total = files.Length;
 
-                    for (var i = 0; i < total; i++)
-                    {
-                        var fileName = files[i];
-                        var filePath = path + "/" + fileName; // TODO need to find a way to normalize this URL
+            var script = System.Text.Encoding.Default.GetString(data);
+            var scriptParser = new ScriptParser(fileName, script, targetEngine.gameChip as LuaGameChip);
 
-                        if (fileSystem.FileExists(filePath))
-                        {
-                            var script = fileSystem.ReadTextFromFile(filePath);
-                            var parser = new ScriptParser(fileName, script, targetEngine.gameChip as LuaGameChip);
-                            ;
-
-                            parsers.Add(parser);
-                        }
-                    }
-                }
+            return scriptParser;
+            //parsers.Add(parser);
+            //            foreach (var path in paths)
+            //                if (fileSystem.DirectoryExists(path))
+            //                {
+            //                    var files = fileSystem.FileNamesInDir(path, new[] {".lua"}, false);
+            //                    var total = files.Length;
+            //
+            //                    for (var i = 0; i < total; i++)
+            //                    {
+            //                        var fileName = files[i];
+            //                        var filePath = path + "/" + fileName; // TODO need to find a way to normalize this URL
+            //
+            //                        if (fileSystem.FileExists(filePath))
+            //                        {
+            //                            var script = fileSystem.ReadTextFromFile(filePath);
+            //                            var parser = new ScriptParser(fileName, script, targetEngine.gameChip as LuaGameChip);
+            //
+            //                            parsers.Add(parser);
+            //                        }
+            //                    }
+            //                }
         }
 
         private void LoadSystem(Dictionary<string, byte[]> files)

@@ -31,7 +31,7 @@ public class WebGLRunner : BaseRunner
 
     public override void LoadGame()
     {
-        var folder = "/StreamingAssets/Game/";
+        var folder = "/StreamingAssets/Archive/TilemapDemo.pv8";
 
 #if UNITY_EDITOR
         folder = "/UnityRunner/Assets" + folder;
