@@ -30,8 +30,8 @@ public class WebGLRunner : LuaRunner
 #if UNITY_EDITOR
 
         // TODO use this path for local testing
-        var localFile = "/UnityRunner/Assets/StreamingAssets/Archive/MusicDemo.pv8";
-
+        var localFile = "/StreamingAssets/Archive/MusicDemo.pv8";
+        
         path = "file://" + Application.dataPath + localFile;
 #else
            path = GetURL();

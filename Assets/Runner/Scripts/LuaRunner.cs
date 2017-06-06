@@ -44,7 +44,7 @@ public class LuaRunner : BaseRunner
 
     public virtual void LoadFiles()
     {
-        var folder = "/UnityRunner/Assets/StreamingAssets/Game/";
+        var folder = "/StreamingAssets/Game/";
         var path = Application.dataPath + folder;
 
         LoadFromDir(path);
