@@ -14,56 +14,33 @@
 // Shawn Rakowski - @shwany
 // 
 
-using PixelVisionOS;
-using PixelVisionRunner.Services;
 using UnityEngine;
 
 public class LuaRunner : BaseRunner
 {
-    public LoadService loadService;
 
-    // Lua Layer
-    protected MouseInput mouseInput;
+    public override void ConfigureEngine()
+    {
+        base.ConfigureEngine();
 
-    public FileSystemService fileSystem { get; private set; }
+        // We need to load in the LuaGame which was not part of the base configuration.
+        engine.LoadGame(new LuaGameChip());
 
-    // MoonSharp script
+    }
 
     public override void LoadGame()
     {
-        var folder = "/StreamingAssets/Game/";
+        base.LoadGame();
 
-#if UNITY_EDITOR
-        folder = "/UnityRunner/Assets" + folder;
-#endif
+        LoadFiles();
+    }
 
+    public virtual void LoadFiles()
+    {
+        var folder = "/UnityRunner/Assets/StreamingAssets/Game/";
         var path = Application.dataPath + folder;
 
-        engine.LoadGame(new LuaGameChip());
-
-        var saveFlags = SaveFlags.System;
-        saveFlags |= SaveFlags.Code;
-        saveFlags |= SaveFlags.Colors;
-        saveFlags |= SaveFlags.ColorMap;
-        saveFlags |= SaveFlags.Sprites;
-        saveFlags |= SaveFlags.TileMap;
-        saveFlags |= SaveFlags.TileMapFlags;
-        saveFlags |= SaveFlags.Fonts;
-        saveFlags |= SaveFlags.Meta;
-
-        fileSystem = new UnityFileSystemService();
-        loadService = new LoadService(fileSystem);
-        var luaService = new LuaService();
-
-        luaService.script.Options.DebugPrint = s => Debug.Log(s);
-
-        // Register Lua Service
-        engine.chipManager.AddService(typeof(LuaService).FullName, luaService);
-
-        loadService.ReadGameFiles(path, engine, saveFlags);
-
-        loadService.LoadAll();
-
-        base.LoadGame();
+        LoadFromDir(path);
     }
+    
 }

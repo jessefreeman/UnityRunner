@@ -24,12 +24,19 @@ namespace PixelVisionRunner.Parsers
 
         private IEngine engine;
 
-        public ParseMetaData(string jsonString, IEngine target) : base(jsonString, target as ILoad)
+        public ParseMetaData(string jsonString, IEngine target) : base(jsonString)
         {
             engine = target;
         }
 
-        public override void ApplySettings()
+        public override void CalculateSteps()
+        {
+            base.CalculateSteps();
+            steps.Add(ApplySettings);
+
+        }
+
+        public void ApplySettings()
         {
             
             foreach (var d in data)

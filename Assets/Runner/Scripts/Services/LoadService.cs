@@ -1,23 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
 using PixelVisionOS;
-using PixelVisionSDK.Services;
 using PixelVisionRunner.Parsers;
 using PixelVisionSDK;
-using System.IO;
-using System.IO.Compression;
-using System.Linq;
-using System.Security.Cryptography;
+using PixelVisionSDK.Services;
 using UnityEngine;
 
 namespace PixelVisionRunner.Services
 {
-    
     public class LoadService : AbstractService
     {
         private readonly List<AbstractParser> parsers = new List<AbstractParser>();
+
         private int currentParserID;
-        protected IFileSystem fileSystem;
+
         public string libPath = "";
 
         protected bool microSteps = false;
@@ -25,18 +24,6 @@ namespace PixelVisionRunner.Services
 
         protected IEngine targetEngine;
         private int totalParsers;
-
-        public List<string> validExtensions = new List<string>()
-        {
-            ".lua",
-            ".png",
-            ".json"
-        };
-
-        public LoadService(IFileSystem fileSystem)
-        {
-            this.fileSystem = fileSystem;
-        }
 
         public bool completed
         {
@@ -48,59 +35,11 @@ namespace PixelVisionRunner.Services
             get { return currentParserID / (float) totalParsers; }
         }
 
-        public void ReadGameFiles(string path, IEngine engine, SaveFlags saveFlags)
+        public void ParseFiles(Dictionary<string, byte[]> files, IEngine engine, SaveFlags saveFlags)
         {
             parsers.Clear();
 
-            var files = new Dictionary<string, byte[]>();
-
-            var paths = fileSystem.GetFiles(path);
-
-            foreach (var filePath in paths)
-            {
-                var fileType = Path.GetExtension(filePath);
-                if (validExtensions.IndexOf(fileType) != -1)
-                {
-                    var fileName = Path.GetFileName(filePath);
-                    var data = File.ReadAllBytes(filePath);
-
-                    files.Add(fileName, data);
-                }
-            }
-
-            ParseFiles(files, engine, saveFlags);
-        }
-
-        public void ReadFromZip(ZipStorer zip, IEngine engine, SaveFlags saveFlags)
-        {
-            //TODO need to create custom logic to explore a zip, using file system for now.
-//            ReadGameFiles(path, engine, saveFlags);
-
-//            // Open an existing zip file for reading
-            //ZipStorer zip = ZipStorer.Open(path, FileAccess.Read);
-//
-            // Read the central directory collection
-            List<ZipStorer.ZipFileEntry> dir = zip.ReadCentralDir();
-            
-            var files = new Dictionary<string, byte[]>();
-
-            // Look for the desired file
-            foreach (ZipStorer.ZipFileEntry entry in dir)
-            {
-
-                var fileBytes = new byte[0];
-                zip.ExtractFile(entry, out fileBytes);
-
-                files.Add(entry.ToString(), fileBytes);
-
-            }
-            zip.Close();
-
-            ParseFiles(files, engine, saveFlags);
-        }
-
-        public void ParseFiles(Dictionary<string, byte[]> files, IEngine engine, SaveFlags saveFlags) { 
-        // Save the engine so we can work with it during loading
+            // Save the engine so we can work with it during loading
             targetEngine = engine;
 
             // Step 1. Load the system snapshot
@@ -114,28 +53,12 @@ namespace PixelVisionRunner.Services
 
                 var paths = files.Keys.Where(s => s.EndsWith(scriptExtension)).ToList();
 
-                if (fileSystem.DirectoryExists(libPath))
-                {
-                    var libFiles = fileSystem.FilePathsInDir(libPath, new[] {".lua"});
-
-                    foreach (var libFile in libFiles)
-                    {
-                        //TODO this could be a bit cleaner
-                        var libFileName = Path.GetFileName(libFile);
-
-                        files.Add(libFileName, File.ReadAllBytes(libFile));
-
-                        paths.Insert(0, libFileName);
-                    }
-                }
 
                 foreach (var fileName in paths)
                 {
-
                     parser = LoadScript(fileName, files[fileName]);
                     parsers.Add(parser);
                 }
-
             }
 
             // Step 3 (optional). Look for new colors
@@ -187,14 +110,12 @@ namespace PixelVisionRunner.Services
 
                 foreach (var fileName in paths)
                 {
-
                     var fontName = fileName.Split('.')[0];
 
                     parser = LoadFont(fontName, files[fileName]);
                     if (parser != null)
                         parsers.Add(parser);
                 }
-
             }
 
             // Step 9 (optional). Look for meta data and override the game
@@ -211,10 +132,8 @@ namespace PixelVisionRunner.Services
 
         public void LoadAll()
         {
-
             while (completed == false)
                 NextParser();
-            
         }
 
 
@@ -243,7 +162,6 @@ namespace PixelVisionRunner.Services
             }
 
             //watch.Stop();
-
         }
 
         private AbstractParser LoadMetaData(Dictionary<string, byte[]> files)
@@ -252,8 +170,7 @@ namespace PixelVisionRunner.Services
 
             if (files.ContainsKey(fileName))
             {
-
-                var fileContents = System.Text.Encoding.Default.GetString(files[fileName]);
+                var fileContents = Encoding.Default.GetString(files[fileName]);
 
                 return new ParseMetaData(fileContents, targetEngine);
             }
@@ -285,7 +202,6 @@ namespace PixelVisionRunner.Services
             //fontName = fontName.Substring(0, fontName.Length - 5);
 
             return new FontParser(tex, targetEngine, fontName);
-
         }
 
         private AbstractParser LoadTilemapFlags(Dictionary<string, byte[]> files)
@@ -297,7 +213,6 @@ namespace PixelVisionRunner.Services
                 var tex = ReadTexture(files[fileName]);
 
                 return new TilemapFlagParser(tex, targetEngine);
-
             }
 
             return null;
@@ -312,9 +227,8 @@ namespace PixelVisionRunner.Services
                 var tex = ReadTexture(files[fileName]);
 
                 return new TilemapParser(tex, targetEngine);
-
             }
-            
+
             return null;
         }
 
@@ -327,7 +241,6 @@ namespace PixelVisionRunner.Services
                 var tex = ReadTexture(files[fileName]);
 
                 return new SpriteParser(tex, targetEngine);
-
             }
 
             return null;
@@ -335,7 +248,6 @@ namespace PixelVisionRunner.Services
 
         private AbstractParser LoadColorMap(Dictionary<string, byte[]> files)
         {
-
             var fileName = "color-map.png";
 
             if (files.ContainsKey(fileName))
@@ -343,7 +255,6 @@ namespace PixelVisionRunner.Services
                 var tex = ReadTexture(files[fileName]);
 
                 return new ColorMapParser(tex, targetEngine);
-
             }
 
             return null;
@@ -351,7 +262,6 @@ namespace PixelVisionRunner.Services
 
         private AbstractParser LoadColors(Dictionary<string, byte[]> files)
         {
-
             var fileName = "colors.png";
 
             if (files.ContainsKey(fileName))
@@ -366,8 +276,7 @@ namespace PixelVisionRunner.Services
 
         private ScriptParser LoadScript(string fileName, byte[] data)
         {
-
-            var script = System.Text.Encoding.Default.GetString(data);
+            var script = Encoding.Default.GetString(data);
             var scriptParser = new ScriptParser(fileName, script, targetEngine.gameChip as LuaGameChip);
 
             return scriptParser;
@@ -396,15 +305,13 @@ namespace PixelVisionRunner.Services
 
         private void LoadSystem(Dictionary<string, byte[]> files)
         {
-
             var fileName = "data.json";
 
             if (files.ContainsKey(fileName))
             {
+                var fileContents = Encoding.Default.GetString(files[fileName]);
 
-                var fileContents = System.Text.Encoding.Default.GetString(files[fileName]);
-
-                var jsonParser = new JsonParser(fileContents, targetEngine as ILoad);
+                var jsonParser = new SystemParser(fileContents, targetEngine as ILoad);
                 while (jsonParser.completed == false)
                     jsonParser.NextStep();
             }

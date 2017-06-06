@@ -27,13 +27,11 @@ namespace PixelVisionRunner.Parsers
 
         protected string jsonString;
         protected Dictionary<string, Object> data;
-        protected ILoad target;
 
-        public JsonParser(string jsonString, ILoad target)
+        public JsonParser(string jsonString)
         {
             //Debug.Log("New Json Parser");
             this.jsonString = jsonString;
-            this.target = target;
 
             CalculateSteps();
         }
@@ -42,7 +40,6 @@ namespace PixelVisionRunner.Parsers
         {
             base.CalculateSteps();
             steps.Add(ParseJson);
-            steps.Add(ApplySettings);
 
             //Debug.Log("Calculating "+totalSteps+" steps.");
         }
@@ -54,13 +51,13 @@ namespace PixelVisionRunner.Parsers
             currentStep++;
         }
 
-        public virtual void ApplySettings()
-        {
-            //Debug.Log("Applying Settings");
-            if(target != null)
-                target.DeserializeData(data);
-            currentStep++;
-        }
+//        public virtual void ApplySettings()
+//        {
+//            //Debug.Log("Applying Settings");
+//            if(target != null)
+//                target.DeserializeData(data);
+//            currentStep++;
+//        }
     }
 
 }

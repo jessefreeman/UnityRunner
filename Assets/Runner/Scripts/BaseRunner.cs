@@ -15,6 +15,12 @@
 // 
 
 using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.IO;
+using System.IO.Compression;
+using PixelVisionOS;
+using PixelVisionRunner.Services;
 using PixelVisionSDK;
 using PixelVisionSDK.Chips;
 using PixelVisionSDK.Utils;
@@ -61,6 +67,16 @@ public class BaseRunner : MonoBehaviour
     protected Texture2D renderTexture;
     protected int totalCachedColors;
 
+    protected LoadService loadService;
+    //protected FileSystemService fileSystem;
+
+    public readonly string[] validExtensions = 
+    {
+        ".lua",
+        ".png",
+        ".json"
+    };
+
     // We'll use this field to store a reference to our PixelVisionEngine class. 
     public IEngine engine { get; set; }
 
@@ -88,6 +104,109 @@ public class BaseRunner : MonoBehaviour
         // By setting the Texture2D filter mode to Point, we ensure that it will look crisp at any size. 
         // Since the Texture will be scaled based on the resolution, we want it always to look pixel perfect.
 
+
+        // Before we can do anything, we need to configure the engine.
+        ConfigureEngine();
+
+        LoadGame();
+    }
+
+    public virtual void LoadGame()
+    {
+        //fileSystem = new UnityFileSystemService();
+        loadService = new LoadService();
+        var luaService = new LuaService();
+
+        luaService.script.Options.DebugPrint = s => Debug.Log(s);
+
+        // Register Lua Service
+        engine.chipManager.AddService(typeof(LuaService).FullName, luaService);
+    }
+
+    public void LoadFromDir(string path)
+    {
+        var files = new Dictionary<string, byte[]>();
+
+        var paths = Directory.GetFiles(path);
+
+        foreach (var filePath in paths)
+        {
+            var fileType = Path.GetExtension(filePath);
+            if (Array.IndexOf(validExtensions, fileType) != -1)
+            {
+                var fileName = Path.GetFileName(filePath);
+                var data = File.ReadAllBytes(filePath);
+
+                files.Add(fileName, data);
+            }
+        }
+
+        ProcessFiles(files);
+
+    }
+
+    public void LoadFromZip(string path)
+    {
+        var www = new WWW(path);
+        StartCoroutine(WaitForRequest(www));
+    }
+
+    IEnumerator WaitForRequest(WWW www)
+    {
+        yield return www;
+
+        // check for errors
+        if (www.error == null)
+        {
+            var mStream = new MemoryStream(www.bytes);
+            var zip = ZipStorer.Open(mStream, FileAccess.Read);
+
+            List<ZipStorer.ZipFileEntry> dir = zip.ReadCentralDir();
+            
+            var files = new Dictionary<string, byte[]>();
+
+            // Look for the desired file
+            foreach (ZipStorer.ZipFileEntry entry in dir)
+            {
+
+                var fileBytes = new byte[0];
+                zip.ExtractFile(entry, out fileBytes);
+
+                files.Add(entry.ToString(), fileBytes);
+
+            }
+
+            zip.Close();
+
+            ProcessFiles(files);
+        }
+        else
+        {
+            Debug.Log("WWW Error: " + www.error);
+        }
+    }
+
+    public virtual void ProcessFiles(Dictionary<string, byte[]> files)
+    {
+        var saveFlags = SaveFlags.System;
+        saveFlags |= SaveFlags.Code;
+        saveFlags |= SaveFlags.Colors;
+        saveFlags |= SaveFlags.ColorMap;
+        saveFlags |= SaveFlags.Sprites;
+        saveFlags |= SaveFlags.TileMap;
+        saveFlags |= SaveFlags.TileMapFlags;
+        saveFlags |= SaveFlags.Fonts;
+        saveFlags |= SaveFlags.Meta;
+
+        loadService.ParseFiles(files, engine, saveFlags);
+
+        loadService.LoadAll();
+
+        RunGame();
+    }
+
+    public virtual void ConfigureEngine()
+    {
         // Before we create the PixelVisionEngine we will need to define each of the chips it will use.
         string[] chips =
         {
@@ -109,23 +228,19 @@ public class BaseRunner : MonoBehaviour
         // names of the chips it should use.
         engine = new PixelVisionEngine(chips);
 
-        // With everything configured, it's time for us to create our LoadGame() method.
-        LoadGame();
-
+        // Configure the input
+        ConfigureInput();
     }
 
     /// <summary>
     ///     The LoadGame method will handle setting up the GameChip and configuring it.
     /// </summary>
-    public virtual void LoadGame()
+    public virtual void RunGame()
     {
 
         // Override this method and add your own game load logic.
 
         ResetResolution(engine.displayChip.width, engine.displayChip.height);
-
-        // Configure the input
-        ConfigureInput();
 
         // After loading the game, we are ready to run it.
         engine.RunGame();
