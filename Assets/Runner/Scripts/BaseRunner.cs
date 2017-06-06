@@ -19,6 +19,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
+using System.Runtime.Remoting.Messaging;
 using PixelVisionOS;
 using PixelVisionRunner.Services;
 using PixelVisionSDK;
@@ -205,19 +206,28 @@ public class BaseRunner : MonoBehaviour
         RunGame();
     }
 
+    public virtual List<string> defaultChips
+    {
+        get
+        {
+            var chips = new List<string>()
+            {
+                typeof(ColorChip).FullName,
+                typeof(SpriteChip).FullName,
+                typeof(TilemapChip).FullName,
+                typeof(FontChip).FullName,
+                typeof(ControllerChip).FullName,
+                typeof(DisplayChip).FullName,
+                typeof(ControllerChip).FullName
+            };
+
+            return chips;
+        }
+    } 
+
     public virtual void ConfigureEngine()
     {
-        // Before we create the PixelVisionEngine we will need to define each of the chips it will use.
-        string[] chips =
-        {
-            typeof(ColorChip).FullName,
-            typeof(SpriteChip).FullName,
-            typeof(TilemapChip).FullName,
-            typeof(FontChip).FullName,
-            typeof(ControllerChip).FullName,
-            typeof(DisplayChip).FullName
-        };
-
+        
         // Pixel Vision 8 has a built in the JSON serialize/de-serialize. It allows chips to be dynamically 
         // loaded by their full class name. Above we are using typeof() along with the FullName property to 
         // get the string values for each chip. The engine will parse this string and automatically create 
@@ -226,7 +236,7 @@ public class BaseRunner : MonoBehaviour
 
         // It's now time to set up a new instance of the PixelVisionEngine. Here we are passing in the string 
         // names of the chips it should use.
-        engine = new PixelVisionEngine(chips);
+        engine = new PixelVisionEngine(defaultChips.ToArray());
 
         // Configure the input
         ConfigureInput();
@@ -288,7 +298,7 @@ public class BaseRunner : MonoBehaviour
 
     protected void ConfigureInput()
     {
-        var controllerChip = engine.chipManager.GetChip(typeof(ControllerChip).FullName) as ControllerChip;
+        var controllerChip = engine.controllerChip;
 
         // This allows the engine to access Unity keyboard input and the inputString
         controllerChip.RegisterKeyInput(new KeyInput());

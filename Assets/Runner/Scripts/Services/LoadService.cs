@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using PixelVisionOS;
+using PixelVisionRunner.Chips;
 using PixelVisionRunner.Parsers;
 using PixelVisionSDK;
 using PixelVisionSDK.Services;
@@ -311,7 +312,7 @@ namespace PixelVisionRunner.Services
             {
                 var fileContents = Encoding.Default.GetString(files[fileName]);
 
-                var jsonParser = new SystemParser(fileContents, targetEngine as ILoad);
+                var jsonParser = new SystemParser(fileContents, targetEngine);
                 while (jsonParser.completed == false)
                     jsonParser.NextStep();
             }

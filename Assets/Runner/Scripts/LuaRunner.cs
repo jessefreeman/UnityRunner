@@ -14,18 +14,25 @@
 // Shawn Rakowski - @shwany
 // 
 
+using System;
+using System.Collections.Generic;
+using PixelVisionRunner.Chips;
 using UnityEngine;
 
 public class LuaRunner : BaseRunner
 {
-
-    public override void ConfigureEngine()
+    public override List<string> defaultChips
     {
-        base.ConfigureEngine();
+        get
+        {
+            var chips = base.defaultChips;
 
-        // We need to load in the LuaGame which was not part of the base configuration.
-        engine.LoadGame(new LuaGameChip());
+            chips.Add(typeof(LuaGameChip).FullName);
+            chips.Add(typeof(SfxrMusicChip).FullName);
+            chips.Add(typeof(SfxrSoundChip).FullName);
 
+            return chips;
+        }
     }
 
     public override void LoadGame()

@@ -14,7 +14,7 @@
 // Shawn Rakowski - @shwany
 // 
 
-using UnityEngine;
+using PixelVisionRunner.Chips;
 
 namespace PixelVisionRunner.Parsers
 {
