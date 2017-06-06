@@ -71,13 +71,13 @@ namespace PixelVisionRunner.Services
             ParseFiles(files, engine, saveFlags);
         }
 
-        public void ReadFromZip(string path, IEngine engine, SaveFlags saveFlags)
+        public void ReadFromZip(ZipStorer zip, IEngine engine, SaveFlags saveFlags)
         {
             //TODO need to create custom logic to explore a zip, using file system for now.
 //            ReadGameFiles(path, engine, saveFlags);
 
 //            // Open an existing zip file for reading
-            ZipStorer zip = ZipStorer.Open(path, FileAccess.Read);
+            //ZipStorer zip = ZipStorer.Open(path, FileAccess.Read);
 //
             // Read the central directory collection
             List<ZipStorer.ZipFileEntry> dir = zip.ReadCentralDir();
