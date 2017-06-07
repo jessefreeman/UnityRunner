@@ -1,31 +1,17 @@
-﻿/*
- * Copyright (c) 2013 Calvin Rien
- *
- * Based on the JSON parser by Patrick van Bergen
- * http://techblog.procurios.nl/k/618/news/view/14605/14863/How-do-I-write-my-own-parser-for-JSON.html
- *
- * Simplified it so that it doesn't throw exceptions
- * and can be used in Unity iPhone with maximum code stripping.
- *
- * Permission is hereby granted, free of charge, to any person obtaining
- * a copy of this software and associated documentation files (the
- * "Software"), to deal in the Software without restriction, including
- * without limitation the rights to use, copy, modify, merge, publish,
- * distribute, sublicense, and/or sell copies of the Software, and to
- * permit persons to whom the Software is furnished to do so, subject to
- * the following conditions:
- *
- * The above copyright notice and this permission notice shall be
- * included in all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
- * IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
- * CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
- * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
- * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- */
+﻿//   
+// Copyright (c) Jesse Freeman. All rights reserved.  
+//  
+// Licensed under the Microsoft Public License (MS-PL) License. 
+// See LICENSE file in the project root for full license information. 
+// 
+// Contributors
+// --------------------------------------------------------
+// This is the official list of Pixel Vision 8 contributors:
+//  
+// Jesse Freeman - @JesseFreeman
+// Christer Kaitila - @McFunkypants
+// Pedro Medeiros - @saint11
+// Shawn Rakowski - @shwany
 
 using System;
 using System.Collections;
@@ -35,8 +21,10 @@ using System.Text;
 
 namespace MiniJSON
 {
+
     public class ToJson : Attribute
     {
+
     }
 
 
@@ -81,6 +69,7 @@ namespace MiniJSON
     /// </summary>
     public static class Json
     {
+
         /// <summary>
         ///     Parses the string json into a value
         /// </summary>
@@ -90,9 +79,7 @@ namespace MiniJSON
         {
             // save the string for debug information
             if (json == null)
-            {
                 return null;
-            }
 
             return Parser.Parse(json);
         }
@@ -109,6 +96,7 @@ namespace MiniJSON
 
         private sealed class Parser : IDisposable
         {
+
             private const string WORD_BREAK = "{}[],:\"";
 
             private StringReader json;
@@ -139,9 +127,7 @@ namespace MiniJSON
                         word.Append(NextChar);
 
                         if (json.Peek() == -1)
-                        {
                             break;
-                        }
                     }
 
                     return word.ToString();
@@ -155,9 +141,7 @@ namespace MiniJSON
                     EatWhitespace();
 
                     if (json.Peek() == -1)
-                    {
                         return TOKEN.NONE;
-                    }
 
                     switch (PeekChar)
                     {
@@ -234,7 +218,6 @@ namespace MiniJSON
 
                 // {
                 while (true)
-                {
                     switch (NextToken)
                     {
                         case TOKEN.NONE:
@@ -244,18 +227,16 @@ namespace MiniJSON
                         case TOKEN.CURLY_CLOSE:
                             return table;
                         default:
+
                             // name
                             var name = ParseString();
                             if (name == null)
-                            {
                                 return null;
-                            }
 
                             // :
                             if (NextToken != TOKEN.COLON)
-                            {
                                 return null;
-                            }
+
                             // ditch the colon
                             json.Read();
 
@@ -263,7 +244,6 @@ namespace MiniJSON
                             table[name] = ParseValue();
                             break;
                     }
-                }
             }
 
             private List<object> ParseArray()
@@ -385,13 +365,12 @@ namespace MiniJSON
                                     var hex = new char[4];
 
                                     for (var i = 0; i < 4; i++)
-                                    {
                                         hex[i] = NextChar;
-                                    }
 
-                                    s.Append((char)Convert.ToInt32(new string(hex), 16));
+                                    s.Append((char) Convert.ToInt32(new string(hex), 16));
                                     break;
                             }
+
                             break;
                         default:
                             s.Append(c);
@@ -425,14 +404,13 @@ namespace MiniJSON
                     json.Read();
 
                     if (json.Peek() == -1)
-                    {
                         break;
-                    }
                 }
             }
 
             private enum TOKEN
             {
+
                 NONE,
                 CURLY_OPEN,
                 CURLY_CLOSE,
@@ -445,11 +423,14 @@ namespace MiniJSON
                 TRUE,
                 FALSE,
                 NULL
+
             }
+
         }
 
         private sealed class Serializer
         {
+
             private readonly StringBuilder builder;
 
             private Serializer()
@@ -473,33 +454,19 @@ namespace MiniJSON
                 string asStr;
 
                 if (value == null)
-                {
                     builder.Append("null");
-                }
                 else if ((asStr = value as string) != null)
-                {
                     SerializeString(asStr);
-                }
                 else if (value is bool)
-                {
-                    builder.Append((bool)value ? "true" : "false");
-                }
+                    builder.Append((bool) value ? "true" : "false");
                 else if ((asList = value as IList) != null)
-                {
                     SerializeArray(asList);
-                }
                 else if ((asDict = value as IDictionary) != null)
-                {
                     SerializeObject(asDict);
-                }
                 else if (value is char)
-                {
-                    SerializeString(new string((char)value, 1));
-                }
+                    SerializeString(new string((char) value, 1));
                 else
-                {
                     SerializeOther(value);
-                }
             }
 
             private void SerializeObject(IDictionary obj)
@@ -511,9 +478,7 @@ namespace MiniJSON
                 foreach (var e in obj.Keys)
                 {
                     if (!first)
-                    {
                         builder.Append(',');
-                    }
 
                     SerializeString(e.ToString());
                     builder.Append(':');
@@ -535,9 +500,7 @@ namespace MiniJSON
                 foreach (var obj in anArray)
                 {
                     if (!first)
-                    {
                         builder.Append(',');
-                    }
 
                     SerializeValue(obj);
 
@@ -553,7 +516,6 @@ namespace MiniJSON
 
                 var charArray = str.ToCharArray();
                 foreach (var c in charArray)
-                {
                     switch (c)
                     {
                         case '"':
@@ -579,7 +541,7 @@ namespace MiniJSON
                             break;
                         default:
                             var codepoint = Convert.ToInt32(c);
-                            if ((codepoint >= 32) && (codepoint <= 126))
+                            if (codepoint >= 32 && codepoint <= 126)
                             {
                                 builder.Append(c);
                             }
@@ -590,7 +552,6 @@ namespace MiniJSON
                             }
                             break;
                     }
-                }
 
                 builder.Append('\"');
             }
@@ -601,9 +562,7 @@ namespace MiniJSON
                 // They always have, I'm just letting you know.
                 // Previously floats and doubles lost precision too.
                 if (value is float)
-                {
-                    builder.Append(((float)value).ToString("R"));
-                }
+                    builder.Append(((float) value).ToString("R"));
                 else if (value is int
                          || value is uint
                          || value is long
@@ -612,19 +571,16 @@ namespace MiniJSON
                          || value is short
                          || value is ushort
                          || value is ulong)
-                {
                     builder.Append(value);
-                }
                 else if (value is double
                          || value is decimal)
-                {
                     builder.Append(Convert.ToDouble(value).ToString("R"));
-                }
                 else
-                {
                     SerializeString(value.ToString());
-                }
             }
+
         }
+
     }
+
 }

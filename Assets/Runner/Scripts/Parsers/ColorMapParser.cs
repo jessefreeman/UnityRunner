@@ -1,22 +1,39 @@
-﻿using System.Collections.Generic;
+﻿//   
+// Copyright (c) Jesse Freeman. All rights reserved.  
+//  
+// Licensed under the Microsoft Public License (MS-PL) License. 
+// See LICENSE file in the project root for full license information. 
+// 
+// Contributors
+// --------------------------------------------------------
+// This is the official list of Pixel Vision 8 contributors:
+//  
+// Jesse Freeman - @JesseFreeman
+// Christer Kaitila - @McFunkypants
+// Pedro Medeiros - @saint11
+// Shawn Rakowski - @shwany
+
+using System.Collections.Generic;
 using PixelVisionSDK;
 using PixelVisionSDK.Chips;
 using UnityEngine;
 
 namespace PixelVisionRunner.Parsers
 {
-    public class ColorMapParser: AbstractParser
+
+    public class ColorMapParser : AbstractParser
     {
-        private Texture2D tex;
-        private IEngineChips chips;
-        private bool unique;
-        private bool ignoreTransparent;
-        private List<Color> colors = new List<Color>();
-        private int totalPixels;
-        private Color tmpColor;
-        private int x, y, width, height;
-        private int totalColors;
+
+        private readonly IEngineChips chips;
         private ColorMapChip colorMapChip;
+        private readonly List<Color> colors = new List<Color>();
+        private readonly bool ignoreTransparent;
+        private readonly Texture2D tex;
+        private Color tmpColor;
+        private int totalColors;
+        private int totalPixels;
+        private readonly bool unique;
+        private int x, y, width, height;
 
         public ColorMapParser(Texture2D tex, IEngineChips chips, bool unique = false, bool ignoreTransparent = false)
         {
@@ -75,19 +92,13 @@ namespace PixelVisionRunner.Parsers
                 tmpColor = tex.GetPixel(x, y); //pixels[i]);
 
                 if (tmpColor.a < 1 && !ignoreTransparent)
-                {
                     tmpColor = Color.magenta;
-                }
 
                 // Look to see if the color is already in the list
                 if (!colors.Contains(tmpColor) && unique)
-                {
                     colors.Add(tmpColor);
-                }
                 else if (unique == false)
-                {
                     colors.Add(tmpColor);
-                }
             }
 
             totalColors = colors.Count;
@@ -113,4 +124,5 @@ namespace PixelVisionRunner.Parsers
         }
 
     }
+
 }

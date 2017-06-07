@@ -1,6 +1,6 @@
-﻿//  
+﻿//   
 // Copyright (c) Jesse Freeman. All rights reserved.  
-// 
+//  
 // Licensed under the Microsoft Public License (MS-PL) License. 
 // See LICENSE file in the project root for full license information. 
 // 
@@ -12,7 +12,6 @@
 // Christer Kaitila - @McFunkypants
 // Pedro Medeiros - @saint11
 // Shawn Rakowski - @shwany
-// 
 
 using System;
 using System.Collections.Generic;
@@ -30,6 +29,7 @@ namespace PixelVisionRunner.Parsers
         protected IEngineChips chips;
         protected ColorData[] colorData;
         protected Color[] colors;
+        protected string emptySpriteData;
         protected int index;
         protected int maxSprites;
         protected int sHeight;
@@ -46,7 +46,6 @@ namespace PixelVisionRunner.Parsers
         protected int totalSprites;
         protected bool unique;
         protected int x, y, width, height;
-        protected string emptySpriteData;
 
         public SpriteParser(Texture2D tex, IEngineChips chips, bool unique = true)
         {
@@ -114,7 +113,7 @@ namespace PixelVisionRunner.Parsers
             width = MathUtil.CeilToInt(tex.width / sWidth);
             height = MathUtil.CeilToInt(tex.height / sHeight);
             totalSprites = width * height;
-            
+
             maxSprites = SpriteChipUtil.CalcualteTotalSprites(spriteChip.textureWidth, spriteChip.textureHeight, sWidth, sHeight);
 
             // Create tmp arrays for color and reference data
@@ -148,7 +147,6 @@ namespace PixelVisionRunner.Parsers
 
                     ProcessSpriteData();
                 }
-
             }
 
             currentStep++;
@@ -156,9 +154,7 @@ namespace PixelVisionRunner.Parsers
 
         protected virtual void ProcessSpriteData()
         {
-
             if (spritesAdded < maxSprites)
-            {
                 if (unique)
                 {
                     if (spriteChip.FindSprite(spriteData) == -1)
@@ -172,7 +168,6 @@ namespace PixelVisionRunner.Parsers
                     spriteChip.UpdateSpriteAt(index, spriteData);
                     spritesAdded++;
                 }
-            }
         }
 
         public virtual bool IsEmpty(Color[] pixels)
@@ -189,7 +184,6 @@ namespace PixelVisionRunner.Parsers
 
         public void CutOutSpriteFromTexture2D()
         {
-
             x = index % width * sWidth;
             y = index / width * sHeight;
 

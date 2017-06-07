@@ -1,6 +1,6 @@
-﻿//  
+﻿//   
 // Copyright (c) Jesse Freeman. All rights reserved.  
-// 
+//  
 // Licensed under the Microsoft Public License (MS-PL) License. 
 // See LICENSE file in the project root for full license information. 
 // 
@@ -12,7 +12,6 @@
 // Christer Kaitila - @McFunkypants
 // Pedro Medeiros - @saint11
 // Shawn Rakowski - @shwany
-// 
 
 using System.Collections.Generic;
 using PixelVisionSDK;
@@ -26,14 +25,16 @@ namespace PixelVisionRunner.Parsers
     {
 
         private readonly ColorChip colorChip;
+
         private readonly List<Color> colors = new List<Color>();
+
         //private readonly bool ignoreTransparent;
 
         private readonly Texture2D tex;
+        private readonly bool unique;
         private Color tmpColor;
         private int totalColors;
         private int totalPixels;
-        private readonly bool unique;
         private int x, y, width, height;
 
         public ColorParser(Texture2D tex, IEngineChips chips, bool unique = false, bool ignoreTransparent = true)
@@ -41,6 +42,7 @@ namespace PixelVisionRunner.Parsers
             this.tex = tex;
             colorChip = chips.colorChip;
             this.unique = unique;
+
             //this.ignoreTransparent = ignoreTransparent;
 
             CalculateSteps();
@@ -85,7 +87,7 @@ namespace PixelVisionRunner.Parsers
                 // Get the current color
                 tmpColor = tex.GetPixel(x, y); //pixels[i]);
 
-                if (tmpColor.a < 1)// && !ignoreTransparent)
+                if (tmpColor.a < 1) // && !ignoreTransparent)
                     tmpColor = Color.magenta;
 
                 // Look to see if the color is already in the list

@@ -1,6 +1,6 @@
-﻿//  
+﻿//   
 // Copyright (c) Jesse Freeman. All rights reserved.  
-// 
+//  
 // Licensed under the Microsoft Public License (MS-PL) License. 
 // See LICENSE file in the project root for full license information. 
 // 
@@ -12,7 +12,6 @@
 // Christer Kaitila - @McFunkypants
 // Pedro Medeiros - @saint11
 // Shawn Rakowski - @shwany
-// 
 
 using PixelVisionSDK.Chips;
 using UnityEngine;
@@ -22,6 +21,7 @@ namespace PixelVisionRunner.Parsers
 
     public class TilemapFlagParser : SpriteParser
     {
+
         private readonly TilemapChip tilemapChip;
 
         public TilemapFlagParser(Texture2D tex, IEngineChips chips, bool autoImport = true) : base(tex, chips)
@@ -38,7 +38,6 @@ namespace PixelVisionRunner.Parsers
 
         protected override void ProcessSpriteData()
         {
-
             //var pixels = CutOutSpriteFromTexture2D(i, src, sWidth, sHeight);
             var color = tmpPixels[0];
             var tmpWidth = tilemapChip.columns;
@@ -46,8 +45,9 @@ namespace PixelVisionRunner.Parsers
             //PosUtil.CalculatePosition(index, tilemapChip.columns, out x, out y);
             x = index % tmpWidth;
             y = index / tmpWidth;
+
             //Debug.Log(color.r);
-            var flag = color.a == 1 ? (int)(color.r * 256) / tilemapChip.totalFlags : -1;
+            var flag = color.a == 1 ? (int) (color.r * 256) / tilemapChip.totalFlags : -1;
 
             tilemapChip.UpdateFlagAt(x, y, flag);
 

@@ -1,6 +1,6 @@
-﻿//  
+﻿//   
 // Copyright (c) Jesse Freeman. All rights reserved.  
-// 
+//  
 // Licensed under the Microsoft Public License (MS-PL) License. 
 // See LICENSE file in the project root for full license information. 
 // 
@@ -12,21 +12,19 @@
 // Christer Kaitila - @McFunkypants
 // Pedro Medeiros - @saint11
 // Shawn Rakowski - @shwany
-// 
 
 using System.Collections.Generic;
 using MiniJSON;
-using PixelVisionSDK;
-using Object = System.Object;
 
 namespace PixelVisionRunner.Parsers
 {
 
-    public class JsonParser: AbstractParser
+    public class JsonParser : AbstractParser
     {
 
+        protected Dictionary<string, object> data;
+
         protected string jsonString;
-        protected Dictionary<string, Object> data;
 
         public JsonParser(string jsonString)
         {
@@ -51,13 +49,15 @@ namespace PixelVisionRunner.Parsers
             currentStep++;
         }
 
-//        public virtual void ApplySettings()
-//        {
-//            //Debug.Log("Applying Settings");
-//            if(target != null)
 //                target.DeserializeData(data);
+//            if(target != null)
+//            //Debug.Log("Applying Settings");
+//        {
+
+//        public virtual void ApplySettings()
 //            currentStep++;
 //        }
+
     }
 
 }

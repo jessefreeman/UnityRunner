@@ -1,6 +1,6 @@
-﻿//  
+﻿//   
 // Copyright (c) Jesse Freeman. All rights reserved.  
-// 
+//  
 // Licensed under the Microsoft Public License (MS-PL) License. 
 // See LICENSE file in the project root for full license information. 
 // 
@@ -12,7 +12,6 @@
 // Christer Kaitila - @McFunkypants
 // Pedro Medeiros - @saint11
 // Shawn Rakowski - @shwany
-// 
 
 using PixelVisionRunner.Chips;
 
@@ -21,6 +20,7 @@ namespace PixelVisionRunner.Parsers
 
     public class ScriptParser : AbstractParser
     {
+
         private readonly string name;
         private readonly string script;
         private readonly LuaGameChip target;
@@ -39,7 +39,6 @@ namespace PixelVisionRunner.Parsers
             base.CalculateSteps();
 
             steps.Add(LoadScript);
-
         }
 
         protected void LoadScript()

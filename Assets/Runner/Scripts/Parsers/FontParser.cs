@@ -1,6 +1,6 @@
-﻿//  
+﻿//   
 // Copyright (c) Jesse Freeman. All rights reserved.  
-// 
+//  
 // Licensed under the Microsoft Public License (MS-PL) License. 
 // See LICENSE file in the project root for full license information. 
 // 
@@ -12,26 +12,25 @@
 // Christer Kaitila - @McFunkypants
 // Pedro Medeiros - @saint11
 // Shawn Rakowski - @shwany
-// 
 
-//using PixelVisionSDK.Chips;
-using UnityEngine;
 using PixelVisionSDK.Chips;
+using UnityEngine;
 
 namespace PixelVisionRunner.Parsers
 {
 
-    public class FontParser: SpriteParser
+    public class FontParser : SpriteParser
     {
 
-        private FontChip fontChip;
-        private bool autoImport;
+        private readonly bool autoImport;
+
+        private readonly FontChip fontChip;
         private int[] fontMap;
-        private string name;
+        private readonly string name;
 
         public FontParser(Texture2D tex, IEngineChips chips, string name = "Default", bool autoImport = true) : base(tex, chips)
         {
-            this.fontChip = chips.fontChip;
+            fontChip = chips.fontChip;
             if (fontChip == null)
             {
                 // Create a new color map chip to store data

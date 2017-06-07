@@ -1,6 +1,6 @@
-﻿//  
+﻿//   
 // Copyright (c) Jesse Freeman. All rights reserved.  
-// 
+//  
 // Licensed under the Microsoft Public License (MS-PL) License. 
 // See LICENSE file in the project root for full license information. 
 // 
@@ -12,26 +12,25 @@
 // Christer Kaitila - @McFunkypants
 // Pedro Medeiros - @saint11
 // Shawn Rakowski - @shwany
-// 
 
 using System.Runtime.InteropServices;
 using UnityEngine;
 
 public class WebGLRunner : LuaRunner
 {
+
     [DllImport("__Internal")]
     private static extern string GetURL();
 
     public override void LoadFiles()
     {
-        
         var path = "";
 
 #if UNITY_EDITOR
 
         // TODO use this path for local testing
         var localFile = "/StreamingAssets/Archive/MusicDemo.pv8";
-        
+
         path = "file://" + Application.dataPath + localFile;
 #else
            path = GetURL();
@@ -39,4 +38,5 @@ public class WebGLRunner : LuaRunner
 
         LoadFromZip(path);
     }
+
 }

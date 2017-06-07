@@ -1,25 +1,60 @@
-﻿using System.Collections.Generic;
+﻿//   
+// Copyright (c) Jesse Freeman. All rights reserved.  
+//  
+// Licensed under the Microsoft Public License (MS-PL) License. 
+// See LICENSE file in the project root for full license information. 
+// 
+// Contributors
+// --------------------------------------------------------
+// This is the official list of Pixel Vision 8 contributors:
+//  
+// Jesse Freeman - @JesseFreeman
+// Christer Kaitila - @McFunkypants
+// Pedro Medeiros - @saint11
+// Shawn Rakowski - @shwany
+
+using System.Collections.Generic;
 using System.Text;
 using PixelVisionRunner.Utils;
 using PixelVisionSDK;
 
 namespace PixelVisionRunner.Data
 {
-    public class SfxrSoundData: ISoundData, ISave, ILoad
+
+    public class SfxrSoundData : ISoundData, ISave, ILoad
     {
-        public string name { get; set; }
 
         protected SfxrSynth synth;
+
+        public SfxrSoundData(string name = "Untitled")
+        {
+            this.name = name;
+            synth = new SfxrSynth();
+        }
 
         public SfxrParams parameters
         {
             get { return synth.parameters; }
         }
 
-        public SfxrSoundData(string name = "Untitled")
+        /// <summary>
+        ///     The DeserializeData method allows you to pass in a
+        ///     Dictionary with a string as the key and a generic object for the
+        ///     value. This can be manually parsed to convert each key/value pair
+        ///     into data used to configure the class that
+        ///     implements this interface.
+        /// </summary>
+        /// <param name="data">
+        ///     A Dictionary with a string as the key and a generic object as the
+        ///     value.
+        /// </param>
+        public void DeserializeData(Dictionary<string, object> data)
         {
-            this.name = name;
-            synth = new SfxrSynth();
+            if (data.ContainsKey("name"))
+                name = data["name"] as string;
+
+            if (data.ContainsKey("settings"))
+                UpdateSound(data["settings"] as string);
         }
 
         /// <summary>
@@ -45,29 +80,11 @@ namespace PixelVisionRunner.Data
             sb.Append("\"");
             JsonUtil.GetLineBreak(sb, 0);
             sb.Append("}");
-            
+
             return sb.ToString();
         }
 
-        /// <summary>
-        ///     The DeserializeData method allows you to pass in a
-        ///     Dictionary with a string as the key and a generic object for the
-        ///     value. This can be manually parsed to convert each key/value pair
-        ///     into data used to configure the class that
-        ///     implements this interface.
-        /// </summary>
-        /// <param name="data">
-        ///     A Dictionary with a string as the key and a generic object as the
-        ///     value.
-        /// </param>
-        public void DeserializeData(Dictionary<string, object> data)
-        {
-            if (data.ContainsKey("name"))
-                name = data["name"] as string;
-
-            if (data.ContainsKey("settings"))
-                UpdateSound(data["settings"] as string);
-        }
+        public string name { get; set; }
 
         /// <summary>
         ///     Plays the sound at a specific frequency.
@@ -102,4 +119,5 @@ namespace PixelVisionRunner.Data
         }
 
     }
+
 }

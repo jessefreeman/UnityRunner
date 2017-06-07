@@ -1,6 +1,6 @@
-﻿//  
+﻿//   
 // Copyright (c) Jesse Freeman. All rights reserved.  
-// 
+//  
 // Licensed under the Microsoft Public License (MS-PL) License. 
 // See LICENSE file in the project root for full license information. 
 // 
@@ -12,18 +12,18 @@
 // Christer Kaitila - @McFunkypants
 // Pedro Medeiros - @saint11
 // Shawn Rakowski - @shwany
-// 
 
 using System.Collections.Generic;
 using MoonSharp.Interpreter;
-using PixelVisionSDK.Chips;
 using PixelVisionSDK;
+using PixelVisionSDK.Chips;
 
 namespace PixelVisionRunner.Chips
 {
 
     public class LuaGameChip : GameChip
     {
+
         private readonly Dictionary<string, int> tmpPos = new Dictionary<string, int>
         {
             {"x", 0},
@@ -81,7 +81,7 @@ namespace PixelVisionRunner.Chips
 
             luaScript.Globals["BackgroundColor"] = (BackgroundColorDelegate) BackgroundColor;
             luaScript.Globals["Color"] = (ColorDelegate) Color;
-            luaScript.Globals["ColorsPerSprite"] = (ColorsPerSpriteDelegate)ColorsPerSprite;
+            luaScript.Globals["ColorsPerSprite"] = (ColorsPerSpriteDelegate) ColorsPerSprite;
             luaScript.Globals["TotalColors"] = (TotalColorsDelegate) TotalColors;
             luaScript.Globals["ReplaceColor"] = (ReplaceColorDelegate) ReplaceColor;
 
@@ -111,11 +111,13 @@ namespace PixelVisionRunner.Chips
             #endregion
 
             #region Input APIs
-            luaScript.Globals["Key"] = (KeyDelegate)Key;
+
+            luaScript.Globals["Key"] = (KeyDelegate) Key;
             luaScript.Globals["Button"] = (ButtonDelegate) Button;
             luaScript.Globals["MouseButton"] = (MouseButtonDelegate) MouseButton;
             luaScript.Globals["MousePosition"] = (MousePositionDelegate) MousePositionDictionary;
             luaScript.Globals["InputString"] = (InputStringDelegate) InputString;
+
             #endregion
 
             #region Math APIs
@@ -281,6 +283,7 @@ namespace PixelVisionRunner.Chips
         private delegate int BackgroundColorDelegate(int? id = null);
 
         private delegate bool KeyDelegate(Keys key, InputState state = InputState.Down);
+
         private delegate bool ButtonDelegate(Buttons buttons, InputState state = InputState.Down, int player = 0);
 
         private delegate void ReplaceColorDelegate(int index, int id);
@@ -310,6 +313,7 @@ namespace PixelVisionRunner.Chips
         private delegate bool MouseButtonDelegate(int button, InputState state = InputState.Down);
 
         private delegate Dictionary<string, int> MousePositionDelegate();
+
         private delegate string InputStringDelegate();
 
         private delegate string ReadDataDelegate(string key, string defaultValue = "undefined");
@@ -345,6 +349,7 @@ namespace PixelVisionRunner.Chips
         private delegate void WriteDataDelegate(string key, string value);
 
         private delegate string ColorDelegate(int id, string value = null);
+
         private delegate int ColorsPerSpriteDelegate();
 
         private delegate int TotalSpritesDelegate(bool ignoreEmpty = true);
@@ -358,5 +363,7 @@ namespace PixelVisionRunner.Chips
         private delegate int CalculateIndexDelegate(int x, int y, int width);
 
         private delegate Dictionary<string, int> CalculatePositionDelegate(int index, int width);
+
     }
+
 }

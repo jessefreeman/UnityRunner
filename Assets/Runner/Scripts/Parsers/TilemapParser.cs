@@ -1,6 +1,6 @@
-﻿//  
+﻿//   
 // Copyright (c) Jesse Freeman. All rights reserved.  
-// 
+//  
 // Licensed under the Microsoft Public License (MS-PL) License. 
 // See LICENSE file in the project root for full license information. 
 // 
@@ -12,7 +12,6 @@
 // Christer Kaitila - @McFunkypants
 // Pedro Medeiros - @saint11
 // Shawn Rakowski - @shwany
-// 
 
 using PixelVisionSDK.Chips;
 using UnityEngine;
@@ -44,10 +43,9 @@ namespace PixelVisionRunner.Parsers
 
         protected override void ProcessSpriteData()
         {
-
             var id = spriteChip.FindSprite(spriteData);
 
-            
+
             if (id == -1 && autoImport)
             {
                 id = spriteChip.NextEmptyID();

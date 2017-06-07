@@ -1,6 +1,6 @@
-﻿//  
+﻿//   
 // Copyright (c) Jesse Freeman. All rights reserved.  
-// 
+//  
 // Licensed under the Microsoft Public License (MS-PL) License. 
 // See LICENSE file in the project root for full license information. 
 // 
@@ -12,21 +12,19 @@
 // Christer Kaitila - @McFunkypants
 // Pedro Medeiros - @saint11
 // Shawn Rakowski - @shwany
-// 
 
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
-using System.Runtime.Remoting.Messaging;
 using PixelVisionOS;
 using PixelVisionRunner.Services;
 using PixelVisionSDK;
 using PixelVisionSDK.Chips;
-using PixelVisionSDK.Utils;
 using UnityEngine;
 using UnityEngine.UI;
+using Rect = UnityEngine.Rect;
 
 /// <summary>
 ///     The Runner will work just like any other Unity GameObject. By extending MonoBehavior,
@@ -36,9 +34,19 @@ using UnityEngine.UI;
 public class BaseRunner : MonoBehaviour
 {
 
+    //protected FileSystemService fileSystem;
+
+    public readonly string[] validExtensions =
+    {
+        ".lua",
+        ".png",
+        ".json"
+    };
+
     // We are going to use these fields to store cached color information to optimize converting the 
     // DisplayChip's pixel data into color pixels our renderTexture can use.
     protected Color[] cachedColors = new Color[0];
+
     protected Color[] cachedPixels = new Color[0];
     protected Color cacheTransparentColor;
 
@@ -53,6 +61,8 @@ public class BaseRunner : MonoBehaviour
     // display at a fixed aspect ratio no matter what the screen resolution is at.
     public RawImage displayTarget;
 
+    protected LoadService loadService;
+
     // To make this work, you'll need to create a new scene. Add a Canvas Component to it. 
     // Change the Canvas Scaler to scale with screen, and the reference Resolution should 
     // be 256 x 240.  It should also match the screen height. Next, add an Image called 
@@ -66,27 +76,36 @@ public class BaseRunner : MonoBehaviour
     // the DisplayChip's pixel data into this Texture. We'll also set this Texture as the RawImage's 
     // source so we can see it in Unity.
     protected Texture2D renderTexture;
+
     protected int totalCachedColors;
-
-    protected LoadService loadService;
-    //protected FileSystemService fileSystem;
-
-    public readonly string[] validExtensions = 
-    {
-        ".lua",
-        ".png",
-        ".json"
-    };
 
     // We'll use this field to store a reference to our PixelVisionEngine class. 
     public IEngine engine { get; set; }
+
+    public virtual List<string> defaultChips
+    {
+        get
+        {
+            var chips = new List<string>
+            {
+                typeof(ColorChip).FullName,
+                typeof(SpriteChip).FullName,
+                typeof(TilemapChip).FullName,
+                typeof(FontChip).FullName,
+                typeof(ControllerChip).FullName,
+                typeof(DisplayChip).FullName,
+                typeof(ControllerChip).FullName
+            };
+
+            return chips;
+        }
+    }
 
     /// <summary>
     ///     We'll use the Start method to configure our PixelVisionEngin and load a game.
     /// </summary>
     public virtual void Start()
     {
-
         // Pixel Vision 8 doesn't have a frame per second lock. It's up to the runner to 
         // determine what that cap should be. Here we'll use Unity's Application.targetFrameRate 
         // to lock it at 60 FPS.
@@ -143,7 +162,6 @@ public class BaseRunner : MonoBehaviour
         }
 
         ProcessFiles(files);
-
     }
 
     public void LoadFromZip(string path)
@@ -152,7 +170,7 @@ public class BaseRunner : MonoBehaviour
         StartCoroutine(WaitForRequest(www));
     }
 
-    IEnumerator WaitForRequest(WWW www)
+    private IEnumerator WaitForRequest(WWW www)
     {
         yield return www;
 
@@ -162,19 +180,17 @@ public class BaseRunner : MonoBehaviour
             var mStream = new MemoryStream(www.bytes);
             var zip = ZipStorer.Open(mStream, FileAccess.Read);
 
-            List<ZipStorer.ZipFileEntry> dir = zip.ReadCentralDir();
-            
+            var dir = zip.ReadCentralDir();
+
             var files = new Dictionary<string, byte[]>();
 
             // Look for the desired file
-            foreach (ZipStorer.ZipFileEntry entry in dir)
+            foreach (var entry in dir)
             {
-
                 var fileBytes = new byte[0];
                 zip.ExtractFile(entry, out fileBytes);
 
                 files.Add(entry.ToString(), fileBytes);
-
             }
 
             zip.Close();
@@ -206,28 +222,8 @@ public class BaseRunner : MonoBehaviour
         RunGame();
     }
 
-    public virtual List<string> defaultChips
-    {
-        get
-        {
-            var chips = new List<string>()
-            {
-                typeof(ColorChip).FullName,
-                typeof(SpriteChip).FullName,
-                typeof(TilemapChip).FullName,
-                typeof(FontChip).FullName,
-                typeof(ControllerChip).FullName,
-                typeof(DisplayChip).FullName,
-                typeof(ControllerChip).FullName
-            };
-
-            return chips;
-        }
-    } 
-
     public virtual void ConfigureEngine()
     {
-        
         // Pixel Vision 8 has a built in the JSON serialize/de-serialize. It allows chips to be dynamically 
         // loaded by their full class name. Above we are using typeof() along with the FullName property to 
         // get the string values for each chip. The engine will parse this string and automatically create 
@@ -247,7 +243,6 @@ public class BaseRunner : MonoBehaviour
     /// </summary>
     public virtual void RunGame()
     {
-
         // Override this method and add your own game load logic.
 
         ResetResolution(engine.displayChip.width, engine.displayChip.height);
@@ -257,7 +252,6 @@ public class BaseRunner : MonoBehaviour
 
         // This method handles caching the colors from the ColorChip to help speed up rendering.
         CacheColors();
-
     }
 
     /// <summary>
@@ -269,7 +263,6 @@ public class BaseRunner : MonoBehaviour
     /// </summary>
     public void CacheColors()
     {
-
         // The ColorChip can return an array of ColorData. ColorData is an internal data structure that Pixel Vision 8 uses to store 
         // color information. It has properties for a Hex representation as well as RGB.
         var colorsData = engine.colorChip.colors;
@@ -278,7 +271,7 @@ public class BaseRunner : MonoBehaviour
         // Also, we'll create a new array to store native Unity Color classes.
         totalCachedColors = colorsData.Length;
 
-        if(cachedColors.Length != totalCachedColors)
+        if (cachedColors.Length != totalCachedColors)
             Array.Resize(ref cachedColors, totalCachedColors);
 
         // Now it's time to loop through each of the colors and convert them from ColorData to Color instances. 
@@ -289,11 +282,8 @@ public class BaseRunner : MonoBehaviour
             var colorData = colorsData[i];
 
             if (colorData.flag != 0)
-            {
                 cachedColors[i] = new Color(colorData.r, colorData.g, colorData.b);
-            }
         }
-
     }
 
     protected void ConfigureInput()
@@ -319,8 +309,8 @@ public class BaseRunner : MonoBehaviour
         var total = keys1.Length;
         for (var i = 0; i < total; i++)
         {
-            controllerChip.UpdateControllerKey(0, new KeyboardButtonInput((Buttons)i, (int)keys1[i]));
-            controllerChip.UpdateControllerKey(1, new KeyboardButtonInput((Buttons)i, (int)keys2[i]));
+            controllerChip.UpdateControllerKey(0, new KeyboardButtonInput((Buttons) i, (int) keys1[i]));
+            controllerChip.UpdateControllerKey(1, new KeyboardButtonInput((Buttons) i, (int) keys2[i]));
         }
 
         // Register mouse input
@@ -333,7 +323,6 @@ public class BaseRunner : MonoBehaviour
     /// </summary>
     public virtual void Update()
     {
-
         // Before trying to update the PixelVisionEngine instance, we need to make sure it exists. The guard clause protects us from throwing an 
         // error when the Runner loads up and starts before we've had a chance to instantiate the new engine instance.
         if (engine == null)
@@ -344,7 +333,6 @@ public class BaseRunner : MonoBehaviour
         // It's important that we pass in the Time.deltaTime to the PixelVisionEngine. It is passed along to any Chip that registers itself with 
         // the ChipManager to be updated. The ControlsChip, GamesChip, and others use this time delta to synchronize their actions based on the 
         // current framerate.
-
     }
 
     /// <summary>
@@ -353,7 +341,6 @@ public class BaseRunner : MonoBehaviour
     /// </summary>
     public virtual void LateUpdate()
     {
-
         // Just like before, we use a guard clause to keep the Runner from throwing errors if no PixelVision8 engine exists.
         if (engine == null)
             return;
@@ -369,16 +356,13 @@ public class BaseRunner : MonoBehaviour
 
         // The first part of rendering Pixel Vision 8's DisplayChip is to get all of the current pixel data during the current frame. Each 
         // Integer in this Array contains an ID we can use to match up to the cached colors we created when setting up the Runner.
-        var pixelData = engine.displayChip.displayPixels;//.displayPixelData;
+        var pixelData = engine.displayChip.displayPixels; //.displayPixelData;
         var total = pixelData.Length;
         int colorRef;
 
         // Need to make sure we are using the latest colors.
         if (engine.colorChip.invalid)
-        {
-            // This method handles caching the colors from the ColorChip to help speed up rendering.
             CacheColors();
-        }
 
         // We also want to cache the ScreenBufferChip's background color. The background color is an ID that references one of the ColorChip's colors.
         var bgColor = engine.colorChip.backgroundColor;
@@ -391,30 +375,25 @@ public class BaseRunner : MonoBehaviour
         // Now it's time to loop through all of the DisplayChip's pixel data.
         for (var i = 0; i < total; i++)
         {
-
             // Here we get a reference to the color we are trying to look up from the pixelData array. Then we compare that ID to what we 
             // have in the cachedPixels. If the color is out of range, we use the cachedTransparentColor. If the color exists in the cache we use that.
             colorRef = pixelData[i];
 
             // Replace transparent colors with bg for next pass
             if (colorRef == -1)
-            {
                 pixelData[i] = bgColor;
-            }
 
             cachedPixels[i] = colorRef < 0 || colorRef >= totalCachedColors ? cacheTransparentColor : cachedColors[colorRef];
 
             // As you can see, we are using a protected field called cachedPixels. When we call ResetResolution, we resize this array to make sure that 
             // it matches the length of the DisplayChip's pixel data. By keeping a reference to this Array and updating each color instead of rebuilding 
             // it, we can significantly increase the render performance of the Runner.
-
         }
 
         // At this point, we have all the color data we need to update the renderTexture. We'll set the cachedPixels on the renderTexture and call 
         // Apply() to re-render the Texture.
         renderTexture.SetPixels(cachedPixels);
         renderTexture.Apply();
-
     }
 
     /// <summary>
@@ -424,14 +403,12 @@ public class BaseRunner : MonoBehaviour
     /// </summary>
     protected void ResetResolution(int width, int height)
     {
-
         // The first thing we need to do is resize the DisplayChip's own resolution.
         engine.displayChip.ResetResolution(width, height);
 
         // We need to make sure our displayTarget, which is our RawImage in the Unity scene,  exists before trying to update it. 
         if (displayTarget != null)
         {
-
             // The first thing we'll do to update the displayTarget recalculate the correct aspect ratio. Here we get a reference 
             // to the AspectRatioFitter component then set the aspectRatio property to the value of the width divided by the height. 
             var fitter = displayTarget.GetComponent<AspectRatioFitter>();
@@ -457,21 +434,17 @@ public class BaseRunner : MonoBehaviour
             // The last this we need to do is make sure that all of the cachedPixels are not transparent. Since Pixel Vision 8 doesn't 
             // support transparency it's important to make sure we can modify these colors before attempting to render the DisplayChip's pixel data.
             for (var i = 0; i < totalPixels; i++)
-            {
                 cachedPixels[i].a = 1;
-            }
 
-            var overscanXPixels = (width - engine.displayChip.overscanXPixels) / (float)width;
-            var overscanYPixels = (height - engine.displayChip.overscanYPixels) / (float)height;
+            var overscanXPixels = (width - engine.displayChip.overscanXPixels) / (float) width;
+            var overscanYPixels = (height - engine.displayChip.overscanYPixels) / (float) height;
             var offsetY = 1 - overscanYPixels;
-            displayTarget.uvRect = new UnityEngine.Rect(0, offsetY, overscanXPixels, overscanYPixels);
+            displayTarget.uvRect = new Rect(0, offsetY, overscanXPixels, overscanYPixels);
 
             // When copying over the DisplayChip's pixel data to the cachedPixels, we only focus on the RGB value. While we could reset the 
             // alpha during that step, it would also slow down the renderer. Since Pixel Vision 8 simply ignores the alpha value of a color, 
             // we can just do this once when changing the resolution and help speed up the Runner.
-
         }
-
     }
 
 }

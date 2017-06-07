@@ -1,6 +1,20 @@
-﻿using System;
+﻿//   
+// Copyright (c) Jesse Freeman. All rights reserved.  
+//  
+// Licensed under the Microsoft Public License (MS-PL) License. 
+// See LICENSE file in the project root for full license information. 
+// 
+// Contributors
+// --------------------------------------------------------
+// This is the official list of Pixel Vision 8 contributors:
+//  
+// Jesse Freeman - @JesseFreeman
+// Christer Kaitila - @McFunkypants
+// Pedro Medeiros - @saint11
+// Shawn Rakowski - @shwany
+
+using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Text;
 using PixelVisionOS;
@@ -12,8 +26,10 @@ using UnityEngine;
 
 namespace PixelVisionRunner.Services
 {
+
     public class LoadService : AbstractService
     {
+
         private readonly List<AbstractParser> parsers = new List<AbstractParser>();
 
         private int currentParserID;
@@ -175,6 +191,7 @@ namespace PixelVisionRunner.Services
 
                 return new ParseMetaData(fileContents, targetEngine);
             }
+
 //            else
 //            {
 //                throw new Exception("Can't find 'data.json' file");
@@ -199,6 +216,7 @@ namespace PixelVisionRunner.Services
         private AbstractParser LoadFont(string fontName, byte[] data)
         {
             var tex = ReadTexture(data);
+
             //var fontName = fileSystem.GetFileNameWithoutExtension(file);
             //fontName = fontName.Substring(0, fontName.Length - 5);
 
@@ -281,6 +299,7 @@ namespace PixelVisionRunner.Services
             var scriptParser = new ScriptParser(fileName, script, targetEngine.gameChip as LuaGameChip);
 
             return scriptParser;
+
             //parsers.Add(parser);
             //            foreach (var path in paths)
             //                if (fileSystem.DirectoryExists(path))
@@ -333,5 +352,7 @@ namespace PixelVisionRunner.Services
             // Return texture
             return tex;
         }
+
     }
+
 }

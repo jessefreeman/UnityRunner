@@ -1,6 +1,6 @@
-﻿//  
+﻿//   
 // Copyright (c) Jesse Freeman. All rights reserved.  
-// 
+//  
 // Licensed under the Microsoft Public License (MS-PL) License. 
 // See LICENSE file in the project root for full license information. 
 // 
@@ -12,7 +12,6 @@
 // Christer Kaitila - @McFunkypants
 // Pedro Medeiros - @saint11
 // Shawn Rakowski - @shwany
-// 
 
 using System;
 using System.Collections.Generic;
@@ -22,8 +21,10 @@ using PixelVisionSDK;
 
 namespace PixelVisionRunner.Data
 {
+
     public class SfxrSongData : SongData, ISave, ILoad
     {
+
         public SfxrSongData(string name = "Untitled", int tracks = 4) : base(name, tracks)
         {
         }
@@ -95,6 +96,7 @@ namespace PixelVisionRunner.Data
                         sb.Append(",");
                     JsonUtil.indentLevel--;
                 }
+
             JsonUtil.indentLevel--;
             JsonUtil.GetLineBreak(sb, 1);
             sb.Append("]");
@@ -109,5 +111,7 @@ namespace PixelVisionRunner.Data
         {
             return new SfxrTrackData();
         }
+
     }
+
 }

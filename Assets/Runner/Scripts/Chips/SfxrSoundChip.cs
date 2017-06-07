@@ -1,6 +1,6 @@
-﻿//  
+﻿//   
 // Copyright (c) Jesse Freeman. All rights reserved.  
-// 
+//  
 // Licensed under the Microsoft Public License (MS-PL) License. 
 // See LICENSE file in the project root for full license information. 
 // 
@@ -12,7 +12,6 @@
 // Christer Kaitila - @McFunkypants
 // Pedro Medeiros - @saint11
 // Shawn Rakowski - @shwany
-// 
 
 using PixelVisionRunner.Data;
 using PixelVisionSDK;
@@ -20,8 +19,10 @@ using PixelVisionSDK.Chips;
 
 namespace PixelVisionRunner.Chips
 {
+
     public class SfxrSoundChip : SoundChip
     {
+
         /// <summary>
         ///     This stub methods is designed to be overridden with a Factory to
         ///     create new sound instances that implement the ISoundData interface.
@@ -48,6 +49,7 @@ namespace PixelVisionRunner.Chips
                 synth.CacheSound();
             }
         }
-        
+
     }
+
 }

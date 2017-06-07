@@ -88,10 +88,6 @@ namespace PixelVisionRunner.Parsers
                             break;
                     }
 
-                    Debug.Log("Processing Chip " + chipName);
-
-
-                    //chipManager.UpdateChip(chipName, chipData);
                 }
 
                 // Removed any active chips not reserialized
@@ -105,7 +101,6 @@ namespace PixelVisionRunner.Parsers
 
         public void ConfigureColorChip(Dictionary<string, object> data)
         {
-            Debug.Log("Configure Color Chip");
 
             var colorChip = target.colorChip;
 
@@ -142,8 +137,6 @@ namespace PixelVisionRunner.Parsers
 
         public void ConfigureDisplayChip(Dictionary<string, object> data)
         {
-            Debug.Log("Configure Display Chip");
-
             var displayChip = target.displayChip;
 
             var _width = displayChip.width;
@@ -169,7 +162,7 @@ namespace PixelVisionRunner.Parsers
 
         public void ConfigureFontChip(Dictionary<string, object> data)
         {
-            Debug.Log("Configure Font Chip");
+
         }
 
         public void ConfigureGameChip(Dictionary<string, object> data)
@@ -201,8 +194,6 @@ namespace PixelVisionRunner.Parsers
         {
             var musicChip = target.musicChip;
 
-            Debug.Log("Configure Music Chip");
-
             if (data.ContainsKey("songs"))
             {
                 var songData = data["songs"] as List<object>;
@@ -211,7 +202,6 @@ namespace PixelVisionRunner.Parsers
 
                 musicChip.totalLoops = total;
 
-                Debug.Log("Total Songs " + total);
                 for (var i = 0; i < total; i++)
                 {
                     var song = new SfxrSongData();

@@ -1,6 +1,6 @@
-﻿//  
+﻿//   
 // Copyright (c) Jesse Freeman. All rights reserved.  
-// 
+//  
 // Licensed under the Microsoft Public License (MS-PL) License. 
 // See LICENSE file in the project root for full license information. 
 // 
@@ -12,7 +12,6 @@
 // Christer Kaitila - @McFunkypants
 // Pedro Medeiros - @saint11
 // Shawn Rakowski - @shwany
-// 
 
 using System;
 using System.Collections.Generic;
@@ -33,17 +32,15 @@ namespace PixelVisionRunner.Data
         public void DeserializeData(Dictionary<string, object> data)
         {
             if (data.ContainsKey("sfxID"))
-                sfxID = Convert.ToInt32((long)data["sfxID"]);
+                sfxID = Convert.ToInt32((long) data["sfxID"]);
 
             if (data.ContainsKey("notes"))
             {
-                var noteData = (List<object>)data["notes"];
+                var noteData = (List<object>) data["notes"];
                 var total = noteData.Count;
                 notes = new int[total];
                 for (var i = 0; i < total; i++)
-                {
-                    notes[i] = (int)(long)noteData[i];
-                }
+                    notes[i] = (int) (long) noteData[i];
             }
         }
 

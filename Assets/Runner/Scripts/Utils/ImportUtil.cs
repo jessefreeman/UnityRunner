@@ -1,6 +1,6 @@
-﻿//  
+﻿//   
 // Copyright (c) Jesse Freeman. All rights reserved.  
-// 
+//  
 // Licensed under the Microsoft Public License (MS-PL) License. 
 // See LICENSE file in the project root for full license information. 
 // 
@@ -12,7 +12,6 @@
 // Christer Kaitila - @McFunkypants
 // Pedro Medeiros - @saint11
 // Shawn Rakowski - @shwany
-// 
 
 using System;
 using System.Collections.Generic;
@@ -65,19 +64,13 @@ namespace PixelVisionSDK.Utils
                 tmpColor = src.GetPixel(x, y); //pixels[i]);
 
                 if (tmpColor.a < 1 && !ignoreTransparent)
-                {
                     tmpColor = Color.magenta;
-                }
 
                 // Look to see if the color is already in the list
                 if (!colors.Contains(tmpColor) && unique)
-                {
                     colors.Add(tmpColor);
-                }
-                else if(unique == false)
-                {
+                else if (unique == false)
                     colors.Add(tmpColor);
-                }
             }
 
             // Return an array of the color list
@@ -135,7 +128,6 @@ namespace PixelVisionSDK.Utils
         public static void ImportSpritesFromTexture(Texture2D src, IEngineChips chips, bool resizeRam = false,
             bool unique = true)
         {
-
             src.filterMode = FilterMode.Point;
 
             var spriteChip = chips.spriteChip;
@@ -148,13 +140,9 @@ namespace PixelVisionSDK.Utils
             // Test for color map, if not index the texture
             var colorMapChipName = typeof(ColorMapChip).FullName;
             if (chips.chipManager.HasChip(colorMapChipName))
-            {
                 colorData = ((ColorMapChip) chips.chipManager.GetChip(typeof(ColorMapChip).FullName)).colors;
-            }
             else
-            {
                 colorData = chips.colorChip.colors;
-            }
 
             var colors = new Color[colorData.Length];
             ApplyColors(ref colors, colorData);
@@ -188,9 +176,7 @@ namespace PixelVisionSDK.Utils
                 ConvertColorsToIndexes(ref spriteData, tmpPixels, colors, spriteChip.colorsPerSprite);
 
                 if (spritesAdded < maxSprites)
-                {
                     if (!SpriteChipUtil.IsEmpty(spriteData))
-                    {
                         if (unique)
                         {
                             if (spriteChip.FindSprite(spriteData) == -1)
@@ -204,8 +190,6 @@ namespace PixelVisionSDK.Utils
                             spriteChip.UpdateSpriteAt(i, spriteData);
                             spritesAdded++;
                         }
-                    }
-                }
             }
         }
 
@@ -235,9 +219,7 @@ namespace PixelVisionSDK.Utils
 
             // Adjust the size of the index array to match the pixel
             if (indexes.Length != total)
-            {
                 Array.Resize(ref indexes, total);
-            }
 
             // Create a tmp color for the loop
             Color tmpColor;
@@ -262,8 +244,6 @@ namespace PixelVisionSDK.Utils
 
                     // if the color is not found let's index it
                     if (indexed == -1)
-                    {
-                        // See if we have room to add the color
                         if (colorIndex.Count < totalColors)
                         {
                             // Add the color
@@ -272,7 +252,6 @@ namespace PixelVisionSDK.Utils
                             // Update the index
                             indexed = colorIndex.Count - 1;
                         }
-                    }
 
                     // if the index is still empty (we ran out of colors, then make transparent)
                     if (indexed == -1)
@@ -292,7 +271,7 @@ namespace PixelVisionSDK.Utils
         /// <returns>
         /// </returns>
         public static void ImportTileMapFromTexture(Texture2D src, IEngineChips chips, bool autoImport = true
-            )
+        )
         {
             var spriteChip = chips.spriteChip;
             var tileMapChip = chips.tilemapChip;
@@ -362,10 +341,7 @@ namespace PixelVisionSDK.Utils
             var rows = MathUtil.CeilToInt(src.height / sHeight);
 
             if (columns != tileMap.columns || rows != tileMap.rows)
-            {
-                //Debug.Log("ERROR: Flag Texture doesn't match screen block size!");
                 return;
-            }
 
             var total = SpriteChipUtil.CalcualteTotalSprites(src.width, src.height, sWidth, sHeight);
             int x, y;
@@ -379,6 +355,7 @@ namespace PixelVisionSDK.Utils
                 //PosUtil.CalculatePosition(i, tileMap.columns, out x, out y);
                 x = i % tmpWidth;
                 y = i / tmpWidth;
+
                 //Debug.Log(color.r);
                 var flag = color.a == 1 ? (int) (color.r * 256) / tileMap.totalFlags : -1;
 
@@ -481,9 +458,7 @@ namespace PixelVisionSDK.Utils
                 return;
 
             for (var i = 0; i < total1; i++)
-            {
                 ApplyColor(ref c1[i], c2[i]);
-            }
         }
 
     }
