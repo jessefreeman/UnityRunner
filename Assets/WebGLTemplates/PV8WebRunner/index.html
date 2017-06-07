@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Pixel Vision 8 | WebGL Runner</title>
+    <script src="%UNITY_WEBGL_LOADER_URL%"></script>
+    <script>
+      window.gameURL = "StreamingAssets/SampleLuaGame.pv8";
+      var gameInstance = UnityLoader.instantiate("gameContainer", "%UNITY_WEBGL_BUILD_URL%"); 
+    </script>
+  </head>
+  <body>
+    <div id="gameContainer" style="width: 512px; height: 488px; margin: 0; padding: 0;"></div>
+  </body>
+</html>

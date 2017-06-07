@@ -14,6 +14,7 @@
 // Shawn Rakowski - @shwany
 
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using PixelVisionRunner.Chips;
 using UnityEngine;
 
@@ -34,19 +35,36 @@ public class LuaRunner : BaseRunner
         }
     }
 
+#if UNITY_WEBGL
+    [DllImport("__Internal")]
+    private static extern string GetURL();
+#endif
+
     public override void LoadGame()
     {
         base.LoadGame();
 
-        LoadFiles();
+        var path = "file://" + Application.dataPath + "/StreamingAssets/SampleLuaGame.pv8";
+
+        #if UNITY_WEBGL && !UNITY_EDITOR
+            path = GetURL();
+        #endif
+
+        // Use this to load a .pv8 file directly from the filesystem or from a url
+        LoadPV8Archive(path);
+
+        // Use this to load the contents of an unzipped .pv8 file from a directory.
+        // LoadPV8Files("/StreamingAssets/Game/");
     }
 
-    public virtual void LoadFiles()
+    public virtual void LoadPV8Files(string folderPath)
     {
-        var folder = "/StreamingAssets/Game/";
-        var path = Application.dataPath + folder;
+        LoadFromDir(Application.dataPath + folderPath);
+    }
 
-        LoadFromDir(path);
+    public virtual void LoadPV8Archive(string url)
+    {
+        LoadFromZip(url);
     }
 
 }
