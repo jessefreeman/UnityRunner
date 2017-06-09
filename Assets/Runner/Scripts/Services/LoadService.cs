@@ -149,7 +149,6 @@ namespace PixelVisionRunner.Services
 
         public void LoadAll()
         {
-            Debug.Log("START PARSING.");
             while (completed == false)
                 NextParser();
         }
@@ -162,7 +161,6 @@ namespace PixelVisionRunner.Services
 
             var parser = parsers[currentParserID];
 
-            Debug.Log("Parser " + parser.GetType());
             //var watch = Stopwatch.StartNew();
 
             if (microSteps)
@@ -261,7 +259,6 @@ namespace PixelVisionRunner.Services
             {
                 var tex = ReadTexture(files[fileName]);
 
-                Debug.Log("Parsing Texture " + tex.width +" "+tex.height);
                 return new SpriteParser(tex, targetEngine);
             }
 

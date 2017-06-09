@@ -132,7 +132,7 @@ namespace PixelVisionRunner.Parsers
 
         public void ConfigureControllerChip(Dictionary<string, object> data)
         {
-            Debug.Log("Configure Controller Chip");
+
         }
 
         public void ConfigureDisplayChip(Dictionary<string, object> data)

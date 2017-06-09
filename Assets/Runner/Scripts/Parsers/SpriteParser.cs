@@ -116,8 +116,6 @@ namespace PixelVisionRunner.Parsers
 
             maxSprites = SpriteChipUtil.CalcualteTotalSprites(spriteChip.textureWidth, spriteChip.textureHeight, sWidth, sHeight);
 
-            Debug.Log("totalSprites " + totalSprites + " " + maxSprites + " " + tex.width + " " + tex.height);
-
             // Create tmp arrays for color and reference data
             totalPixels = spriteChip.width * spriteChip.height;
             tmpPixels = new Color[totalPixels];
