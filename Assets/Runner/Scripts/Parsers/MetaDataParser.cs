@@ -18,12 +18,12 @@ using PixelVisionSDK;
 namespace PixelVisionRunner.Parsers
 {
 
-    public class ParseMetaData : JsonParser
+    public class MetaDataParser : JsonParser
     {
 
         private readonly IEngine engine;
 
-        public ParseMetaData(string jsonString, IEngine target) : base(jsonString)
+        public MetaDataParser(string jsonString, IEngine target) : base(jsonString)
         {
             engine = target;
         }
@@ -37,7 +37,9 @@ namespace PixelVisionRunner.Parsers
         public void ApplySettings()
         {
             foreach (var d in data)
+            {
                 engine.SetMetaData(d.Key, d.Value as string);
+            }
 
             currentStep++;
         }

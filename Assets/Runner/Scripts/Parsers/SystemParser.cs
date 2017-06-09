@@ -274,7 +274,21 @@ namespace PixelVisionRunner.Parsers
 
         public void ConfigureTielmapChip(Dictionary<string, object> data)
         {
-            Debug.Log("Configure Tilemap Chip");
+            var tilemapChip = target.tilemapChip;
+
+            var columns = tilemapChip.columns;
+            var rows = tilemapChip.rows;
+
+            if (data.ContainsKey("columns"))
+                columns = (int)(long)data["columns"];
+
+            if (data.ContainsKey("rows"))
+                rows = (int)(long)data["rows"];
+
+            if (data.ContainsKey("totalFlags"))
+                tilemapChip.totalFlags = (int)(long)data["totalFlags"];
+
+            tilemapChip.Resize(columns, rows);
         }
 
     }
