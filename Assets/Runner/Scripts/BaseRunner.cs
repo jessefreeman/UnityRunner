@@ -401,11 +401,13 @@ public class BaseRunner : MonoBehaviour
     ///     correctly in its UI container
     ///     as well as making sure the cachedPixel array matches up to DisplayChip's pixel data length.
     /// </summary>
-    protected void ResetResolution(int width, int height)
+    protected virtual void ResetResolution(int width, int height, bool fullScreen = true)
     {
         // The first thing we need to do is resize the DisplayChip's own resolution.
         engine.displayChip.ResetResolution(width, height);
 
+        Screen.fullScreen = fullScreen;
+        
         // We need to make sure our displayTarget, which is our RawImage in the Unity scene,  exists before trying to update it. 
         if (displayTarget != null)
         {
