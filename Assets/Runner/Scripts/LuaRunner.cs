@@ -44,7 +44,7 @@ public class LuaRunner : BaseRunner
     {
         base.LoadGame();
 
-        var path = "file://" + Application.dataPath + "/StreamingAssets/SampleLuaGame.pv8";
+		var path = "file://" + Application.streamingAssetsPath + "/SampleLuaGame.pv8";
 
         #if UNITY_WEBGL && !UNITY_EDITOR
             path = GetURL();

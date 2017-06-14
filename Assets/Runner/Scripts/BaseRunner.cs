@@ -401,7 +401,7 @@ public class BaseRunner : MonoBehaviour
     ///     correctly in its UI container
     ///     as well as making sure the cachedPixel array matches up to DisplayChip's pixel data length.
     /// </summary>
-    protected virtual void ResetResolution(int width, int height, bool fullScreen = true)
+    protected virtual void ResetResolution(int width, int height, bool fullScreen = false)
     {
         // The first thing we need to do is resize the DisplayChip's own resolution.
         engine.displayChip.ResetResolution(width, height);
