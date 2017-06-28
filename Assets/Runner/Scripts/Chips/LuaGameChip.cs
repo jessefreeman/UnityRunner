@@ -153,7 +153,7 @@ namespace PixelVisionRunner.Chips
             luaScript.Globals["TilemapSize"] = (TilemapSizeDelegate) TilemapSizeDictionary;
             luaScript.Globals["Tile"] = (TileDelegate) Tile;
             luaScript.Globals["UpdateTiles"] = (UpdateTilesDelegate) UpdateTiles;
-
+            luaScript.Globals["Flag"] = (FlagDelegate) Flag;
             #endregion
 
             // Enums
@@ -342,6 +342,8 @@ namespace PixelVisionRunner.Chips
             int? flag);
 
         private delegate int[] SpriteDelegate(int id, int[] data = null);
+
+        private delegate int FlagDelegate(int column, int row, int? value = null);
 
         private delegate void UpdateTilesDelegate(int column, int row, int columns, int[] ids, int? colorOffset = null,
             int? flag = null);
