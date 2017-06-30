@@ -407,7 +407,7 @@ public class BaseRunner : MonoBehaviour
         engine.displayChip.ResetResolution(width, height);
 
         Screen.fullScreen = fullScreen;
-        
+
         // We need to make sure our displayTarget, which is our RawImage in the Unity scene,  exists before trying to update it. 
         if (displayTarget != null)
         {
@@ -423,7 +423,7 @@ public class BaseRunner : MonoBehaviour
 
             // Now we can resize the redenerTexture to also match the new resolution.
             renderTexture.Resize(width, height);
-
+			
             // At this point, the Unity-specific UI is correctly configured. The CanvasScaler and AspectRetioFitter will ensure that 
             // the Texture we use to show the DisplayChip's pixel data will always maintain it's aspect ratio no matter what the game's 
             // real resolution is.
