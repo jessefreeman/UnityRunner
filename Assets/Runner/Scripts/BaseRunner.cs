@@ -80,6 +80,7 @@ public class BaseRunner : MonoBehaviour
     // We'll use this field to store a reference to our PixelVisionEngine class. 
     public IEngine activeEngine { get; set; }
     protected IEngine tmpEngine { get; set; }
+    protected ControllerChip activeControllerChip;
 
     public virtual List<string> defaultChips
     {
@@ -241,16 +242,13 @@ public class BaseRunner : MonoBehaviour
     /// </summary>
     public virtual void RunGame()
     {
-        // Override this method and add your own game load logic.
-
+        
         // Make the loaded engine active
         activeEngine = tmpEngine;
         tmpEngine = null;
 
         // Update the resolution
         ResetResolution(activeEngine.displayChip.width, activeEngine.displayChip.height);
-
-        
 
         // Configure the input
         ConfigureInput();
@@ -296,10 +294,10 @@ public class BaseRunner : MonoBehaviour
 
     protected virtual void ConfigureInput()
     {
-        var controllerChip = activeEngine.controllerChip;
+        activeControllerChip = activeEngine.controllerChip;
 
         // This allows the engine to access Unity keyboard input and the inputString
-        controllerChip.RegisterKeyInput(new KeyInput());
+        activeControllerChip.RegisterKeyInput(new KeyInput());
 
         // Map Controller and Keyboard
         var keys1 = new[]
@@ -317,12 +315,12 @@ public class BaseRunner : MonoBehaviour
         var total = keys1.Length;
         for (var i = 0; i < total; i++)
         {
-            controllerChip.UpdateControllerKey(0, new KeyboardButtonInput((Buttons) i, (int) keys1[i]));
-            controllerChip.UpdateControllerKey(1, new KeyboardButtonInput((Buttons) i, (int) keys2[i]));
+            activeControllerChip.UpdateControllerKey(0, new KeyboardButtonInput((Buttons) i, (int) keys1[i]));
+            activeControllerChip.UpdateControllerKey(1, new KeyboardButtonInput((Buttons) i, (int) keys2[i]));
         }
 
         // Register mouse input
-        controllerChip.RegisterMouseInput(new MouseInput(displayTarget.rectTransform));
+        activeControllerChip.RegisterMouseInput(new MouseInput(displayTarget.rectTransform));
     }
 
     /// <summary>
