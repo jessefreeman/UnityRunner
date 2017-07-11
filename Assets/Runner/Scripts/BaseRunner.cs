@@ -78,7 +78,8 @@ public class BaseRunner : MonoBehaviour
     protected int totalCachedColors;
 
     // We'll use this field to store a reference to our PixelVisionEngine class. 
-    public IEngine engine { get; set; }
+    public IEngine activeEngine { get; set; }
+    protected IEngine tmpEngine { get; set; }
 
     public virtual List<string> defaultChips
     {
@@ -139,7 +140,7 @@ public class BaseRunner : MonoBehaviour
         luaService.script.Options.DebugPrint = s => Debug.Log(s);
 
         // Register Lua Service
-        engine.chipManager.AddService(typeof(LuaService).FullName, luaService);
+        tmpEngine.chipManager.AddService(typeof(LuaService).FullName, luaService);
     }
 
     public void LoadFromDir(string path)
@@ -214,7 +215,7 @@ public class BaseRunner : MonoBehaviour
         saveFlags |= SaveFlags.Fonts;
         saveFlags |= SaveFlags.Meta;
 
-        loadService.ParseFiles(files, engine, saveFlags);
+        loadService.ParseFiles(files, tmpEngine, saveFlags);
 
         loadService.LoadAll();
 
@@ -231,10 +232,8 @@ public class BaseRunner : MonoBehaviour
 
         // It's now time to set up a new instance of the PixelVisionEngine. Here we are passing in the string 
         // names of the chips it should use.
-        engine = new PixelVisionEngine(defaultChips.ToArray());
-
-        // Configure the input
-        ConfigureInput();
+        tmpEngine = new PixelVisionEngine(defaultChips.ToArray());
+        
     }
 
     /// <summary>
@@ -244,13 +243,23 @@ public class BaseRunner : MonoBehaviour
     {
         // Override this method and add your own game load logic.
 
-        ResetResolution(engine.displayChip.width, engine.displayChip.height);
+        // Make the loaded engine active
+        activeEngine = tmpEngine;
+        tmpEngine = null;
 
-        // After loading the game, we are ready to run it.
-        engine.RunGame();
+        // Update the resolution
+        ResetResolution(activeEngine.displayChip.width, activeEngine.displayChip.height);
+
+        
+
+        // Configure the input
+        ConfigureInput();
 
         // This method handles caching the colors from the ColorChip to help speed up rendering.
         CacheColors();
+
+        // After loading the game, we are ready to run it.
+        activeEngine.RunGame();
     }
 
     /// <summary>
@@ -264,7 +273,7 @@ public class BaseRunner : MonoBehaviour
     {
         // The ColorChip can return an array of ColorData. ColorData is an internal data structure that Pixel Vision 8 uses to store 
         // color information. It has properties for a Hex representation as well as RGB.
-        var colorsData = engine.colorChip.colors;
+        var colorsData = activeEngine.colorChip.colors;
 
         // To improve performance, we'll save a reference to the total cashed colors directly to the Runner's totalCachedColors field. 
         // Also, we'll create a new array to store native Unity Color classes.
@@ -285,9 +294,9 @@ public class BaseRunner : MonoBehaviour
         }
     }
 
-    protected void ConfigureInput()
+    protected virtual void ConfigureInput()
     {
-        var controllerChip = engine.controllerChip;
+        var controllerChip = activeEngine.controllerChip;
 
         // This allows the engine to access Unity keyboard input and the inputString
         controllerChip.RegisterKeyInput(new KeyInput());
@@ -324,10 +333,10 @@ public class BaseRunner : MonoBehaviour
     {
         // Before trying to update the PixelVisionEngine instance, we need to make sure it exists. The guard clause protects us from throwing an 
         // error when the Runner loads up and starts before we've had a chance to instantiate the new engine instance.
-        if (engine == null)
+        if (activeEngine == null)
             return;
 
-        engine.Update(Time.deltaTime);
+        activeEngine.Update(Time.deltaTime);
 
         // It's important that we pass in the Time.deltaTime to the PixelVisionEngine. It is passed along to any Chip that registers itself with 
         // the ChipManager to be updated. The ControlsChip, GamesChip, and others use this time delta to synchronize their actions based on the 
@@ -341,35 +350,35 @@ public class BaseRunner : MonoBehaviour
     public virtual void LateUpdate()
     {
         // Just like before, we use a guard clause to keep the Runner from throwing errors if no PixelVision8 engine exists.
-        if (engine == null)
+        if (activeEngine == null)
             return;
 
         // Here we are checking that the PixelVisionEngine is actually running. If a game is not loaded there is nothing to render so we would 
         // exit out of this call.
-        if (!engine.running)
+        if (!activeEngine.running)
             return;
 
         // Now it's time to call the PixelVisionEngine's Draw() method. This Draw() call propagates throughout all of the Chips that have 
         // registered themselves as being able to draw such as the GameChip and the DisplayChip.
-        engine.Draw();
+        activeEngine.Draw();
 
         // The first part of rendering Pixel Vision 8's DisplayChip is to get all of the current pixel data during the current frame. Each 
         // Integer in this Array contains an ID we can use to match up to the cached colors we created when setting up the Runner.
-        var pixelData = engine.displayChip.displayPixels; //.displayPixelData;
+        var pixelData = activeEngine.displayChip.displayPixels; //.displayPixelData;
         var total = pixelData.Length;
         int colorRef;
 
         // Need to make sure we are using the latest colors.
-        if (engine.colorChip.invalid)
+        if (activeEngine.colorChip.invalid)
             CacheColors();
 
         // We also want to cache the ScreenBufferChip's background color. The background color is an ID that references one of the ColorChip's colors.
-        var bgColor = engine.colorChip.backgroundColor;
+        var bgColor = activeEngine.colorChip.backgroundColor;
 
         // The cachedTransparentColor is what shows when a color ID is out of range. Pixel Vision 8 doesn't support transparency, so this 
         // color shows instead. Here we test to see if the bgColor is an ID within the length of the bgColor variable. If not, we set it to 
         // Unity's default magenta color. If the bgColor is within range, we'll use that for transparency.
-        cacheTransparentColor = bgColor > cachedColors.Length || bgColor < 0 ? Color.magenta : cachedColors[engine.colorChip.backgroundColor];
+        cacheTransparentColor = bgColor > cachedColors.Length || bgColor < 0 ? Color.magenta : cachedColors[activeEngine.colorChip.backgroundColor];
 
         // Now it's time to loop through all of the DisplayChip's pixel data.
         for (var i = 0; i < total; i++)
@@ -403,7 +412,7 @@ public class BaseRunner : MonoBehaviour
     protected virtual void ResetResolution(int width, int height, bool fullScreen = false)
     {
         // The first thing we need to do is resize the DisplayChip's own resolution.
-        engine.displayChip.ResetResolution(width, height);
+        activeEngine.displayChip.ResetResolution(width, height);
 
         Screen.fullScreen = fullScreen;
 
@@ -437,8 +446,8 @@ public class BaseRunner : MonoBehaviour
             for (var i = 0; i < totalPixels; i++)
                 cachedPixels[i].a = 1;
 
-            var overscanXPixels = (width - engine.displayChip.overscanXPixels) / (float) width;
-            var overscanYPixels = (height - engine.displayChip.overscanYPixels) / (float) height;
+            var overscanXPixels = (width - activeEngine.displayChip.overscanXPixels) / (float) width;
+            var overscanYPixels = (height - activeEngine.displayChip.overscanYPixels) / (float) height;
             var offsetY = 1 - overscanYPixels;
             displayTarget.uvRect = new UnityEngine.Rect(0, offsetY, overscanXPixels, overscanYPixels);
 
