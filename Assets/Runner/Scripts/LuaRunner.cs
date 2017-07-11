@@ -40,10 +40,10 @@ public class LuaRunner : BaseRunner
     private static extern string GetURL();
 #endif
 
-    public override void LoadGame()
+    public override void Start()
     {
-        base.LoadGame();
-
+        base.Start();
+    
 		var path = "file://" + Application.streamingAssetsPath + "/SampleLuaGame.pv8";
 
         #if UNITY_WEBGL && !UNITY_EDITOR

@@ -24,7 +24,6 @@ using PixelVisionSDK;
 using PixelVisionSDK.Chips;
 using UnityEngine;
 using UnityEngine.UI;
-using Rect = UnityEngine.Rect;
 
 /// <summary>
 ///     The Runner will work just like any other Unity GameObject. By extending MonoBehavior,
@@ -46,7 +45,6 @@ public class BaseRunner : MonoBehaviour
     // We are going to use these fields to store cached color information to optimize converting the 
     // DisplayChip's pixel data into color pixels our renderTexture can use.
     protected Color[] cachedColors = new Color[0];
-
     protected Color[] cachedPixels = new Color[0];
     protected Color cacheTransparentColor;
 
@@ -117,8 +115,7 @@ public class BaseRunner : MonoBehaviour
 
         // Before we set up the PixelVisionEngine we'll want to configure the renderTexture. 
         // We'll create a new 256 x 240 Texture2D instance and set it as the displayTarget.texture.
-        renderTexture = new Texture2D(256, 240, TextureFormat.ARGB32, false);
-        renderTexture.filterMode = FilterMode.Point;
+        renderTexture = new Texture2D(256, 240, TextureFormat.ARGB32, false) {filterMode = FilterMode.Point};
         displayTarget.texture = renderTexture;
 
         // By setting the Texture2D filter mode to Point, we ensure that it will look crisp at any size. 
@@ -128,14 +125,16 @@ public class BaseRunner : MonoBehaviour
         // Before we can do anything, we need to configure the engine.
         ConfigureEngine();
 
-        LoadGame();
+        ConfigureServices();
     }
 
-    public virtual void LoadGame()
+    public LuaService luaService;
+
+    public virtual void ConfigureServices()
     {
         //fileSystem = new UnityFileSystemService();
         loadService = new LoadService();
-        var luaService = new LuaService();
+        luaService = new LuaService();
 
         luaService.script.Options.DebugPrint = s => Debug.Log(s);
 
@@ -199,7 +198,7 @@ public class BaseRunner : MonoBehaviour
         }
         else
         {
-            Debug.Log("WWW Error: " + www.error);
+            Debug.Log("WWW Error: " + www.error +" "+www.url);
         }
     }
 
@@ -441,7 +440,7 @@ public class BaseRunner : MonoBehaviour
             var overscanXPixels = (width - engine.displayChip.overscanXPixels) / (float) width;
             var overscanYPixels = (height - engine.displayChip.overscanYPixels) / (float) height;
             var offsetY = 1 - overscanYPixels;
-            displayTarget.uvRect = new Rect(0, offsetY, overscanXPixels, overscanYPixels);
+            displayTarget.uvRect = new UnityEngine.Rect(0, offsetY, overscanXPixels, overscanYPixels);
 
             // When copying over the DisplayChip's pixel data to the cachedPixels, we only focus on the RGB value. While we could reset the 
             // alpha during that step, it would also slow down the renderer. Since Pixel Vision 8 simply ignores the alpha value of a color, 
