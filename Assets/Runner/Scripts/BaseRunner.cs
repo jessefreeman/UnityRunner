@@ -18,6 +18,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
+using GameCreator.Services;
 using PixelVisionOS;
 using PixelVisionRunner.Services;
 using PixelVisionSDK;
@@ -59,6 +60,7 @@ public class BaseRunner : MonoBehaviour
     // display at a fixed aspect ratio no matter what the screen resolution is at.
     public RawImage displayTarget;
 
+    public FileSystemService fileSystem { get; protected set; }
     protected LoadService loadService;
 
     // To make this work, you'll need to create a new scene. Add a Canvas Component to it. 
@@ -125,18 +127,21 @@ public class BaseRunner : MonoBehaviour
 
 
         // Before we can do anything, we need to configure the engine.
-        ConfigureEngine();
+        //ConfigureEngine();
 
-        ConfigureServices();
+        
     }
-
+    
     public LuaService luaService;
 
     public virtual void ConfigureServices()
     {
         //fileSystem = new UnityFileSystemService();
-        loadService = new LoadService();
-        luaService = new LuaService();
+        if(loadService == null)
+            loadService = new LoadService();
+
+        if(luaService == null)
+            luaService = new LuaService();
 
         luaService.script.Options.DebugPrint = s => Debug.Log(s);
 
@@ -148,15 +153,15 @@ public class BaseRunner : MonoBehaviour
     {
         var files = new Dictionary<string, byte[]>();
 
-        var paths = Directory.GetFiles(path);
+        var paths = fileSystem.GetFiles(path);
 
         foreach (var filePath in paths)
         {
-            var fileType = Path.GetExtension(filePath);
+            var fileType = fileSystem.GetExtension(filePath);
             if (Array.IndexOf(validExtensions, fileType) != -1)
             {
-                var fileName = Path.GetFileName(filePath);
-                var data = File.ReadAllBytes(filePath);
+                var fileName = fileSystem.GetFileName(filePath);
+                var data = fileSystem.ReadAllBytes(filePath);
 
                 files.Add(fileName, data);
             }
@@ -223,7 +228,12 @@ public class BaseRunner : MonoBehaviour
         RunGame();
     }
 
-    public virtual void ConfigureEngine()
+    protected virtual IEngine CreateNewEngine()
+    {
+        return new PixelVisionEngine(defaultChips.ToArray());
+    }
+
+    public virtual void ConfigureEngine(Dictionary<string, string> metaData = null)
     {
         // Pixel Vision 8 has a built in the JSON serialize/de-serialize. It allows chips to be dynamically 
         // loaded by their full class name. Above we are using typeof() along with the FullName property to 
@@ -233,10 +243,16 @@ public class BaseRunner : MonoBehaviour
 
         // It's now time to set up a new instance of the PixelVisionEngine. Here we are passing in the string 
         // names of the chips it should use.
-        tmpEngine = new PixelVisionEngine(defaultChips.ToArray());
-        
-    }
+        tmpEngine = CreateNewEngine();
+        ConfigureServices();
 
+        // Pass all meta data into the engine instance
+        if (metaData != null)
+            foreach (var entry in metaData)
+                tmpEngine.SetMetaData(entry.Key, entry.Value);
+
+    }
+    
     /// <summary>
     ///     The LoadGame method will handle setting up the GameChip and configuring it.
     /// </summary>

@@ -44,27 +44,32 @@ public class LuaRunner : BaseRunner
     {
         base.Start();
     
-		var path = "file://" + Application.streamingAssetsPath + "/SampleLuaGame.pv8";
-
-        #if UNITY_WEBGL && !UNITY_EDITOR
-            path = GetURL();
-        #endif
-
-        // Use this to load a .pv8 file directly from the filesystem or from a url
-        LoadPV8Archive(path);
+		LoadDefaultGame();
 
         // Use this to load the contents of an unzipped .pv8 file from a directory.
         // LoadPV8Files("/StreamingAssets/Game/");
     }
 
-    public virtual void LoadPV8Files(string folderPath)
+    public virtual void LoadDefaultGame()
     {
-        LoadFromDir(Application.dataPath + folderPath);
+        var path = "file://" + Application.streamingAssetsPath + "/SampleLuaGame.pv8";
+
+#if UNITY_WEBGL && !UNITY_EDITOR
+                    path = GetURL();
+#endif
+
+        // Use this to load a .pv8 file directly from the filesystem or from a url
+        LoadFromZip(path);
     }
 
-    public virtual void LoadPV8Archive(string url)
-    {
-        LoadFromZip(url);
-    }
+//    public virtual void LoadPV8Files(string folderPath)
+//    {
+//        LoadFromDir(folderPath);
+//    }
+
+//    public virtual void LoadPV8Archive(string url)
+//    {
+//        
+//    }
 
 }
