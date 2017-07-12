@@ -24,6 +24,7 @@ using PixelVisionOS;
 using PixelVisionRunner.Services;
 using PixelVisionSDK;
 using PixelVisionSDK.Chips;
+using UnityEditorInternal;
 using UnityEngine;
 using UnityEngine.UI;
 using Debug = UnityEngine.Debug;
@@ -126,11 +127,6 @@ public class BaseRunner : MonoBehaviour
 
         // By setting the Texture2D filter mode to Point, we ensure that it will look crisp at any size. 
         // Since the Texture will be scaled based on the resolution, we want it always to look pixel perfect.
-
-
-        // Before we can do anything, we need to configure the engine.
-        //ConfigureEngine();
-
         
     }
     
@@ -183,6 +179,8 @@ public class BaseRunner : MonoBehaviour
         StartCoroutine(WaitForRequest(www));
     }
 
+    protected bool displayProgress = true;
+
     private IEnumerator WaitForRequest(WWW www)
     {
         yield return www;
@@ -230,7 +228,7 @@ public class BaseRunner : MonoBehaviour
 
         loadService.ParseFiles(files, tmpEngine, saveFlags);
         
-        if (preload)
+        if (displayProgress)
             PreloaderStart();
         else
         {
@@ -241,7 +239,7 @@ public class BaseRunner : MonoBehaviour
     
     protected bool preloading;
 
-    public void PreloaderStart()
+    public virtual void PreloaderStart()
     {
         if (preloading)
             return;
@@ -252,7 +250,7 @@ public class BaseRunner : MonoBehaviour
         StartCoroutine(PreloaderNextStep());
     }
 
-    public IEnumerator PreloaderNextStep()
+    public virtual IEnumerator PreloaderNextStep()
     {
 
         yield return new WaitForEndOfFrame();
@@ -286,7 +284,7 @@ public class BaseRunner : MonoBehaviour
 
     }
 
-    public void PreloaderComplete()
+    public virtual void PreloaderComplete()
     {
         preloading = false;
 
@@ -323,11 +321,22 @@ public class BaseRunner : MonoBehaviour
     /// </summary>
     public virtual void RunGame()
     {
-        
-        // Make the loaded engine active
-        activeEngine = tmpEngine;
+
+        ActivateEngine(tmpEngine);
+
         tmpEngine = null;
 
+        
+
+        // After loading the game, we are ready to run it.
+        activeEngine.RunGame();
+    }
+
+    protected void ActivateEngine(IEngine engine)
+    {
+        // Make the loaded engine active
+        activeEngine = engine;
+        
         // Update the resolution
         ResetResolution(activeEngine.displayChip.width, activeEngine.displayChip.height);
 
@@ -336,11 +345,7 @@ public class BaseRunner : MonoBehaviour
 
         // This method handles caching the colors from the ColorChip to help speed up rendering.
         CacheColors();
-
-        // After loading the game, we are ready to run it.
-        activeEngine.RunGame();
     }
-
     /// <summary>
     ///     To optimize the Runner, we need to save a reference to each color in the ColorChip as native Unity Colors. The
     ///     cached
