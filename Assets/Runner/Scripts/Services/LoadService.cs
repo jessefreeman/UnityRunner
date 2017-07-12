@@ -50,6 +50,11 @@ namespace PixelVisionRunner.Services
             get { return currentParserID / (float) totalParsers; }
         }
 
+        /// <summary>
+        ///     This can be used to display a message while preloading
+        /// </summary>
+        public string message { get; protected set; }
+
         public void ParseFiles(Dictionary<string, byte[]> files, IEngine engine, SaveFlags saveFlags)
         {
             parsers.Clear();

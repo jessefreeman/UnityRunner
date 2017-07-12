@@ -228,7 +228,49 @@ public class BaseRunner : MonoBehaviour
 
         loadService.ParseFiles(files, tmpEngine, saveFlags);
 
-        loadService.LoadAll();
+        //        loadService.LoadAll();
+        //
+        //        RunGame();
+
+        PreloaderStart();
+    }
+
+    
+
+    protected bool preloading;
+
+    public void PreloaderStart()
+    {
+        if (preloading)
+            return;
+
+        preloading = true;
+        //preloadProgress = 0;
+
+        StartCoroutine(PreloaderNextStep());
+    }
+
+    public IEnumerator PreloaderNextStep()
+    {
+        if (!loadService.completed)
+        {
+
+            loadService.NextParser();
+            StartCoroutine(PreloaderNextStep());
+
+            Debug.Log("Loading Percent " + loadService.percent);
+        }
+        else
+        {
+            PreloaderComplete();
+            yield return null;
+        }
+
+    }
+
+    public void PreloaderComplete()
+    {
+        preloading = false;
 
         RunGame();
     }
@@ -360,6 +402,9 @@ public class BaseRunner : MonoBehaviour
         // It's important that we pass in the Time.deltaTime to the PixelVisionEngine. It is passed along to any Chip that registers itself with 
         // the ChipManager to be updated. The ControlsChip, GamesChip, and others use this time delta to synchronize their actions based on the 
         // current framerate.
+
+        if(preloading)
+            Debug.Log("Loading Percent "+loadService.percent);
     }
 
     /// <summary>
