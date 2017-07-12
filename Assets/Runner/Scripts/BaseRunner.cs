@@ -153,6 +153,13 @@ public class BaseRunner : MonoBehaviour
     {
         var files = new Dictionary<string, byte[]>();
 
+        ImportFilesFromDir(path, ref files);
+
+        ProcessFiles(files);
+    }
+
+    protected void ImportFilesFromDir(string path, ref Dictionary<string, byte[]> files)
+    {
         var paths = fileSystem.GetFiles(path);
 
         foreach (var filePath in paths)
@@ -166,8 +173,6 @@ public class BaseRunner : MonoBehaviour
                 files.Add(fileName, data);
             }
         }
-
-        ProcessFiles(files);
     }
 
     public void LoadFromZip(string path)

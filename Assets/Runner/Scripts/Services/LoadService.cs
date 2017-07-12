@@ -34,8 +34,6 @@ namespace PixelVisionRunner.Services
 
         private int currentParserID;
 
-        public string libPath = "";
-
         protected bool microSteps = false;
         protected AbstractParser parser;
 

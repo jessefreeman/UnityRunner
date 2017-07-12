@@ -45,9 +45,6 @@ public class LuaRunner : BaseRunner
         base.Start();
     
 		LoadDefaultGame();
-
-        // Use this to load the contents of an unzipped .pv8 file from a directory.
-        // LoadPV8Files("/StreamingAssets/Game/");
     }
 
     public virtual void LoadDefaultGame()
@@ -61,15 +58,5 @@ public class LuaRunner : BaseRunner
         // Use this to load a .pv8 file directly from the filesystem or from a url
         LoadFromZip(path);
     }
-
-//    public virtual void LoadPV8Files(string folderPath)
-//    {
-//        LoadFromDir(folderPath);
-//    }
-
-//    public virtual void LoadPV8Archive(string url)
-//    {
-//        
-//    }
 
 }
