@@ -16,6 +16,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using GameCreator.Services;
@@ -25,6 +26,7 @@ using PixelVisionSDK;
 using PixelVisionSDK.Chips;
 using UnityEngine;
 using UnityEngine.UI;
+using Debug = UnityEngine.Debug;
 
 /// <summary>
 ///     The Runner will work just like any other Unity GameObject. By extending MonoBehavior,
@@ -214,7 +216,7 @@ public class BaseRunner : MonoBehaviour
         }
     }
 
-    public virtual void ProcessFiles(Dictionary<string, byte[]> files)
+    public virtual void ProcessFiles(Dictionary<string, byte[]> files, bool preload = true)
     {
         var saveFlags = SaveFlags.System;
         saveFlags |= SaveFlags.Code;
@@ -227,16 +229,16 @@ public class BaseRunner : MonoBehaviour
         saveFlags |= SaveFlags.Meta;
 
         loadService.ParseFiles(files, tmpEngine, saveFlags);
-
-        //        loadService.LoadAll();
-        //
-        //        RunGame();
-
-        PreloaderStart();
+        
+        if (preload)
+            PreloaderStart();
+        else
+        {
+            loadService.LoadAll();
+            RunGame();
+        }
     }
-
     
-
     protected bool preloading;
 
     public void PreloaderStart()
@@ -252,18 +254,34 @@ public class BaseRunner : MonoBehaviour
 
     public IEnumerator PreloaderNextStep()
     {
-        if (!loadService.completed)
+
+        yield return new WaitForEndOfFrame();
+
+        var timeElapsed = 0L;
+        var batchedSteps = 0;
+
+        while (timeElapsed < 15L && loadService.completed == false)
         {
 
-            loadService.NextParser();
-            StartCoroutine(PreloaderNextStep());
+            var watch = Stopwatch.StartNew();
 
-            Debug.Log("Loading Percent " + loadService.percent);
+            loadService.NextParser();
+
+            watch.Stop();
+
+            timeElapsed = watch.ElapsedMilliseconds;
+            batchedSteps++;
+        }
+
+        Debug.Log("Batched Steps :" + batchedSteps + " " + timeElapsed);
+        if (loadService.completed)
+        {
+            PreloaderComplete();
+
         }
         else
         {
-            PreloaderComplete();
-            yield return null;
+            StartCoroutine(PreloaderNextStep());
         }
 
     }
@@ -392,6 +410,9 @@ public class BaseRunner : MonoBehaviour
     /// </summary>
     public virtual void Update()
     {
+        if (preloading)
+            Debug.Log("Loading Percent " + loadService.percent);
+
         // Before trying to update the PixelVisionEngine instance, we need to make sure it exists. The guard clause protects us from throwing an 
         // error when the Runner loads up and starts before we've had a chance to instantiate the new engine instance.
         if (activeEngine == null)
@@ -402,9 +423,7 @@ public class BaseRunner : MonoBehaviour
         // It's important that we pass in the Time.deltaTime to the PixelVisionEngine. It is passed along to any Chip that registers itself with 
         // the ChipManager to be updated. The ControlsChip, GamesChip, and others use this time delta to synchronize their actions based on the 
         // current framerate.
-
-        if(preloading)
-            Debug.Log("Loading Percent "+loadService.percent);
+        
     }
 
     /// <summary>
