@@ -24,7 +24,6 @@ using PixelVisionOS;
 using PixelVisionRunner.Services;
 using PixelVisionSDK;
 using PixelVisionSDK.Chips;
-using UnityEditorInternal;
 using UnityEngine;
 using UnityEngine.UI;
 using Debug = UnityEngine.Debug;
@@ -186,7 +185,7 @@ public class BaseRunner : MonoBehaviour
         yield return www;
 
         // check for errors
-        if (www.error == null)
+        if (string.IsNullOrEmpty(www.error))
         {
             var mStream = new MemoryStream(www.bytes);
             var zip = ZipStorer.Open(mStream, FileAccess.Read);
