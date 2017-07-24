@@ -201,7 +201,7 @@ namespace System.IO.Compression
 
             FileStream stream = new FileStream(_pathname, FileMode.Open, FileAccess.Read);
             AddStream(_method, _filenameInZip, stream, File.GetLastWriteTime(_pathname), _comment);
-            stream.Close();
+            stream.Dispose();
         }
         /// <summary>
         /// Add full contents of a stream into the Zip storage
@@ -243,7 +243,7 @@ namespace System.IO.Compression
 
             // Write file to zip (store)
             Store(ref zfe, _source);
-            _source.Close();
+            _source.Dispose();
 
             this.UpdateCrcAndSizes(ref zfe);
 
@@ -355,7 +355,7 @@ namespace System.IO.Compression
             Stream output = new FileStream(_filename, FileMode.Create, FileAccess.Write);
             bool result = ExtractFile(_zfe, output);
             if (result)
-                output.Close();
+                output.Dispose();
 
             File.SetCreationTime(_filename, _zfe.ModifyTime);
             File.SetLastWriteTime(_filename, _zfe.ModifyTime);

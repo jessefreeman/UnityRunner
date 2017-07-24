@@ -84,114 +84,114 @@ namespace PixelVisionSDK.Utils
         /// <param name="src"></param>
         /// <param name="colorChip"></param>
         /// <param name="rebuild"></param>
-        public static void ImportColorsFromTexture(Texture2D src, IEngineChips chips, bool rebuild = true,
-            bool saveAsDeafult = true)
-        {
-            var colorChip = chips.colorChip;
-
-            // Get the unique colors from a texture
-            var indexedColors = IndexColorsFromTexture(src, false, false);
-
-            // Get the total colors loaded
-            var total = indexedColors.Length;
-
-            //Debug.Log("Total Colors Imported "+ total);
-            // Clear the colors first
-            colorChip.Clear();
-
-            // Update the color chip to support the number of colors found
-            colorChip.RebuildColorPages(total);
-
-            // Loop through new colors and add them to the chip
-            for (var i = 0; i < total; i++)
-            {
-                var tmpColor = indexedColors[i];
-                var hex = ColorData.ColorToHex(tmpColor.r, tmpColor.g, tmpColor.b);
-
-                colorChip.UpdateColorAt(i, hex);
-            }
-
-            // Update supported colors based on what was imported
-            colorChip.RecalculateSupportedColors();
-        }
-
-        /// <summary>
-        ///     Imports sprites form a texture. As the sprites are imported their
-        ///     colors are indexed and remapped to values the engine can use to map
-        ///     to the color chip. This means if you have more colors then the color
-        ///     chip can support they will be ignored.
-        /// </summary>
-        /// <param name="src"></param>
-        /// <param name="spriteChip"></param>
-        /// <param name="resizeRam"></param>
-        /// <param name="unique"></param>
-        public static void ImportSpritesFromTexture(Texture2D src, IEngineChips chips, bool resizeRam = false,
-            bool unique = true)
-        {
-            src.filterMode = FilterMode.Point;
-
-            var spriteChip = chips.spriteChip;
-            var sWidth = spriteChip.width;
-            var sHeight = spriteChip.height;
-
-            // Set up colors array
-            ColorData[] colorData;
-
-            // Test for color map, if not index the texture
-            var colorMapChipName = typeof(ColorMapChip).FullName;
-            if (chips.chipManager.HasChip(colorMapChipName))
-                colorData = ((ColorMapChip) chips.chipManager.GetChip(typeof(ColorMapChip).FullName)).colors;
-            else
-                colorData = chips.colorChip.colors;
-
-            var colors = new Color[colorData.Length];
-            ApplyColors(ref colors, colorData);
-
-            // Calculate values needed to cut out sprites
-            var srcWidth = src.width;
-            var srcHeight = src.height;
-
-            //var spriteSize = spriteChip.spriteSize;
-            var totalSprites = SpriteChipUtil.CalcualteTotalSprites(srcWidth, srcHeight, sWidth, sHeight);
-            var maxSprites = SpriteChipUtil.CalcualteTotalSprites(spriteChip.textureWidth, spriteChip.textureHeight,
-                sWidth, sHeight);
-
-            // Create tmp arrays for color and reference data
-            var totalPixels = spriteChip.width * spriteChip.height;
-            var tmpPixels = new Color[totalPixels];
-            var spriteData = new int[totalPixels];
-
-            // Keep track of number of sprites added
-            var spritesAdded = 0;
-
-            //var spriteCache = new List<string>();
-
-            // Loop through all the potential sprites and import them
-            for (var i = 0; i < totalSprites; i++)
-            {
-                // Cut out the sprite from the texture
-                tmpPixels = CutOutSpriteFromTexture2D(i, src, sWidth, sHeight);
-
-                // Convert sprite to color index
-                ConvertColorsToIndexes(ref spriteData, tmpPixels, colors, spriteChip.colorsPerSprite);
-
-                if (spritesAdded < maxSprites)
-                    if (!SpriteChipUtil.IsEmpty(spriteData))
-                        if (unique)
-                        {
-                            if (spriteChip.FindSprite(spriteData) == -1)
-                            {
-                                spriteChip.UpdateSpriteAt(spritesAdded, spriteData);
-                                spritesAdded++;
-                            }
-                        }
-                        else
-                        {
-                            spriteChip.UpdateSpriteAt(i, spriteData);
-                            spritesAdded++;
-                        }
-            }
-        }
+//        public static void ImportColorsFromTexture(Texture2D src, IEngineChips chips, bool rebuild = true,
+//            bool saveAsDeafult = true)
+//        {
+//            var colorChip = chips.colorChip;
+//
+//            // Get the unique colors from a texture
+//            var indexedColors = IndexColorsFromTexture(src, false, false);
+//
+//            // Get the total colors loaded
+//            var total = indexedColors.Length;
+//
+//            //Debug.Log("Total Colors Imported "+ total);
+//            // Clear the colors first
+//            colorChip.Clear();
+//
+//            // Update the color chip to support the number of colors found
+//            colorChip.RebuildColorPages(total);
+//
+//            // Loop through new colors and add them to the chip
+//            for (var i = 0; i < total; i++)
+//            {
+//                var tmpColor = indexedColors[i];
+//                var hex = ColorData.ColorToHex(tmpColor.r, tmpColor.g, tmpColor.b);
+//
+//                colorChip.UpdateColorAt(i, hex);
+//            }
+//
+//            // Update supported colors based on what was imported
+//            colorChip.RecalculateSupportedColors();
+//        }
+//
+//        /// <summary>
+//        ///     Imports sprites form a texture. As the sprites are imported their
+//        ///     colors are indexed and remapped to values the engine can use to map
+//        ///     to the color chip. This means if you have more colors then the color
+//        ///     chip can support they will be ignored.
+//        /// </summary>
+//        /// <param name="src"></param>
+//        /// <param name="spriteChip"></param>
+//        /// <param name="resizeRam"></param>
+//        /// <param name="unique"></param>
+//        public static void ImportSpritesFromTexture(Texture2D src, IEngineChips chips, bool resizeRam = false,
+//            bool unique = true)
+//        {
+//            src.filterMode = FilterMode.Point;
+//
+//            var spriteChip = chips.spriteChip;
+//            var sWidth = spriteChip.width;
+//            var sHeight = spriteChip.height;
+//
+//            // Set up colors array
+//            ColorData[] colorData;
+//
+//            // Test for color map, if not index the texture
+//            var colorMapChipName = typeof(ColorMapChip).FullName;
+//            if (chips.chipManager.HasChip(colorMapChipName))
+//                colorData = ((ColorMapChip) chips.chipManager.GetChip(typeof(ColorMapChip).FullName)).colors;
+//            else
+//                colorData = chips.colorChip.colors;
+//
+//            var colors = new Color[colorData.Length];
+//            ApplyColors(ref colors, colorData);
+//
+//            // Calculate values needed to cut out sprites
+//            var srcWidth = src.width;
+//            var srcHeight = src.height;
+//
+//            //var spriteSize = spriteChip.spriteSize;
+//            var totalSprites = SpriteChipUtil.CalcualteTotalSprites(srcWidth, srcHeight, sWidth, sHeight);
+//            var maxSprites = SpriteChipUtil.CalcualteTotalSprites(spriteChip.textureWidth, spriteChip.textureHeight,
+//                sWidth, sHeight);
+//
+//            // Create tmp arrays for color and reference data
+//            var totalPixels = spriteChip.width * spriteChip.height;
+//            var tmpPixels = new Color[totalPixels];
+//            var spriteData = new int[totalPixels];
+//
+//            // Keep track of number of sprites added
+//            var spritesAdded = 0;
+//
+//            //var spriteCache = new List<string>();
+//
+//            // Loop through all the potential sprites and import them
+//            for (var i = 0; i < totalSprites; i++)
+//            {
+//                // Cut out the sprite from the texture
+//                tmpPixels = CutOutSpriteFromTexture2D(i, src, sWidth, sHeight);
+//
+//                // Convert sprite to color index
+//                ConvertColorsToIndexes(ref spriteData, tmpPixels, colors, spriteChip.colorsPerSprite);
+//
+//                if (spritesAdded < maxSprites)
+//                    if (!SpriteChipUtil.IsEmpty(spriteData))
+//                        if (unique)
+//                        {
+//                            if (spriteChip.FindSprite(spriteData) == -1)
+//                            {
+//                                spriteChip.UpdateSpriteAt(spritesAdded, spriteData);
+//                                spritesAdded++;
+//                            }
+//                        }
+//                        else
+//                        {
+//                            spriteChip.UpdateSpriteAt(i, spriteData);
+//                            spritesAdded++;
+//                        }
+//            }
+//        }
 
         /// <summary>
         ///     Cut out a sprite from a texture

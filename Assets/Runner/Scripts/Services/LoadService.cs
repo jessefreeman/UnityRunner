@@ -190,7 +190,7 @@ namespace PixelVisionRunner.Services
 
             if (files.ContainsKey(fileName))
             {
-                var fileContents = Encoding.Default.GetString(files[fileName]);
+                var fileContents = Encoding.UTF8.GetString(files[fileName]);
                 
                 return new MetaDataParser(fileContents, targetEngine);
             }
@@ -298,7 +298,7 @@ namespace PixelVisionRunner.Services
 
         private ScriptParser LoadScript(string fileName, byte[] data)
         {
-            var script = Encoding.Default.GetString(data);
+            var script = Encoding.UTF8.GetString(data);
             var scriptParser = new ScriptParser(fileName, script, targetEngine.gameChip as LuaGameChip);
 
             return scriptParser;
@@ -332,7 +332,7 @@ namespace PixelVisionRunner.Services
 
             if (files.ContainsKey(fileName))
             {
-                var fileContents = Encoding.Default.GetString(files[fileName]);
+                var fileContents = Encoding.UTF8.GetString(files[fileName]);
 
                 var jsonParser = new SystemParser(fileContents, targetEngine);
                 while (jsonParser.completed == false)

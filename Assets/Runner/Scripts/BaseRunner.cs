@@ -248,7 +248,7 @@ public class BaseRunner : MonoBehaviour
 
         StartCoroutine(PreloaderNextStep());
     }
-
+    
     public virtual IEnumerator PreloaderNextStep()
     {
 
@@ -271,6 +271,7 @@ public class BaseRunner : MonoBehaviour
         }
 
         Debug.Log("Batched Steps :" + batchedSteps + " " + timeElapsed);
+
         if (loadService.completed)
         {
             PreloaderComplete();
