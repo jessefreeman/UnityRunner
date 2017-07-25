@@ -270,7 +270,7 @@ public class BaseRunner : MonoBehaviour
             batchedSteps++;
         }
 
-        Debug.Log("Batched Steps :" + batchedSteps + " " + timeElapsed);
+        //Debug.Log("Batched Steps :" + batchedSteps + " " + timeElapsed);
 
         if (loadService.completed)
         {
@@ -415,8 +415,8 @@ public class BaseRunner : MonoBehaviour
     /// </summary>
     public virtual void Update()
     {
-        if (preloading)
-            Debug.Log("Loading Percent " + loadService.percent);
+//        if (preloading)
+//            Debug.Log("Loading Percent " + loadService.percent);
 
         // Before trying to update the PixelVisionEngine instance, we need to make sure it exists. The guard clause protects us from throwing an 
         // error when the Runner loads up and starts before we've had a chance to instantiate the new engine instance.
