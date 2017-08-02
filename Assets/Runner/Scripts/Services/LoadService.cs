@@ -15,6 +15,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using PixelVisionOS;
@@ -58,7 +59,9 @@ namespace PixelVisionRunner.Services
         public void ParseFiles(Dictionary<string, byte[]> files, IEngine engine, SaveFlags saveFlags)
         {
             parsers.Clear();
-
+    
+            var watch = Stopwatch.StartNew();
+            
             // Save the engine so we can work with it during loading
             targetEngine = engine;
 
@@ -148,6 +151,10 @@ namespace PixelVisionRunner.Services
 
             totalParsers = parsers.Count;
             currentParserID = 0;
+            
+            watch.Stop();
+
+            UnityEngine.Debug.Log("Parser Setup Time - " + watch.ElapsedMilliseconds);
         }
 
         public void LoadAll()
@@ -164,7 +171,7 @@ namespace PixelVisionRunner.Services
 
             var parser = parsers[currentParserID];
 
-            //var watch = Stopwatch.StartNew();
+            var watch = Stopwatch.StartNew();
 
             if (microSteps)
             {
@@ -181,7 +188,9 @@ namespace PixelVisionRunner.Services
                 currentParserID++;
             }
 
-            //watch.Stop();
+            watch.Stop();
+
+            UnityEngine.Debug.Log("Parser " + currentParserID + " Done " + watch.ElapsedMilliseconds);
         }
 
         private AbstractParser LoadMetaData(Dictionary<string, byte[]> files)

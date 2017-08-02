@@ -178,7 +178,7 @@ public class BaseRunner : MonoBehaviour
         StartCoroutine(WaitForRequest(www));
     }
 
-    protected bool displayProgress = true;
+    //protected bool displayProgress = true;
 
     private IEnumerator WaitForRequest(WWW www)
     {
@@ -212,42 +212,59 @@ public class BaseRunner : MonoBehaviour
             Debug.Log("WWW Error: " + www.error +" "+www.url);
         }
     }
-
-    public virtual void ProcessFiles(Dictionary<string, byte[]> files, bool preload = true)
+    
+    protected bool displayProgress;
+    private Dictionary<string, byte[]> preloadFiles;
+    
+    
+    public virtual void ProcessFiles(Dictionary<string, byte[]> files)
     {
-        var saveFlags = SaveFlags.System;
-        saveFlags |= SaveFlags.Code;
-        saveFlags |= SaveFlags.Colors;
-        saveFlags |= SaveFlags.ColorMap;
-        saveFlags |= SaveFlags.Sprites;
-        saveFlags |= SaveFlags.TileMap;
-        saveFlags |= SaveFlags.TileMapFlags;
-        saveFlags |= SaveFlags.Fonts;
-        saveFlags |= SaveFlags.Meta;
+        ParseFiles(files);
 
-        loadService.ParseFiles(files, tmpEngine, saveFlags);
-        
         if (displayProgress)
-            PreloaderStart();
+        {
+            
+            //PreloaderStart();
+        }
         else
         {
             loadService.LoadAll();
             RunGame();
         }
     }
+
+    protected virtual void ParseFiles(Dictionary<string, byte[]> files, SaveFlags? flags = null)
+    {
+        if (!flags.HasValue)
+        {
+            flags = SaveFlags.System;
+            flags |= SaveFlags.Code;
+            flags |= SaveFlags.Colors;
+            flags |= SaveFlags.ColorMap;
+            flags |= SaveFlags.Sprites;
+            flags |= SaveFlags.TileMap;
+            flags |= SaveFlags.TileMapFlags;
+            flags |= SaveFlags.Fonts;
+            flags |= SaveFlags.Meta;
+
+        }
+        
+        loadService.ParseFiles(files, tmpEngine, flags.Value);
+
+    }
     
     protected bool preloading;
 
-    public virtual void PreloaderStart()
-    {
-        if (preloading)
-            return;
-
-        preloading = true;
-        //preloadProgress = 0;
-
-        StartCoroutine(PreloaderNextStep());
-    }
+//    public virtual void PreloaderStart()
+//    {
+//        if (preloading)
+//            return;
+//
+//        preloading = true;
+//        //preloadProgress = 0;
+//
+//        StartCoroutine(PreloaderNextStep());
+//    }
     
     public virtual IEnumerator PreloaderNextStep()
     {
