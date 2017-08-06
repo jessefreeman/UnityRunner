@@ -127,6 +127,9 @@ public class BaseRunner : MonoBehaviour
         // By setting the Texture2D filter mode to Point, we ensure that it will look crisp at any size. 
         // Since the Texture will be scaled based on the resolution, we want it always to look pixel perfect.
         
+        fileSystem = new UnityFileSystemService();
+        loadService = new LoadService();
+//        workspace = new UnityWorkspaceService(fileSystem, loadService);
     }
     
     public LuaService luaService;

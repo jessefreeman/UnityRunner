@@ -154,7 +154,7 @@ namespace PixelVisionRunner.Services
             
             watch.Stop();
 
-            UnityEngine.Debug.Log("Parser Setup Time - " + watch.ElapsedMilliseconds);
+//            UnityEngine.Debug.Log("Parser Setup Time - " + watch.ElapsedMilliseconds);
         }
 
         public void LoadAll()
@@ -190,7 +190,7 @@ namespace PixelVisionRunner.Services
 
             watch.Stop();
 
-            UnityEngine.Debug.Log("Parser " + currentParserID + " Done " + watch.ElapsedMilliseconds);
+//            UnityEngine.Debug.Log("Parser " + currentParserID + " Done " + watch.ElapsedMilliseconds);
         }
 
         private AbstractParser LoadMetaData(Dictionary<string, byte[]> files)

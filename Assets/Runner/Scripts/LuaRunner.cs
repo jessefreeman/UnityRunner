@@ -15,7 +15,9 @@
 
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using GameCreator.Services;
 using PixelVisionRunner.Chips;
+using PixelVisionRunner.Services;
 using UnityEngine;
 
 public class LuaRunner : BaseRunner
@@ -49,8 +51,14 @@ public class LuaRunner : BaseRunner
 
     public virtual void LoadDefaultGame()
     {
+        fileSystem = new UnityFileSystemService();
+        loadService = new LoadService();
+        ConfigureEngine();
+        
         var path = "file://" + Application.streamingAssetsPath + "/SampleLuaGame.pv8";
 
+        //TODO need to get any game in the default game folder
+        
 #if UNITY_WEBGL && !UNITY_EDITOR
         path = GetURL();
 #endif
