@@ -2,9 +2,10 @@
 // Website: http://github.com/jaime-olivares/zipstorer
 // Version: 3.2.0 (January 20, 2017)
 
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
-using UnityEngine;
 
 namespace System.IO.Compression
 {

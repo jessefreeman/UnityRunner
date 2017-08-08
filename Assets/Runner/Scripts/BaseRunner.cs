@@ -142,10 +142,12 @@ public class BaseRunner : MonoBehaviour
 
         if(luaService == null)
             luaService = new LuaService();
-
+        
+#if !UNITY_WEBGL
         luaService.script.Options.DebugPrint = s => Debug.Log(s);
-
-        // Register Lua Service
+#endif
+//
+//        // Register Lua Service
         tmpEngine.chipManager.AddService(typeof(LuaService).FullName, luaService);
     }
 
@@ -328,7 +330,7 @@ public class BaseRunner : MonoBehaviour
         // names of the chips it should use.
         tmpEngine = CreateNewEngine();
         ConfigureServices();
-
+//
         // Pass all meta data into the engine instance
         if (metaData != null)
             foreach (var entry in metaData)
@@ -366,6 +368,7 @@ public class BaseRunner : MonoBehaviour
         // This method handles caching the colors from the ColorChip to help speed up rendering.
         CacheColors();
     }
+    
     /// <summary>
     ///     To optimize the Runner, we need to save a reference to each color in the ColorChip as native Unity Colors. The
     ///     cached

@@ -39,7 +39,7 @@ public class LuaRunner : BaseRunner
 
 #if UNITY_WEBGL
     [DllImport("__Internal")]
-    private static extern string GetURL();
+    protected static extern string GetURL();
 #endif
 
     public override void Start()
@@ -54,11 +54,11 @@ public class LuaRunner : BaseRunner
         fileSystem = new UnityFileSystemService();
         loadService = new LoadService();
         ConfigureEngine();
-        
+//        
         var path = "file://" + Application.streamingAssetsPath + "/SampleLuaGame.pv8";
-
+//        var path = "";
         //TODO need to get any game in the default game folder
-        
+
 #if UNITY_WEBGL && !UNITY_EDITOR
         path = GetURL();
 #endif
