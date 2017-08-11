@@ -356,6 +356,9 @@ public class BaseRunner : MonoBehaviour
 
     protected void ActivateEngine(IEngine engine)
     {
+        if (engine == null)
+            return;
+        
         // Make the loaded engine active
         activeEngine = engine;
         
