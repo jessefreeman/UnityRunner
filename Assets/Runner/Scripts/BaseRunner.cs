@@ -193,29 +193,34 @@ public class BaseRunner : MonoBehaviour
         if (string.IsNullOrEmpty(www.error))
         {
             var mStream = new MemoryStream(www.bytes);
-            var zip = ZipStorer.Open(mStream, FileAccess.Read);
-
-            var dir = zip.ReadCentralDir();
-
-            var files = new Dictionary<string, byte[]>();
-
-            // Look for the desired file
-            foreach (var entry in dir)
-            {
-                var fileBytes = new byte[0];
-                zip.ExtractFile(entry, out fileBytes);
-
-                files.Add(entry.ToString(), fileBytes);
-            }
-
-            zip.Close();
-
-            ProcessFiles(files);
+            ExtractZipFromMemoryStream(mStream);
         }
         else
         {
             Debug.Log("WWW Error: " + www.error +" "+www.url);
         }
+    }
+
+    protected void ExtractZipFromMemoryStream(MemoryStream stream)
+    {
+        var zip = ZipStorer.Open(stream, FileAccess.Read);
+
+        var dir = zip.ReadCentralDir();
+
+        var files = new Dictionary<string, byte[]>();
+
+        // Look for the desired file
+        foreach (var entry in dir)
+        {
+            var fileBytes = new byte[0];
+            zip.ExtractFile(entry, out fileBytes);
+
+            files.Add(entry.ToString(), fileBytes);
+        }
+
+        zip.Close();
+
+        ProcessFiles(files);
     }
     
     protected bool displayProgress;
