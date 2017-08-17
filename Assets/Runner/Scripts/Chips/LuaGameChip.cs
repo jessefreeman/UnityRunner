@@ -126,6 +126,7 @@ namespace PixelVisionRunner.Chips
             luaScript.Globals["CalculatePosition"] = (CalculatePositionDelegate) CalculatePositionDictionary;
             luaScript.Globals["Clamp"] = (ClampDelegate) Clamp;
             luaScript.Globals["Repeat"] = (RepeatDelegate) Repeat;
+            luaScript.Globals["CalculateTextHeight"] = (CalculateTextHeightDelegate) CalculateTextHeight;
 
             #endregion
 
@@ -361,6 +362,8 @@ namespace PixelVisionRunner.Chips
         private delegate int ClampDelegate(int val, int min, int max);
 
         private delegate int RepeatDelegate(int val, int max);
+        
+        private delegate int CalculateTextHeightDelegate(string text, int characterWidth);
 
         private delegate int CalculateIndexDelegate(int x, int y, int width);
 
