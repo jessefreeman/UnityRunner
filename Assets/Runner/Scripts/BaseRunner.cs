@@ -63,7 +63,7 @@ public class BaseRunner : MonoBehaviour
     public RawImage displayTarget;
 
     public FileSystemService fileSystem { get; protected set; }
-    protected LoadService loadService;
+    public LoadService loadService { get; protected set; }
 
     // To make this work, you'll need to create a new scene. Add a Canvas Component to it. 
     // Change the Canvas Scaler to scale with screen, and the reference Resolution should 

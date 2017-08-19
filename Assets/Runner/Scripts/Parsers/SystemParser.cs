@@ -281,9 +281,7 @@ namespace PixelVisionRunner.Parsers
 
             if (data.ContainsKey("columns"))
             {
-                Debug.Log("Parse Columns "+ (int)(long)data["columns"]);
                 columns = (int)(long)data["columns"];
-
             }
 
             if (data.ContainsKey("rows"))
