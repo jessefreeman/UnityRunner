@@ -14,6 +14,7 @@
 // Shawn Rakowski - @shwany
 
 using System.Collections.Generic;
+using System.Linq;
 using MoonSharp.Interpreter;
 using PixelVisionSDK;
 using PixelVisionSDK.Chips;
@@ -43,7 +44,7 @@ namespace PixelVisionRunner.Chips
 
             luaScript.Call(luaScript.Globals["Init"]);
         }
-
+        
         public override void Update(float timeDelta)
         {
             if (luaScript == null)
@@ -186,6 +187,12 @@ namespace PixelVisionRunner.Chips
 
         public void LoadScript(string name)
         {
+
+            var split = name.Split('.');
+            
+            if (split.Last() != "lua")
+                name += ".lua";
+            
             if (scripts.ContainsKey(name))
             {
                 var script = scripts[name];

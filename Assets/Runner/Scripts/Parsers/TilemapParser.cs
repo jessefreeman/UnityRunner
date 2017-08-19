@@ -13,6 +13,7 @@
 // Pedro Medeiros - @saint11
 // Shawn Rakowski - @shwany
 
+using System;
 using PixelVisionSDK.Chips;
 using UnityEngine;
 
@@ -35,8 +36,9 @@ namespace PixelVisionRunner.Parsers
 
         public override void CutOutSprites()
         {
+            
             // Resize the tilemap first
-            tilemapChip.Resize(width, height);
+            tilemapChip.Resize(Math.Max(width, tilemapChip.columns), Math.Max(height, tilemapChip.rows));
 
             base.CutOutSprites();
         }

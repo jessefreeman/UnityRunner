@@ -54,7 +54,7 @@ namespace PixelVisionRunner.Parsers
                     var split = fullName.Split('.');
                     var chipName = split[split.Length - 1];
                     var chipData = entry.Value as Dictionary<string, object>;
-
+                    
                     switch (chipName)
                     {
                         case "ColorChip":
@@ -84,7 +84,7 @@ namespace PixelVisionRunner.Parsers
                             ConfigureSpriteChip(chipData);
                             break;
                         case "TilemapChip":
-                            ConfigureTielmapChip(chipData);
+                            ConfigureTilemapChip(chipData);
                             break;
                     }
 
@@ -272,7 +272,7 @@ namespace PixelVisionRunner.Parsers
             //            }
         }
 
-        public void ConfigureTielmapChip(Dictionary<string, object> data)
+        public void ConfigureTilemapChip(Dictionary<string, object> data)
         {
             var tilemapChip = target.tilemapChip;
 
@@ -280,7 +280,11 @@ namespace PixelVisionRunner.Parsers
             var rows = tilemapChip.rows;
 
             if (data.ContainsKey("columns"))
+            {
+                Debug.Log("Parse Columns "+ (int)(long)data["columns"]);
                 columns = (int)(long)data["columns"];
+
+            }
 
             if (data.ContainsKey("rows"))
                 rows = (int)(long)data["rows"];
