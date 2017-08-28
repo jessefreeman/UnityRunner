@@ -168,13 +168,29 @@ namespace PixelVisionRunner.Parsers
         public void ConfigureGameChip(Dictionary<string, object> data)
         {
             var gameChip = target.gameChip;
-
+    
             // loop through all data and save it to the game's memory
+            
+            if (data.ContainsKey("name"))
+                gameChip.name = (string) data["name"];
+            
+            if (data.ContainsKey("description"))
+                gameChip.description = (string) data["description"];
+            
+            if (data.ContainsKey("version"))
+                gameChip.version = (string) data["version"];
+            
+            if (data.ContainsKey("ext"))
+                gameChip.ext = (string) data["ext"];
+            
             if (data.ContainsKey("maxSize"))
                 gameChip.maxSize = (int) (long) data["maxSize"];
 
             if (data.ContainsKey("saveSlots"))
                 gameChip.saveSlots = (int) (long) data["saveSlots"];
+            
+            if (data.ContainsKey("lockSpecs"))
+                gameChip.lockSpecs = Convert.ToBoolean(data["lockSpecs"]);
 
             if (data.ContainsKey("savedData"))
                 foreach (var entry in data["savedData"] as Dictionary<string, object>)
