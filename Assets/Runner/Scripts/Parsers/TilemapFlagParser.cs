@@ -13,6 +13,7 @@
 // Pedro Medeiros - @saint11
 // Shawn Rakowski - @shwany
 
+using System;
 using PixelVisionSDK.Chips;
 using UnityEngine;
 
@@ -40,7 +41,7 @@ namespace PixelVisionRunner.Parsers
         {
             //var pixels = CutOutSpriteFromTexture2D(i, src, sWidth, sHeight);
             var color = tmpPixels[0];
-            var tmpWidth = tilemapChip.columns;
+            var tmpWidth = (int)Math.Floor(tex.width/8f);
 
             //PosUtil.CalculatePosition(index, tilemapChip.columns, out x, out y);
             x = index % tmpWidth;
