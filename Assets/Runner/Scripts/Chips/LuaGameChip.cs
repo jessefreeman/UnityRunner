@@ -144,6 +144,7 @@ namespace PixelVisionRunner.Chips
             #region Sprite APIs
 
             luaScript.Globals["Sprite"] = (SpriteDelegate) Sprite;
+            luaScript.Globals["Sprites"] = (SpritesDelegate) Sprites;
             luaScript.Globals["SpriteSize"] = (SpriteSizeDelegate) SpriteSizeDictionary;
             luaScript.Globals["TotalSprites"] = (TotalSpritesDelegate) TotalSprites;
 
@@ -350,6 +351,7 @@ namespace PixelVisionRunner.Chips
             int? flag);
 
         private delegate int[] SpriteDelegate(int id, int[] data = null);
+        private delegate int[] SpritesDelegate(int[] id, int width);
 
         private delegate int FlagDelegate(int column, int row, int? value = null);
 
