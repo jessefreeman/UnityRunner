@@ -31,7 +31,8 @@ namespace PixelVisionOS
         TileMapFlags = 64,
         Fonts = 128,
         Meta = 256,
-        Music = 512
+        Music = 512,
+        Sound = 1024
 
     }
 
