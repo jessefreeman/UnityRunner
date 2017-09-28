@@ -36,7 +36,7 @@ using Debug = UnityEngine.Debug;
 public class BaseRunner : MonoBehaviour
 {
 
-    //protected FileSystemService fileSystem;
+    protected IFileSystem fileSystem;
 
     public readonly string[] validExtensions =
     {
@@ -62,7 +62,7 @@ public class BaseRunner : MonoBehaviour
     // display at a fixed aspect ratio no matter what the screen resolution is at.
     public RawImage displayTarget;
 
-    public FileSystemService fileSystem { get; protected set; }
+    //public FileSystemService fileSystem { get; protected set; }
     public LoadService loadService { get; protected set; }
 
     // To make this work, you'll need to create a new scene. Add a Canvas Component to it. 
