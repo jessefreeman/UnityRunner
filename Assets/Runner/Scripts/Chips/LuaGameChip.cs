@@ -16,8 +16,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using MoonSharp.Interpreter;
+using PixelVisionOS;
 using PixelVisionSDK;
 using PixelVisionSDK.Chips;
+using UnityEngine;
 
 namespace PixelVisionRunner.Chips
 {
@@ -25,11 +27,11 @@ namespace PixelVisionRunner.Chips
     public class LuaGameChip : GameChip
     {
 
-        private readonly Dictionary<string, int> tmpPos = new Dictionary<string, int>
-        {
-            {"x", 0},
-            {"y", 0}
-        };
+//        private readonly Dictionary<string, int> tmpPos = new Dictionary<string, int>
+//        {
+//            {"x", 0},
+//            {"y", 0}
+//        };
 
         public Dictionary<string, string> scripts = new Dictionary<string, string>();
         public Script luaScript { get; protected set; }
@@ -91,15 +93,15 @@ namespace PixelVisionRunner.Chips
             #region Display APIs
 
             luaScript.Globals["Clear"] = (ClearDelegate) Clear;
-            luaScript.Globals["DisplaySize"] = (DisplayDelegate) DisplaySizeDictionary;
+            luaScript.Globals["DisplaySize"] = (DisplayDelegate) DisplaySize;
             luaScript.Globals["DrawPixels"] = (DrawPixelsDelegate) DrawPixels;
             luaScript.Globals["DrawSprite"] = (DrawSpriteDelegate) DrawSprite;
             luaScript.Globals["DrawSprites"] = (DrawSpritesDelegate) DrawSprites;
             luaScript.Globals["DrawText"] = (DrawTextDelegate) DrawText;
             luaScript.Globals["DrawTilemap"] = (DrawTilemapDelegate) DrawTilemap;
-            luaScript.Globals["OverscanBorder"] = (OverscanDelegate) OverscanBorderDictionary;
+            luaScript.Globals["OverscanBorder"] = (OverscanDelegate) OverscanBorder;
             luaScript.Globals["RedrawDisplay"] = (RedrawDisplayDelegate) RedrawDisplay;
-            luaScript.Globals["ScrollPosition"] = (ScrollPositionDelegate) ScrollPositionDictionary;
+            luaScript.Globals["ScrollPosition"] = (ScrollPositionDelegate) ScrollPosition;
 
             #endregion
 
@@ -116,7 +118,7 @@ namespace PixelVisionRunner.Chips
             luaScript.Globals["Key"] = (KeyDelegate) Key;
             luaScript.Globals["Button"] = (ButtonDelegate) Button;
             luaScript.Globals["MouseButton"] = (MouseButtonDelegate) MouseButton;
-            luaScript.Globals["MousePosition"] = (MousePositionDelegate) MousePositionDictionary;
+            luaScript.Globals["MousePosition"] = (MousePositionDelegate) MousePosition;
             luaScript.Globals["InputString"] = (InputStringDelegate) InputString;
 
             #endregion
@@ -124,7 +126,7 @@ namespace PixelVisionRunner.Chips
             #region Math APIs
 
             luaScript.Globals["CalculateIndex"] = (CalculateIndexDelegate) CalculateIndex;
-            luaScript.Globals["CalculatePosition"] = (CalculatePositionDelegate) CalculatePositionDictionary;
+            luaScript.Globals["CalculatePosition"] = (CalculatePositionDelegate) CalculatePosition;
             luaScript.Globals["Clamp"] = (ClampDelegate) Clamp;
             luaScript.Globals["Repeat"] = (RepeatDelegate) Repeat;
             luaScript.Globals["CalculateTextHeight"] = (CalculateTextHeightDelegate) CalculateTextHeight;
@@ -145,7 +147,7 @@ namespace PixelVisionRunner.Chips
 
             luaScript.Globals["Sprite"] = (SpriteDelegate) Sprite;
             luaScript.Globals["Sprites"] = (SpritesDelegate) Sprites;
-            luaScript.Globals["SpriteSize"] = (SpriteSizeDelegate) SpriteSizeDictionary;
+            luaScript.Globals["SpriteSize"] = (SpriteSizeDelegate) SpriteSize;
             luaScript.Globals["TotalSprites"] = (TotalSpritesDelegate) TotalSprites;
 
             #endregion
@@ -153,7 +155,7 @@ namespace PixelVisionRunner.Chips
             #region Tilemap
 
             luaScript.Globals["RebuildTilemap"] = (RebuildMapDelegate) RebuildTilemap;
-            luaScript.Globals["TilemapSize"] = (TilemapSizeDelegate) TilemapSizeDictionary;
+            luaScript.Globals["TilemapSize"] = (TilemapSizeDelegate) TilemapSize;
             luaScript.Globals["Tile"] = (TileDelegate) Tile;
             luaScript.Globals["UpdateTiles"] = (UpdateTilesDelegate) UpdateTiles;
             luaScript.Globals["Flag"] = (FlagDelegate) Flag;
@@ -168,7 +170,15 @@ namespace PixelVisionRunner.Chips
 
             UserData.RegisterType<InputState>();
             luaScript.Globals["InputState"] = UserData.CreateStatic<InputState>();
+            
+            UserData.RegisterType<SaveFlags>();
+            luaScript.Globals["SaveFlags"] = UserData.CreateStatic<SaveFlags>();
 
+            Debug.Log("C# SaveFlag " + SaveFlags.System);
+            
+            // Register PV8's vector type
+            UserData.RegisterType<Vector>();
+            
             // Load the deafult script
             LoadScript("code.lua");
 
@@ -210,84 +220,84 @@ namespace PixelVisionRunner.Chips
                 scripts.Add(name, script);
         }
 
-        public Dictionary<string, int> CalculatePositionDictionary(int index, int width)
-        {
-            var pos = CalculatePosition(index, width);
+//        public Dictionary<string, int> CalculatePositionDictionary(int index, int width)
+//        {
+//            var pos = CalculatePosition(index, width);
+//
+//            tmpPos["x"] = pos.x;
+//            tmpPos["y"] = pos.y;
+//
+//            return tmpPos;
+//        }
+//
+//        public Dictionary<string, int> MousePositionDictionary()
+//        {
+//            var pos = MousePosition();
+//            tmpPos["x"] = pos.x;
+//            tmpPos["y"] = pos.y;
+//
+//            return tmpPos;
+//        }
 
-            tmpPos["x"] = pos.x;
-            tmpPos["y"] = pos.y;
+//        public int MouseX()
+//        {
+//            return MousePosition().x;
+//        }
+//
+//        public int MouseY()
+//        {
+//            return MousePosition().y;
+//        }
 
-            return tmpPos;
-        }
-
-        public Dictionary<string, int> MousePositionDictionary()
-        {
-            var pos = MousePosition();
-            tmpPos["x"] = pos.x;
-            tmpPos["y"] = pos.y;
-
-            return tmpPos;
-        }
-
-        public int MouseX()
-        {
-            return MousePosition().x;
-        }
-
-        public int MouseY()
-        {
-            return MousePosition().y;
-        }
-
-        public Dictionary<string, int> ScrollPositionDictionary(int? x = null, int? y = null)
-        {
-            var pos = ScrollPosition(x, y);
-
-            tmpPos["x"] = pos.x;
-            tmpPos["y"] = pos.y;
-
-            return tmpPos;
-        }
-
-        public Dictionary<string, int> DisplaySizeDictionary(int? x = null, int? y = null)
-        {
-            var size = DisplaySize(x, y);
-
-            tmpPos["x"] = size.x;
-            tmpPos["y"] = size.y;
-
-            return tmpPos;
-        }
-
-        public Dictionary<string, int> OverscanBorderDictionary(int? x = null, int? y = null)
-        {
-            var size = OverscanBorder(x, y);
-
-            tmpPos["x"] = size.x;
-            tmpPos["y"] = size.y;
-
-            return tmpPos;
-        }
-
-        public Dictionary<string, int> TilemapSizeDictionary(int? columns = null, int? rows = null)
-        {
-            var size = TilemapSize(columns, rows);
-
-            tmpPos["x"] = size.x;
-            tmpPos["y"] = size.y;
-
-            return tmpPos;
-        }
-
-        public Dictionary<string, int> SpriteSizeDictionary(int? width = null, int? height = null)
-        {
-            var size = SpriteSize(width, height);
-
-            tmpPos["x"] = size.x;
-            tmpPos["y"] = size.y;
-
-            return tmpPos;
-        }
+//        public Dictionary<string, int> ScrollPositionDictionary(int? x = null, int? y = null)
+//        {
+//            var pos = ScrollPosition(x, y);
+//
+//            tmpPos["x"] = pos.x;
+//            tmpPos["y"] = pos.y;
+//
+//            return tmpPos;
+//        }
+//
+//        public Dictionary<string, int> DisplaySizeDictionary(int? x = null, int? y = null)
+//        {
+//            var size = DisplaySize(x, y);
+//
+//            tmpPos["x"] = size.x;
+//            tmpPos["y"] = size.y;
+//
+//            return tmpPos;
+//        }
+//
+//        public Dictionary<string, int> OverscanBorderDictionary(int? x = null, int? y = null)
+//        {
+//            var size = OverscanBorder(x, y);
+//
+//            tmpPos["x"] = size.x;
+//            tmpPos["y"] = size.y;
+//
+//            return tmpPos;
+//        }
+//
+//        public Dictionary<string, int> TilemapSizeDictionary(int? columns = null, int? rows = null)
+//        {
+//            var size = TilemapSize(columns, rows);
+//
+//            tmpPos["x"] = size.x;
+//            tmpPos["y"] = size.y;
+//
+//            return tmpPos;
+//        }
+//
+//        public Dictionary<string, int> SpriteSizeDictionary(int? width = null, int? height = null)
+//        {
+//            var size = SpriteSize(width, height);
+//
+//            tmpPos["x"] = size.x;
+//            tmpPos["y"] = size.y;
+//
+//            return tmpPos;
+//        }
 
         private delegate int BackgroundColorDelegate(int? id = null);
 
@@ -299,9 +309,9 @@ namespace PixelVisionRunner.Chips
 
         private delegate void ClearDelegate(int x = 0, int y = 0, int width = 0, int height = 0);
 
-        private delegate Dictionary<string, int> DisplayDelegate(int? x = null, int? y = null);
+        private delegate Vector DisplayDelegate(int? x = null, int? y = null);
 
-        private delegate Dictionary<string, int> OverscanDelegate(int? x = null, int? y = null);
+        private delegate Vector OverscanDelegate(int? x = null, int? y = null);
 
         private delegate void LoadScriptDelegate(string name);
 
@@ -321,7 +331,7 @@ namespace PixelVisionRunner.Chips
 
         private delegate bool MouseButtonDelegate(int button, InputState state = InputState.Down);
 
-        private delegate Dictionary<string, int> MousePositionDelegate();
+        private delegate Vector MousePositionDelegate();
 
         private delegate string InputStringDelegate();
 
@@ -333,7 +343,7 @@ namespace PixelVisionRunner.Chips
 
         private delegate void RewindSongDelegate(int position, int loop);
 
-        private delegate Dictionary<string, int> ScrollPositionDelegate(int? x, int? y);
+        private delegate Vector ScrollPositionDelegate(int? x, int? y);
 
         private delegate void PlaySoundDelegate(int id, int channel = 0);
 
@@ -341,11 +351,11 @@ namespace PixelVisionRunner.Chips
 
         private delegate void PauseSongDelegate();
 
-        private delegate Dictionary<string, int> SpriteSizeDelegate(int? x = 8, int? y = 8);
+        private delegate Vector SpriteSizeDelegate(int? x = 8, int? y = 8);
 
         private delegate void StopSongDelegate();
 
-        private delegate Dictionary<string, int> TilemapSizeDelegate(int? columns = null, int? rows = null);
+        private delegate Vector TilemapSizeDelegate(int? columns = null, int? rows = null);
 
         private delegate Dictionary<string, int> TileDelegate(int column, int row, int? spriteID, int? colorOffset,
             int? flag);
@@ -376,7 +386,7 @@ namespace PixelVisionRunner.Chips
 
         private delegate int CalculateIndexDelegate(int x, int y, int width);
 
-        private delegate Dictionary<string, int> CalculatePositionDelegate(int index, int width);
+        private delegate Vector CalculatePositionDelegate(int index, int width);
 
     }
 
