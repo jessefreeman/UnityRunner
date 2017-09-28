@@ -47,7 +47,7 @@ public class BaseRunner : MonoBehaviour
 
     // We are going to use these fields to store cached color information to optimize converting the 
     // DisplayChip's pixel data into color pixels our renderTexture can use.
-    protected Color[] cachedColors = new Color[0];
+    public Color[] cachedColors = new Color[0];
     protected Color[] cachedPixels = new Color[0];
     protected Color cacheTransparentColor;
 
