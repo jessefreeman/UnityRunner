@@ -32,7 +32,7 @@ namespace PixelVisionOS
         Fonts = 128,
         Meta = 256,
         Music = 512,
-        Sound = 1024
+        Sounds = 1024
 
     }
 

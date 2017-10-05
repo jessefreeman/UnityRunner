@@ -54,7 +54,7 @@ namespace PixelVisionRunner.Data
                 name = data["name"] as string;
 
             if (data.ContainsKey("settings"))
-                UpdateSound(data["settings"] as string);
+                UpdateSettings(data["settings"] as string);
         }
 
         /// <summary>
@@ -112,10 +112,21 @@ namespace PixelVisionRunner.Data
             synth.CacheSound();
         }
 
-        public void UpdateSound(string param)
+        public void UpdateSettings(string param)
         {
+            
             synth.parameters.SetSettingsString(param);
             CacheSound();
+        }
+
+        public string ReadSettings()
+        {
+            return synth.parameters.GetSettingsString();
+        }
+
+        public void Mutate(float value = 0.05f)
+        {
+            synth.parameters.Mutate(value);
         }
 
     }

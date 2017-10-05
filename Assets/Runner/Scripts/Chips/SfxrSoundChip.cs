@@ -13,6 +13,7 @@
 // Pedro Medeiros - @saint11
 // Shawn Rakowski - @shwany
 
+using JetBrains.Annotations;
 using PixelVisionRunner.Data;
 using PixelVisionSDK;
 using PixelVisionSDK.Chips;
@@ -45,9 +46,25 @@ namespace PixelVisionRunner.Chips
             var synth = sounds[index] as SfxrSoundData;
             if (synth != null)
             {
-                synth.parameters.SetSettingsString(param);
                 synth.CacheSound();
+                synth.parameters.SetSettingsString(param);
             }
+        }
+        
+        /// <summary>
+        ///     This allows you to feed soudn effect data directly to the sound chip and play it on
+        ///     on a specific channel. Use this if you don't have a sound effect stored in the sound
+        ///     chip or for hard coded sounds. These sounds are not cached by the engine so it may
+        ///     cause performance issues when playing back at run time.
+        /// </summary>
+        /// <param name="channel"></param>
+        /// <param name="data"></param>
+        public void PlayRawSound(string data, int channel = 0, float frequency = 0.1266f)
+        {
+            var tmpSoundData = CreateEmptySoundData("Raw Sound") as SfxrSoundData;
+            tmpSoundData.UpdateSettings(data);
+            
+            LoadSound(tmpSoundData, channel, frequency, true);
         }
 
     }

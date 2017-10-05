@@ -174,8 +174,6 @@ namespace PixelVisionRunner.Chips
             UserData.RegisterType<SaveFlags>();
             luaScript.Globals["SaveFlags"] = UserData.CreateStatic<SaveFlags>();
 
-            Debug.Log("C# SaveFlag " + SaveFlags.System);
-            
             // Register PV8's vector type
             UserData.RegisterType<Vector>();
             
