@@ -341,7 +341,8 @@ namespace GameCreator.Services
 
         public void ArchiveDirectory(string filename, string sourcePath, string destinationPath, string comment = "A Pixel Vision 8 Archive")
         {
-            var zipPath = WorkspaceService.NormalizePath(destinationPath) + filename;
+            // zip path isn't being normalized
+            var zipPath = destinationPath + filename;
             
             ZipStorer zip = ZipStorer.Create(zipPath, comment);
 
