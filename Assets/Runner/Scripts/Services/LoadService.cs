@@ -109,7 +109,7 @@ namespace PixelVisionRunner.Services
             }
 
             // Step 6 (optional). Look for tile map to load
-            if ((saveFlags & SaveFlags.TileMap) == SaveFlags.TileMap)
+            if ((saveFlags & SaveFlags.Tilemap) == SaveFlags.Tilemap)
             {
                 parser = LoadTilemap(files);
                 if (parser != null)
@@ -117,7 +117,7 @@ namespace PixelVisionRunner.Services
             }
 
             // Step 7 (optional). Look for tile map flags to load
-            if ((saveFlags & SaveFlags.TileMapFlags) == SaveFlags.TileMapFlags)
+            if ((saveFlags & SaveFlags.TilemapFlags) == SaveFlags.TilemapFlags)
             {
                 parser = LoadTilemapFlags(files);
                 if (parser != null)

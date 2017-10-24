@@ -252,8 +252,8 @@ public class BaseRunner : MonoBehaviour
             flags |= SaveFlags.Colors;
             flags |= SaveFlags.ColorMap;
             flags |= SaveFlags.Sprites;
-            flags |= SaveFlags.TileMap;
-            flags |= SaveFlags.TileMapFlags;
+            flags |= SaveFlags.Tilemap;
+            flags |= SaveFlags.TilemapFlags;
             flags |= SaveFlags.Fonts;
             flags |= SaveFlags.Meta;
 
