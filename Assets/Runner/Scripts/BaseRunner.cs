@@ -83,7 +83,15 @@ public class BaseRunner : MonoBehaviour
 
     // We'll use this field to store a reference to our PixelVisionEngine class. 
     public IEngine activeEngine { get; set; }
-    protected IEngine tmpEngine { get; set; }
+
+    protected IEngine _tmpEngine;
+
+    protected IEngine tmpEngine
+    {
+        get { return _tmpEngine; }
+        set { _tmpEngine = value; }
+    }
+
     protected ControllerChip activeControllerChip;
 
     public virtual List<string> defaultChips
@@ -179,6 +187,7 @@ public class BaseRunner : MonoBehaviour
 
     public void LoadFromZip(string path)
     {
+        print("Load from zip");
         var www = new WWW(path);
         StartCoroutine(WaitForRequest(www));
     }
@@ -187,11 +196,15 @@ public class BaseRunner : MonoBehaviour
 
     private IEnumerator WaitForRequest(WWW www)
     {
+        
+        print("Wait for www");
         yield return www;
 
         // check for errors
         if (string.IsNullOrEmpty(www.error))
         {
+            print("extracting zip");
+
             var mStream = new MemoryStream(www.bytes);
             ExtractZipFromMemoryStream(mStream);
         }
@@ -208,7 +221,8 @@ public class BaseRunner : MonoBehaviour
         var dir = zip.ReadCentralDir();
 
         var files = new Dictionary<string, byte[]>();
-
+    
+        
         // Look for the desired file
         foreach (var entry in dir)
         {
@@ -219,7 +233,16 @@ public class BaseRunner : MonoBehaviour
         }
 
         zip.Close();
-
+        
+        print(files.Count + " Files in zip " + (tmpEngine == null));
+        
+        // For some reason there may be a chance that the engine is null, so create one
+        if (tmpEngine == null)
+        {
+            tmpEngine = CreateNewEngine();
+            displayProgress = false;
+        }
+        
         ProcessFiles(files);
     }
     
@@ -233,11 +256,12 @@ public class BaseRunner : MonoBehaviour
 
         if (displayProgress)
         {
-            
+            Debug.Log("Display Progress?");
             //PreloaderStart();
         }
         else
         {
+            Debug.Log("No Progress");
             loadService.LoadAll();
             RunGame();
         }
@@ -255,9 +279,11 @@ public class BaseRunner : MonoBehaviour
             flags |= SaveFlags.Tilemap;
             flags |= SaveFlags.TilemapFlags;
             flags |= SaveFlags.Fonts;
-            flags |= SaveFlags.Meta;
+            flags |= SaveFlags.Sounds;
+//            flags |= SaveFlags.Meta;
 
         }
+        
         
         loadService.ParseFiles(files, tmpEngine, flags.Value);
 
@@ -352,11 +378,7 @@ public class BaseRunner : MonoBehaviour
         ActivateEngine(tmpEngine);
 
         tmpEngine = null;
-
         
-
-        // After loading the game, we are ready to run it.
-        activeEngine.RunGame();
     }
 
     protected void ActivateEngine(IEngine engine)
@@ -375,6 +397,9 @@ public class BaseRunner : MonoBehaviour
 
         // This method handles caching the colors from the ColorChip to help speed up rendering.
         CacheColors();
+        
+        // After loading the game, we are ready to run it.
+        activeEngine.RunGame();
     }
     
     /// <summary>

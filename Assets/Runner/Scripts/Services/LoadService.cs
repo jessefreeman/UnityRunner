@@ -148,6 +148,22 @@ namespace PixelVisionRunner.Services
                 if (parser != null)
                     parsers.Add(parser);
             }
+            
+            // Step 10 (optional). Look for meta data and override the game
+            if ((saveFlags & SaveFlags.Sounds) == SaveFlags.Sounds)
+            {
+                LoadSounds(files);
+//                if (parser != null)
+//                    parsers.Add(parser);
+            }
+            
+            // Step 11 (optional). Look for meta data and override the game
+            if ((saveFlags & SaveFlags.Music) == SaveFlags.Music)
+            {
+                LoadMusic(files);
+//                if (parser != null)
+//                    parsers.Add(parser);
+            }
 
             totalParsers = parsers.Count;
             currentParserID = 0;
@@ -307,6 +323,7 @@ namespace PixelVisionRunner.Services
 
         private ScriptParser LoadScript(string fileName, byte[] data)
         {
+            
             var script = Encoding.UTF8.GetString(data);
             var scriptParser = new ScriptParser(fileName, script, targetEngine.gameChip as LuaGameChip);
 
@@ -363,6 +380,42 @@ namespace PixelVisionRunner.Services
 
             // Return texture
             return tex;
+        }
+        
+        private void LoadSounds(Dictionary<string, byte[]> files)
+        {
+            var fileName = "sound.json";
+
+            if (files.ContainsKey(fileName))
+            {
+                var fileContents = Encoding.UTF8.GetString(files[fileName]);
+
+                var jsonParser = new SystemParser(fileContents, targetEngine);
+                while (jsonParser.completed == false)
+                    jsonParser.NextStep();
+            }
+//            else
+//            {
+//                throw new Exception("Can't find 'sound.json' file");
+//            }
+        }
+        
+        private void LoadMusic(Dictionary<string, byte[]> files)
+        {
+            var fileName = "music.json";
+
+            if (files.ContainsKey(fileName))
+            {
+                var fileContents = Encoding.UTF8.GetString(files[fileName]);
+
+                var jsonParser = new SystemParser(fileContents, targetEngine);
+                while (jsonParser.completed == false)
+                    jsonParser.NextStep();
+            }
+//            else
+//            {
+//                throw new Exception("Can't find 'data.json' file");
+//            }
         }
 
     }

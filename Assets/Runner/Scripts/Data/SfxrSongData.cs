@@ -58,6 +58,8 @@ namespace PixelVisionRunner.Data
             }
         }
 
+        public bool ignore { get; private set; }
+
         /// <summary>
         /// </summary>
         /// <param name="sb"></param>

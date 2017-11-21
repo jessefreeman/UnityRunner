@@ -231,6 +231,9 @@ namespace PixelVisionRunner.Parsers
 
             if (data.ContainsKey("notesPerTrack"))
                 musicChip.maxNoteNum = Convert.ToInt32((long) data["notesPerTrack"]);
+            
+            if (data.ContainsKey("totalLoop"))
+                musicChip.totalLoops = Convert.ToInt32((long) data["totalLoop"]);
         }
 
         public void ConfigureSoundChip(Dictionary<string, object> data)
@@ -239,6 +242,9 @@ namespace PixelVisionRunner.Parsers
 
             if (data.ContainsKey("totalChannels"))
                 soundChip.totalChannels = (int) (long) data["totalChannels"];
+            
+            if (data.ContainsKey("totalSounds"))
+                soundChip.totalSounds = (int) (long) data["totalSounds"];
 
             // Disabled this for now as I break out into individual files
             if (data.ContainsKey("sounds"))

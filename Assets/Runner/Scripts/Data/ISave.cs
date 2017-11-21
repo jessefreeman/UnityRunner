@@ -26,7 +26,9 @@ namespace PixelVisionSDK
     /// </summary>
     public interface ISave
     {
-
+        
+        bool ignore { get; }
+        
         /// <summary>
         ///     Use this method to create a new StringBuilder instance and wrap any
         ///     custom serialized data by leveraging the CustomSerializedData()

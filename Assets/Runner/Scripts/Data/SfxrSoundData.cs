@@ -57,6 +57,8 @@ namespace PixelVisionRunner.Data
                 UpdateSettings(data["settings"] as string);
         }
 
+        public bool ignore { get; private set; }
+
         /// <summary>
         ///     Use this method to create a new StringBuilder instance and wrap any
         ///     custom serialized data by leveraging the CustomSerializedData()
