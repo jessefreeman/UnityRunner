@@ -181,8 +181,8 @@ namespace PixelVisionRunner.Parsers
 
             return transPixels == total;
         }
-
-        public void CutOutSpriteFromTexture2D()
+        
+        public virtual void CutOutSpriteFromTexture2D()
         {
             x = index % width * sWidth;
             y = index / width * sHeight;
@@ -191,6 +191,7 @@ namespace PixelVisionRunner.Parsers
             y = tex.height - y - sHeight;
 
             tmpPixels = tex.GetPixels(x, y, sWidth, sHeight);
+
         }
 
         public void ConvertColorsToIndexes(int totalColors)

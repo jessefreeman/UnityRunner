@@ -13,7 +13,6 @@
 // Pedro Medeiros - @saint11
 // Shawn Rakowski - @shwany
 
-using System;
 using PixelVisionSDK.Chips;
 using UnityEngine;
 
@@ -25,28 +24,59 @@ namespace PixelVisionRunner.Parsers
 
         private readonly bool autoImport;
         private readonly TilemapChip tilemapChip;
+        private Texture2D flagTex;
+        private Texture2D colorTex;
+        
+        private int flag;
+        private int offset;
 
-        public TilemapParser(Texture2D tex, IEngineChips chips, bool autoImport = true) : base(tex, chips)
+        public TilemapParser(Texture2D tex, Texture2D flagTex, Texture2D colorTex, IEngineChips chips, bool autoImport = true) : base(tex, chips)
         {
             tilemapChip = chips.tilemapChip;
+            this.flagTex = flagTex;
             this.autoImport = autoImport;
 
             CalculateSteps();
         }
 
-        public override void CutOutSprites()
+        public override void PrepareSprites()
         {
             
-            // Resize the tilemap first
-            tilemapChip.Resize(Math.Max(width, tilemapChip.columns), Math.Max(height, tilemapChip.rows));
-
-            base.CutOutSprites();
+            // Test to see if the tilemap image is larger than the tilemap chip can allow
+            if (tex.GetPixels32().Length > (tilemapChip.realWidth * tilemapChip.realHeight))
+            {
+                // Need to resize the texture so we only parse what can fit into the tilemap chip's memory
+                var pixelData = tex.GetPixels(0, 0, tilemapChip.realWidth, tilemapChip.realHeight);
+                
+                // Resize the texture
+                tex.Resize(tilemapChip.realWidth, tilemapChip.realHeight);
+                
+                // Set the pixels back into the texture
+                tex.SetPixels(0, 0, tilemapChip.realWidth, tilemapChip.realHeight, pixelData);
+            }
+            
+            // Prepare the sprites
+            base.PrepareSprites();
         }
+        
+        public override void CutOutSpriteFromTexture2D()
+        {
+            base.CutOutSpriteFromTexture2D();
+            
+            // Calculate flag value
+            var color = flagTex != null ? flagTex.GetPixel(x, y) : Color.clear;
 
+            flag = color.a == 1 ? (int) (color.r * 256) / tilemapChip.totalFlags : -1;
+            
+            color = colorTex != null ? colorTex.GetPixel(x, y) : Color.clear;
+
+            offset = color.a == 1 ? (int) (color.r * 256) : 0;
+            
+        }
+        
         protected override void ProcessSpriteData()
         {
             var id = spriteChip.FindSprite(spriteData);
-
 
             if (id == -1 && autoImport)
             {
@@ -54,11 +84,12 @@ namespace PixelVisionRunner.Parsers
                 spriteChip.UpdateSpriteAt(id, spriteData);
             }
 
-            //PosUtil.CalculatePosition(index, width, out x, out y);
             x = index % width;
             y = index / width;
+            
+            // Update the tile data in the map
+            tilemapChip.UpdateTileAt(id, x, y, flag, offset);
 
-            tilemapChip.UpdateTileAt(id, x, y);
         }
 
     }

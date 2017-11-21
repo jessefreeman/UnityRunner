@@ -300,7 +300,10 @@ namespace PixelVisionRunner.Parsers
 
             var columns = tilemapChip.columns;
             var rows = tilemapChip.rows;
+            
+            Debug.Log("Configrue Tilemap Chip " + columns + "x" + rows);
 
+            
             if (data.ContainsKey("columns"))
             {
                 columns = (int)(long)data["columns"];

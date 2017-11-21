@@ -117,12 +117,12 @@ namespace PixelVisionRunner.Services
             }
 
             // Step 7 (optional). Look for tile map flags to load
-            if ((saveFlags & SaveFlags.TilemapFlags) == SaveFlags.TilemapFlags)
-            {
-                parser = LoadTilemapFlags(files);
-                if (parser != null)
-                    parsers.Add(parser);
-            }
+//            if ((saveFlags & SaveFlags.TilemapFlags) == SaveFlags.TilemapFlags)
+//            {
+//                parser = LoadTilemapFlags(files);
+//                if (parser != null)
+//                    parsers.Add(parser);
+//            }
 
             // Step 8 (optional). Look for fonts to load
             if ((saveFlags & SaveFlags.Fonts) == SaveFlags.Fonts)
@@ -267,13 +267,29 @@ namespace PixelVisionRunner.Services
 
         private AbstractParser LoadTilemap(Dictionary<string, byte[]> files)
         {
-            var fileName = "tilemap.png";
+            var tilemapFile = "tilemap.png";
 
-            if (files.ContainsKey(fileName))
+            if (files.ContainsKey(tilemapFile))
             {
-                var tex = ReadTexture(files[fileName]);
+                var tex = ReadTexture(files[tilemapFile]);
+                Texture2D flagTex = null;
+                Texture2D colorTex = null;
+                
+                var flagFile = "tilemap-flags.png";
 
-                return new TilemapParser(tex, targetEngine);
+                if (files.ContainsKey(flagFile))
+                {
+                    flagTex = ReadTexture(files[flagFile]);
+                }
+                
+                var colorFile = "tilemap-colors.png";
+
+                if (files.ContainsKey(colorFile))
+                {
+                    colorTex = ReadTexture(files[colorFile]);
+                }
+                
+                return new TilemapParser(tex, flagTex, colorTex, targetEngine);
             }
 
             return null;
@@ -329,27 +345,6 @@ namespace PixelVisionRunner.Services
 
             return scriptParser;
 
-            //parsers.Add(parser);
-            //            foreach (var path in paths)
-            //                if (fileSystem.DirectoryExists(path))
-            //                {
-            //                    var files = fileSystem.FileNamesInDir(path, new[] {".lua"}, false);
-            //                    var total = files.Length;
-            //
-            //                    for (var i = 0; i < total; i++)
-            //                    {
-            //                        var fileName = files[i];
-            //                        var filePath = path + "/" + fileName; // TODO need to find a way to normalize this URL
-            //
-            //                        if (fileSystem.FileExists(filePath))
-            //                        {
-            //                            var script = fileSystem.ReadTextFromFile(filePath);
-            //                            var parser = new ScriptParser(fileName, script, targetEngine.gameChip as LuaGameChip);
-            //
-            //                            parsers.Add(parser);
-            //                        }
-            //                    }
-            //                }
         }
 
         private void LoadSystem(Dictionary<string, byte[]> files)
@@ -394,10 +389,7 @@ namespace PixelVisionRunner.Services
                 while (jsonParser.completed == false)
                     jsonParser.NextStep();
             }
-//            else
-//            {
-//                throw new Exception("Can't find 'sound.json' file");
-//            }
+
         }
         
         private void LoadMusic(Dictionary<string, byte[]> files)
@@ -412,10 +404,7 @@ namespace PixelVisionRunner.Services
                 while (jsonParser.completed == false)
                     jsonParser.NextStep();
             }
-//            else
-//            {
-//                throw new Exception("Can't find 'data.json' file");
-//            }
+
         }
 
     }
