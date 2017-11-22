@@ -13,6 +13,7 @@
 // Pedro Medeiros - @saint11
 // Shawn Rakowski - @shwany
 
+using System;
 using PixelVisionSDK.Chips;
 using UnityEngine;
 
@@ -45,14 +46,17 @@ namespace PixelVisionRunner.Parsers
             // Test to see if the tilemap image is larger than the tilemap chip can allow
             if (tex.GetPixels32().Length > (tilemapChip.realWidth * tilemapChip.realHeight))
             {
+                var newWidth = Math.Min(tex.width, tilemapChip.realWidth);
+                var newHeight = Math.Min(tex.width, tilemapChip.realHeight);
+                
                 // Need to resize the texture so we only parse what can fit into the tilemap chip's memory
-                var pixelData = tex.GetPixels(0, 0, tilemapChip.realWidth, tilemapChip.realHeight);
+                var pixelData = tex.GetPixels(0, 0, newWidth, Math.Min(tex.width, newHeight));
                 
                 // Resize the texture
                 tex.Resize(tilemapChip.realWidth, tilemapChip.realHeight);
                 
                 // Set the pixels back into the texture
-                tex.SetPixels(0, 0, tilemapChip.realWidth, tilemapChip.realHeight, pixelData);
+                tex.SetPixels(0, 0, newWidth, newHeight, pixelData);
             }
             
             // Prepare the sprites
