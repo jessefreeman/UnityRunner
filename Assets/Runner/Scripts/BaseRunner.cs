@@ -187,14 +187,40 @@ public class BaseRunner : MonoBehaviour
 
     public void LoadFromZip(string path)
     {
-        print("Load from zip");
         var www = new WWW(path);
         StartCoroutine(WaitForRequest(www));
     }
+    
+    /// <summary>
+    ///     Load a game from the Unity resouce folder. The game must be zipped up with a .bytes extension.
+    /// </summary>
+    /// <param name="resourceName"></param>
+    /// <param name="metaData"></param>
+    /// <returns></returns>
+    public bool LoadGameResource(string resourceName, Dictionary<string, string> metaData = null)
+    {
+        fileSystem = new UnityFileSystemService();
+        loadService = new LoadService();
+        ConfigureEngine(metaData);
+			
+        try
+        {
+            TextAsset asset = Resources.Load(resourceName) as TextAsset;
+            MemoryStream s = new MemoryStream(asset.bytes);
+            ExtractZipFromMemoryStream(s);
 
-    //protected bool displayProgress = true;
+            return true;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+				
+        }
 
-    private IEnumerator WaitForRequest(WWW www)
+    }
+
+    protected IEnumerator WaitForRequest(WWW www)
     {
         
         print("Wait for www");
@@ -234,34 +260,23 @@ public class BaseRunner : MonoBehaviour
 
         zip.Close();
         
-        print(files.Count + " Files in zip " + (tmpEngine == null));
-        
-        // For some reason there may be a chance that the engine is null, so create one
-        if (tmpEngine == null)
-        {
-            tmpEngine = CreateNewEngine();
-            displayProgress = false;
-        }
-        
         ProcessFiles(files);
     }
     
     protected bool displayProgress;
-    private Dictionary<string, byte[]> preloadFiles;
+    protected Dictionary<string, byte[]> preloadFiles;
     
     
     public virtual void ProcessFiles(Dictionary<string, byte[]> files)
     {
         ParseFiles(files);
 
-        if (displayProgress)
+        if (!displayProgress)
         {
-            Debug.Log("Display Progress?");
-            //PreloaderStart();
-        }
-        else
-        {
-            Debug.Log("No Progress");
+//            //PreloaderStart();
+//        }
+//        else
+//        {
             loadService.LoadAll();
             RunGame();
         }
