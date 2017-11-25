@@ -295,6 +295,7 @@ public class BaseRunner : MonoBehaviour
             flags |= SaveFlags.TilemapFlags;
             flags |= SaveFlags.Fonts;
             flags |= SaveFlags.Sounds;
+            flags |= SaveFlags.Music;
 //            flags |= SaveFlags.Meta;
 
         }
