@@ -234,6 +234,8 @@ namespace PixelVisionRunner.Parsers
             
             if (data.ContainsKey("totalLoop"))
                 musicChip.totalLoops = Convert.ToInt32((long) data["totalLoop"]);
+            
+            
         }
 
         public void ConfigureSoundChip(Dictionary<string, object> data)

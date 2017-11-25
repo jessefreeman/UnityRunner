@@ -379,7 +379,7 @@ namespace PixelVisionRunner.Services
         
         private void LoadSounds(Dictionary<string, byte[]> files)
         {
-            var fileName = "sound.json";
+            var fileName = "sounds.json";
 
             if (files.ContainsKey(fileName))
             {
