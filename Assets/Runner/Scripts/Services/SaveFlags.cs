@@ -32,7 +32,9 @@ namespace PixelVisionOS
         Fonts = 128,
         Meta = 256,
         Music = 512,
-        Sounds = 1024
+        Sounds = 1024,
+        SpriteCache = 2048,
+        TilemapCache = 4096
 
     }
 

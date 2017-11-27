@@ -268,8 +268,20 @@ namespace PixelVisionRunner.Services
         private AbstractParser LoadTilemap(Dictionary<string, byte[]> files)
         {
             var tilemapFile = "tilemap.png";
+            var tilemapJsonFile = "tilemap.json";
+            
+            // If a tilemap json file exists, try to load that
+            if (files.ContainsKey(tilemapJsonFile))
+            {
+                var fileContents = Encoding.UTF8.GetString(files[tilemapJsonFile]);
 
-            if (files.ContainsKey(tilemapFile))
+                var jsonParser = new TilemapJsonParser(fileContents, targetEngine);
+                
+                return jsonParser;
+            }
+            
+            // If a tilemap file exists, load that instead
+            else if (files.ContainsKey(tilemapFile))
             {
                 var tex = ReadTexture(files[tilemapFile]);
                 Texture2D flagTex = null;
@@ -297,10 +309,23 @@ namespace PixelVisionRunner.Services
 
         private AbstractParser LoadSprites(Dictionary<string, byte[]> files)
         {
-            var fileName = "sprites.png";
+            var srcFile = "sprites.png";
+            var cacheFile = "sprites.cache.png";
 
-            if (files.ContainsKey(fileName))
+            string fileName = null;
+
+            if (files.ContainsKey(cacheFile))
             {
+                fileName = cacheFile;
+            }
+            else if(files.ContainsKey(srcFile))
+            {
+                fileName = srcFile;
+            }
+            
+            if (fileName != null)
+            {
+                
                 var tex = ReadTexture(files[fileName]);
 
                 return new SpriteParser(tex, targetEngine);
