@@ -97,6 +97,8 @@ namespace PixelVisionRunner.Chips
             luaScript.Globals["DrawPixels"] = (DrawPixelsDelegate) DrawPixels;
             luaScript.Globals["DrawSprite"] = (DrawSpriteDelegate) DrawSprite;
             luaScript.Globals["DrawSprites"] = (DrawSpritesDelegate) DrawSprites;
+            luaScript.Globals["DrawTile"] = (DrawTileDelegate) DrawTile;
+            luaScript.Globals["DrawTiles"] = (DrawTilesDelegate) DrawTiles;
             luaScript.Globals["DrawText"] = (DrawTextDelegate) DrawText;
             luaScript.Globals["DrawTilemap"] = (DrawTilemapDelegate) DrawTilemap;
             luaScript.Globals["OverscanBorder"] = (OverscanDelegate) OverscanBorder;
@@ -318,6 +320,10 @@ namespace PixelVisionRunner.Chips
 
         private delegate void DrawSpriteDelegate(int id, int x, int y, bool flipH = false, bool flipV = false,
             DrawMode drawMode = DrawMode.Sprite, int colorOffset = 0);
+        
+        private delegate void DrawTileDelegate(int id, int c, int r, DrawMode drawMode = DrawMode.Tile, int colorOffset = 0);
+
+        private delegate void DrawTilesDelegate(int[] ids, int c, int r, int width, DrawMode drawMode = DrawMode.Tile, int colorOffset = 0);
 
         private delegate void DrawSpritesDelegate(int[] ids, int x, int y, int width, bool flipH = false,
             bool flipV = false, DrawMode drawMode = DrawMode.Sprite, int colorOffset = 0, bool onScreen = true);
