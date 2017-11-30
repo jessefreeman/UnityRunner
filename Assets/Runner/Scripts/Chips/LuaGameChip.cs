@@ -325,8 +325,7 @@ namespace PixelVisionRunner.Chips
 
         private delegate void DrawTilesDelegate(int[] ids, int c, int r, int width, DrawMode drawMode = DrawMode.Tile, int colorOffset = 0);
 
-        private delegate void DrawSpritesDelegate(int[] ids, int x, int y, int width, bool flipH = false,
-            bool flipV = false, DrawMode drawMode = DrawMode.Sprite, int colorOffset = 0, bool onScreen = true);
+        private delegate void DrawSpritesDelegate(int[] ids, int x, int y, int width, bool flipH = false, bool flipV = false, DrawMode drawMode = DrawMode.Sprite, int colorOffset = 0, bool onScreen = true, bool useScrollPos = true);
 
         private delegate int DrawTextDelegate(string text, int x, int y, DrawMode mode = DrawMode.Sprite,
             string font = "Default", int colorOffset = 0, int spacing = 0, int? width = null);
