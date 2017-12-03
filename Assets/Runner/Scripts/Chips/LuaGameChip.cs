@@ -93,6 +93,7 @@ namespace PixelVisionRunner.Chips
             #region Display APIs
 
             luaScript.Globals["Clear"] = (ClearDelegate) Clear;
+            luaScript.Globals["ClearUILayer"] = (ClearUILayerDelagator)ClearUILayer;
             luaScript.Globals["DisplaySize"] = (DisplayDelegate) DisplaySize;
             luaScript.Globals["DrawPixels"] = (DrawPixelsDelegate) DrawPixels;
             luaScript.Globals["DrawSprite"] = (DrawSpriteDelegate) DrawSprite;
@@ -390,6 +391,7 @@ namespace PixelVisionRunner.Chips
         private delegate int CalculateIndexDelegate(int x, int y, int width);
 
         private delegate Vector CalculatePositionDelegate(int index, int width);
+        private delegate void ClearUILayerDelagator();
 
     }
 
