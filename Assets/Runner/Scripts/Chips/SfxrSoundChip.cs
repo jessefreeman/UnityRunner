@@ -59,12 +59,20 @@ namespace PixelVisionRunner.Chips
         /// </summary>
         /// <param name="channel"></param>
         /// <param name="data"></param>
-        public void PlayRawSound(string data, int channel = 0, float frequency = 0.1266f)
+        public void PlayRawSound(string data, int channelID = 0, float frequency = 0.1266f)
         {
             var tmpSoundData = CreateEmptySoundData("Raw Sound") as SfxrSoundData;
             tmpSoundData.UpdateSettings(data);
             
-            LoadSound(tmpSoundData, channel, frequency, true);
+            var channel = channels[channelID];
+            
+            if (channel != null)
+            {
+                channel.Stop();
+            }
+            
+            tmpSoundData.Play(frequency);
+            
         }
 
     }
