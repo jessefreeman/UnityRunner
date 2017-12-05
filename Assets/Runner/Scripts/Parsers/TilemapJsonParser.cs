@@ -46,7 +46,7 @@ namespace PixelVisionRunner.Parsers
 
 			if (data.ContainsKey("layers"))
 			{
-				Debug.Log("Parse tilemap json data");
+//				Debug.Log("Parse tilemap json data");
 
 				var layers = data["layers"] as List<object>;
 

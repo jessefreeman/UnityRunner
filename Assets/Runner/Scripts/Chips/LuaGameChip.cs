@@ -139,6 +139,7 @@ namespace PixelVisionRunner.Chips
             #region Sound APIs
 
             luaScript.Globals["PlaySound"] = (PlaySoundDelegate) PlaySound;
+            luaScript.Globals["PlayRawSound"] = (PlayRawSoundDelegate) PlayRawSound;
             luaScript.Globals["PlaySong"] = (PlaySongDelegate) PlaySong;
             luaScript.Globals["PauseSong"] = (PauseSongDelegate) PauseSong;
             luaScript.Globals["RewindSong"] = (RewindSongDelegate) RewindSong;
@@ -219,6 +220,16 @@ namespace PixelVisionRunner.Chips
                 scripts[name] = script;
             else
                 scripts.Add(name, script);
+        }
+        
+        public void PlayRawSound(string data, int channel = 0, float frequency = 0.1266f)
+        {
+            var soundChip = engine.soundChip as SfxrSoundChip;
+
+            if (soundChip != null)
+            {
+                soundChip.PlayRawSound(data, channel, frequency);
+            }
         }
 
 //        public Dictionary<string, int> CalculatePositionDictionary(int index, int width)
@@ -351,6 +362,8 @@ namespace PixelVisionRunner.Chips
 
         private delegate void PlaySoundDelegate(int id, int channel = 0);
 
+        private delegate void PlayRawSoundDelegate(string data, int channel = 0, float frequency = 0.1266f);
+
         private delegate void PlaySongDelegate(int[] trackIDs, bool loop = true);
 
         private delegate void PauseSongDelegate();
@@ -392,6 +405,9 @@ namespace PixelVisionRunner.Chips
 
         private delegate Vector CalculatePositionDelegate(int index, int width);
         private delegate void ClearUILayerDelagator();
+        
+        
+        
 
     }
 
