@@ -106,15 +106,12 @@ namespace PixelVisionRunner.Parsers
 
             if (data.ContainsKey("colorsPerPage"))
                 colorChip.colorsPerPage = (int) (long) data["colorsPerPage"];
-
+            
             if (data.ContainsKey("transparent"))
                 colorChip.transparent = (string) data["transparent"];
 
             if (data.ContainsKey("supportedColors"))
                 colorChip.supportedColors = (int) (long) data["supportedColors"];
-
-            if (data.ContainsKey("backgroundColor"))
-                colorChip.backgroundColor = (int) (long) data["backgroundColor"];
 
             // Make sure we have data to parse
             if (data.ContainsKey("colors"))
@@ -128,6 +125,13 @@ namespace PixelVisionRunner.Parsers
                 for (var i = 0; i < newTotal; i++)
                     colorChip.UpdateColorAt(i, (string) colors[i]);
             }
+            
+            // If the data has a page count, resize the pages to match that value, even though there may be less colors than pages
+            if (data.ContainsKey("pages"))
+                colorChip.pages = (int) (long) data["pages"];
+            
+            if (data.ContainsKey("backgroundColor"))
+                colorChip.backgroundColor = (int) (long) data["backgroundColor"];
         }
 
         public void ConfigureControllerChip(Dictionary<string, object> data)

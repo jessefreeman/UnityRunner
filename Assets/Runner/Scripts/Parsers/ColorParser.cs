@@ -111,7 +111,7 @@ namespace PixelVisionRunner.Parsers
             colorChip.Clear();
 
             // Update the color chip to support the number of colors found
-            colorChip.RebuildColorPages(colors.Count);
+//            colorChip.RebuildColorPages(colors.Count);
 
             currentStep++;
         }

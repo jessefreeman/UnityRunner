@@ -31,12 +31,13 @@ namespace PixelVisionRunner.Parsers
         private int flag;
         private int offset;
 
-        public TilemapParser(Texture2D tex, Texture2D flagTex, Texture2D colorTex, IEngineChips chips, bool autoImport = true) : base(tex, chips)
+        public TilemapParser(Texture2D tex, Texture2D flagTex, Texture2D colorTex, IEngineChips chips, bool autoImport = false) : base(tex, chips)
         {
             tilemapChip = chips.tilemapChip;
             this.flagTex = flagTex;
             this.autoImport = autoImport;
-
+            this.colorTex = colorTex;
+            
             CalculateSteps();
         }
 
