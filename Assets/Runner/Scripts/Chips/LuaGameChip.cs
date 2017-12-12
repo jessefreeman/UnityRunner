@@ -132,7 +132,6 @@ namespace PixelVisionRunner.Chips
             luaScript.Globals["CalculatePosition"] = (CalculatePositionDelegate) CalculatePosition;
             luaScript.Globals["Clamp"] = (ClampDelegate) Clamp;
             luaScript.Globals["Repeat"] = (RepeatDelegate) Repeat;
-            luaScript.Globals["CalculateTextHeight"] = (CalculateTextHeightDelegate) CalculateTextHeight;
 
             #endregion
 
@@ -319,7 +318,7 @@ namespace PixelVisionRunner.Chips
 
         private delegate void ReplaceColorDelegate(int index, int id);
 
-        private delegate void ClearDelegate(int x = 0, int y = 0, int width = 0, int height = 0);
+        private delegate void ClearDelegate(int x = 0, int y = 0, int? width = null, int? height = null);
 
         private delegate Vector DisplayDelegate(int? x = null, int? y = null);
 
@@ -340,7 +339,7 @@ namespace PixelVisionRunner.Chips
         private delegate void DrawSpritesDelegate(int[] ids, int x, int y, int width, bool flipH = false, bool flipV = false, DrawMode drawMode = DrawMode.Sprite, int colorOffset = 0, bool onScreen = true, bool useScrollPos = true);
 
         private delegate int DrawTextDelegate(string text, int x, int y, DrawMode mode = DrawMode.Sprite,
-            string font = "Default", int colorOffset = 0, int spacing = 0, int? width = null);
+            string font = "Default", int colorOffset = 0, int spacing = 0);
 
         private delegate void DrawTilemapDelegate(int x = 0, int y = 0, int columns = 0, int rows = 0);
 
@@ -399,12 +398,10 @@ namespace PixelVisionRunner.Chips
 
         private delegate int RepeatDelegate(int val, int max);
         
-        private delegate int CalculateTextHeightDelegate(string text, int characterWidth);
-
         private delegate int CalculateIndexDelegate(int x, int y, int width);
 
         private delegate Vector CalculatePositionDelegate(int index, int width);
-        private delegate void ClearUILayerDelagator();
+        private delegate void ClearUILayerDelagator(int x = 0, int y = 0, int? width = null, int? height = null);
         
         
         
