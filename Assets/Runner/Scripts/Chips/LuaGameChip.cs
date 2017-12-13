@@ -19,7 +19,6 @@ using MoonSharp.Interpreter;
 using PixelVisionOS;
 using PixelVisionSDK;
 using PixelVisionSDK.Chips;
-using UnityEngine;
 
 namespace PixelVisionRunner.Chips
 {
@@ -233,85 +232,6 @@ namespace PixelVisionRunner.Chips
                 soundChip.PlayRawSound(data, channel, frequency);
             }
         }
-
-//        public Dictionary<string, int> CalculatePositionDictionary(int index, int width)
-//        {
-//            var pos = CalculatePosition(index, width);
-//
-//            tmpPos["x"] = pos.x;
-//            tmpPos["y"] = pos.y;
-//
-//            return tmpPos;
-//        }
-//
-//        public Dictionary<string, int> MousePositionDictionary()
-//        {
-//            var pos = MousePosition();
-//            tmpPos["x"] = pos.x;
-//            tmpPos["y"] = pos.y;
-//
-//            return tmpPos;
-//        }
-
-//        public int MouseX()
-//        {
-//            return MousePosition().x;
-//        }
-//
-//        public int MouseY()
-//        {
-//            return MousePosition().y;
-//        }
-
-//        public Dictionary<string, int> ScrollPositionDictionary(int? x = null, int? y = null)
-//        {
-//            var pos = ScrollPosition(x, y);
-//
-//            tmpPos["x"] = pos.x;
-//            tmpPos["y"] = pos.y;
-//
-//            return tmpPos;
-//        }
-//
-//        public Dictionary<string, int> DisplaySizeDictionary(int? x = null, int? y = null)
-//        {
-//            var size = DisplaySize(x, y);
-//
-//            tmpPos["x"] = size.x;
-//            tmpPos["y"] = size.y;
-//
-//            return tmpPos;
-//        }
-//
-//        public Dictionary<string, int> OverscanBorderDictionary(int? x = null, int? y = null)
-//        {
-//            var size = OverscanBorder(x, y);
-//
-//            tmpPos["x"] = size.x;
-//            tmpPos["y"] = size.y;
-//
-//            return tmpPos;
-//        }
-//
-//        public Dictionary<string, int> TilemapSizeDictionary(int? columns = null, int? rows = null)
-//        {
-//            var size = TilemapSize(columns, rows);
-//
-//            tmpPos["x"] = size.x;
-//            tmpPos["y"] = size.y;
-//
-//            return tmpPos;
-//        }
-//
-//        public Dictionary<string, int> SpriteSizeDictionary(int? width = null, int? height = null)
-//        {
-//            var size = SpriteSize(width, height);
-//
-//            tmpPos["x"] = size.x;
-//            tmpPos["y"] = size.y;
-//
-//            return tmpPos;
-//        }
 
         private delegate int BackgroundColorDelegate(int? id = null);
 
