@@ -49,6 +49,9 @@ namespace PixelVisionRunner.Chips
         
         public override void Update(float timeDelta)
         {
+            
+            base.Update(timeDelta);
+            
             if (luaScript == null)
                 return;
 
