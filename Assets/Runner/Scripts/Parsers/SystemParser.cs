@@ -284,6 +284,9 @@ namespace PixelVisionRunner.Parsers
 
             if (data.ContainsKey("pages"))
                 spritChip.pages = (int) (long) data["pages"];
+            
+            if (data.ContainsKey("unique"))
+                spritChip.unique = Convert.ToBoolean(data["unique"]);
 
             spritChip.Resize(spritChip.pageWidth, spritChip.pageHeight * spritChip.pages);
 

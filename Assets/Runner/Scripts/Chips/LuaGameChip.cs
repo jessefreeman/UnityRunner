@@ -15,6 +15,7 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using MoonSharp.Interpreter;
 using PixelVisionOS;
 using PixelVisionSDK;
@@ -104,6 +105,7 @@ namespace PixelVisionRunner.Chips
             luaScript.Globals["DrawTiles"] = (DrawTilesDelegate) DrawTiles;
             luaScript.Globals["DrawText"] = (DrawTextDelegate) DrawText;
             luaScript.Globals["DrawTilemap"] = (DrawTilemapDelegate) DrawTilemap;
+            luaScript.Globals["DrawRect"] = (DrawRectDelegate) DrawRect;
             luaScript.Globals["OverscanBorder"] = (OverscanDelegate) OverscanBorder;
             luaScript.Globals["RedrawDisplay"] = (RedrawDisplayDelegate) RedrawDisplay;
             luaScript.Globals["ScrollPosition"] = (ScrollPositionDelegate) ScrollPosition;
@@ -211,7 +213,22 @@ namespace PixelVisionRunner.Chips
             {
                 var script = scripts[name];
                 if (script != "")
+                {
+                    // Patch script to run in vanilla lua vm
+                    
+                    // Replace short hand math oporators
+                    string pattern = @"(\S+)\s*([+\-*/%])\s*=";
+                    string replacement = "$1 = $1 $2 ";
+                    script = Regex.Replace(script, pattern, replacement, RegexOptions.Multiline);
+                    
+                    // Replace != conditions
+                    pattern = @"!\s*=";
+                    replacement = "~=";
+                    script = Regex.Replace(script, pattern, replacement, RegexOptions.Multiline);
+
                     luaScript.DoString(script, null, name);
+
+                }
             }
         }
 
@@ -266,6 +283,7 @@ namespace PixelVisionRunner.Chips
 
         private delegate void DrawTilemapDelegate(int x = 0, int y = 0, int columns = 0, int rows = 0);
 
+        private delegate void DrawRectDelegate(int x, int y, int width, int height, int color = -1, DrawMode drawMode = DrawMode.UI);
         private delegate bool MouseButtonDelegate(int button, InputState state = InputState.Down);
 
         private delegate Vector MousePositionDelegate();

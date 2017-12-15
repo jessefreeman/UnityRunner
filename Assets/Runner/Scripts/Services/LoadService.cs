@@ -309,6 +309,7 @@ namespace PixelVisionRunner.Services
 
         private AbstractParser LoadSprites(Dictionary<string, byte[]> files)
         {
+            // TODO need to tell if the cache should be ignore, important when in tools
             var srcFile = "sprites.png";
             var cacheFile = "sprites.cache.png";
 

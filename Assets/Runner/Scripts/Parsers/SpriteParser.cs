@@ -44,15 +44,17 @@ namespace PixelVisionRunner.Parsers
         protected int totalColors;
         protected int totalPixels;
         protected int totalSprites;
-        protected bool unique;
+//        protected bool unique;
         protected int x, y, width, height;
 
         public SpriteParser(Texture2D tex, IEngineChips chips, bool unique = true)
         {
             this.tex = tex;
-            this.unique = unique;
+//            this.unique = unique;
             this.chips = chips;
             spriteChip = chips.spriteChip;
+            
+            Debug.Log("Unique " + spriteChip.unique);
 
             CalculateSteps();
         }
@@ -154,8 +156,10 @@ namespace PixelVisionRunner.Parsers
 
         protected virtual void ProcessSpriteData()
         {
+            
             if (spritesAdded < maxSprites)
-                if (unique)
+            {
+                if (spriteChip.unique)
                 {
                     if (spriteChip.FindSprite(spriteData) == -1)
                     {
@@ -165,9 +169,13 @@ namespace PixelVisionRunner.Parsers
                 }
                 else
                 {
+                    Debug.Log("Add any sprite");
+                    
                     spriteChip.UpdateSpriteAt(index, spriteData);
                     spritesAdded++;
                 }
+            }
+                
         }
 
         public virtual bool IsEmpty(Color[] pixels)
