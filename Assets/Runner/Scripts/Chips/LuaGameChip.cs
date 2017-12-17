@@ -74,11 +74,15 @@ namespace PixelVisionRunner.Chips
 
         public override void Reset()
         {
+            // Setup the GameChip
+            base.Reset();
+
+            // Get the Lua service
             var luaService = engine.chipManager.GetService(typeof(LuaService).FullName) as LuaService;
 
+//            if (luaService == null)
+//                return;
             luaScript = luaService.script;
-
-            base.Reset();
 
             if (luaScript == null)
                 return;
@@ -96,15 +100,16 @@ namespace PixelVisionRunner.Chips
             #region Display APIs
 
             luaScript.Globals["Clear"] = (ClearDelegate) Clear;
-            luaScript.Globals["ClearUILayer"] = (ClearUILayerDelagator)ClearUILayer;
             luaScript.Globals["DisplaySize"] = (DisplayDelegate) DisplaySize;
             luaScript.Globals["DrawPixels"] = (DrawPixelsDelegate) DrawPixels;
+            luaScript.Globals["DrawPixel"] = (DrawPixelDelegate) DrawPixel;
             luaScript.Globals["DrawSprite"] = (DrawSpriteDelegate) DrawSprite;
             luaScript.Globals["DrawSprites"] = (DrawSpritesDelegate) DrawSprites;
             luaScript.Globals["DrawTile"] = (DrawTileDelegate) DrawTile;
             luaScript.Globals["DrawTiles"] = (DrawTilesDelegate) DrawTiles;
             luaScript.Globals["DrawText"] = (DrawTextDelegate) DrawText;
             luaScript.Globals["DrawTilemap"] = (DrawTilemapDelegate) DrawTilemap;
+
             luaScript.Globals["DrawRect"] = (DrawRectDelegate) DrawRect;
             luaScript.Globals["OverscanBorder"] = (OverscanDelegate) OverscanBorder;
             luaScript.Globals["RedrawDisplay"] = (RedrawDisplayDelegate) RedrawDisplay;
@@ -250,6 +255,8 @@ namespace PixelVisionRunner.Chips
             }
         }
 
+        private delegate void DrawPixelDelegate(int x, int y, int colorRef, DrawMode drawMode = DrawMode.UI);
+        
         private delegate int BackgroundColorDelegate(int? id = null);
 
         private delegate bool KeyDelegate(Keys key, InputState state = InputState.Down);
@@ -342,7 +349,6 @@ namespace PixelVisionRunner.Chips
         private delegate int CalculateIndexDelegate(int x, int y, int width);
 
         private delegate Vector CalculatePositionDelegate(int index, int width);
-        private delegate void ClearUILayerDelagator(int x = 0, int y = 0, int? width = null, int? height = null);
         
         
         

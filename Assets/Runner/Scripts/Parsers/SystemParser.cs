@@ -17,14 +17,11 @@ using System;
 using System.Collections.Generic;
 using PixelVisionRunner.Data;
 using PixelVisionSDK;
-using UnityEngine;
 
 namespace PixelVisionRunner.Parsers
 {
-
     public class SystemParser : JsonParser
     {
-
         protected IEngine target;
 
         public SystemParser(string jsonString, IEngine target) : base(jsonString)
@@ -54,7 +51,7 @@ namespace PixelVisionRunner.Parsers
                     var split = fullName.Split('.');
                     var chipName = split[split.Length - 1];
                     var chipData = entry.Value as Dictionary<string, object>;
-                    
+
                     switch (chipName)
                     {
                         case "ColorChip":
@@ -87,7 +84,6 @@ namespace PixelVisionRunner.Parsers
                             ConfigureTilemapChip(chipData);
                             break;
                     }
-
                 }
 
                 // Removed any active chips not reserialized
@@ -101,12 +97,11 @@ namespace PixelVisionRunner.Parsers
 
         public void ConfigureColorChip(Dictionary<string, object> data)
         {
-
             var colorChip = target.colorChip;
 
             if (data.ContainsKey("colorsPerPage"))
                 colorChip.colorsPerPage = (int) (long) data["colorsPerPage"];
-            
+
             if (data.ContainsKey("transparent"))
                 colorChip.transparent = (string) data["transparent"];
 
@@ -125,18 +120,17 @@ namespace PixelVisionRunner.Parsers
                 for (var i = 0; i < newTotal; i++)
                     colorChip.UpdateColorAt(i, (string) colors[i]);
             }
-            
+
             // If the data has a page count, resize the pages to match that value, even though there may be less colors than pages
             if (data.ContainsKey("pages"))
                 colorChip.pages = (int) (long) data["pages"];
-            
+
             if (data.ContainsKey("backgroundColor"))
                 colorChip.backgroundColor = (int) (long) data["backgroundColor"];
         }
 
         public void ConfigureControllerChip(Dictionary<string, object> data)
         {
-
         }
 
         public void ConfigureDisplayChip(Dictionary<string, object> data)
@@ -159,42 +153,39 @@ namespace PixelVisionRunner.Parsers
                 displayChip.overscanY = (int) (long) data["overscanY"];
 
             displayChip.ResetResolution(_width, _height);
-
-            if (data.ContainsKey("maxSpriteCount"))
-                displayChip.maxSpriteCount = (int) (long) data["maxSpriteCount"];
         }
 
         public void ConfigureFontChip(Dictionary<string, object> data)
         {
-
         }
 
         public void ConfigureGameChip(Dictionary<string, object> data)
         {
             var gameChip = target.gameChip;
-    
+
             // loop through all data and save it to the game's memory
-            
+
             if (data.ContainsKey("name"))
                 gameChip.name = (string) data["name"];
-            
+
             if (data.ContainsKey("description"))
                 gameChip.description = (string) data["description"];
-            
+
             if (data.ContainsKey("version"))
                 gameChip.version = (string) data["version"];
-            
+
             if (data.ContainsKey("ext"))
                 gameChip.ext = (string) data["ext"];
-            
+
             if (data.ContainsKey("maxSize"))
                 gameChip.maxSize = (int) (long) data["maxSize"];
 
             if (data.ContainsKey("saveSlots"))
                 gameChip.saveSlots = (int) (long) data["saveSlots"];
-            
+
             if (data.ContainsKey("lockSpecs"))
                 gameChip.lockSpecs = Convert.ToBoolean(data["lockSpecs"]);
+
 
             if (data.ContainsKey("savedData"))
                 foreach (var entry in data["savedData"] as Dictionary<string, object>)
@@ -203,11 +194,6 @@ namespace PixelVisionRunner.Parsers
                     var value = entry.Value as string;
                     gameChip.WriteSaveData(name, value);
                 }
-        }
-
-        public void ConfigureLuaGameChip(Dictionary<string, object> data)
-        {
-            Debug.Log("Configure Lua Game Chip");
         }
 
         public void ConfigurMusicChip(Dictionary<string, object> data)
@@ -235,11 +221,9 @@ namespace PixelVisionRunner.Parsers
 
             if (data.ContainsKey("notesPerTrack"))
                 musicChip.maxNoteNum = Convert.ToInt32((long) data["notesPerTrack"]);
-            
+
             if (data.ContainsKey("totalLoop"))
                 musicChip.totalLoops = Convert.ToInt32((long) data["totalLoop"]);
-            
-            
         }
 
         public void ConfigureSoundChip(Dictionary<string, object> data)
@@ -248,7 +232,7 @@ namespace PixelVisionRunner.Parsers
 
             if (data.ContainsKey("totalChannels"))
                 soundChip.totalChannels = (int) (long) data["totalChannels"];
-            
+
             if (data.ContainsKey("totalSounds"))
                 soundChip.totalSounds = (int) (long) data["totalSounds"];
 
@@ -271,36 +255,28 @@ namespace PixelVisionRunner.Parsers
 
         public void ConfigureSpriteChip(Dictionary<string, object> data)
         {
-            var spritChip = target.spriteChip;
+            var spriteChip = target.spriteChip;
+
+            if (data.ContainsKey("maxSpriteCount"))
+                spriteChip.maxSpriteCount = (int) (long) data["maxSpriteCount"];
 
             if (data.ContainsKey("spriteWidth"))
-                spritChip.width = (int) (long) data["spriteWidth"];
+                spriteChip.width = (int) (long) data["spriteWidth"];
 
             if (data.ContainsKey("spriteHeight"))
-                spritChip.height = (int) (long) data["spriteHeight"];
+                spriteChip.height = (int) (long) data["spriteHeight"];
 
             if (data.ContainsKey("cps"))
-                spritChip.colorsPerSprite = (int) (long) data["cps"];
+                spriteChip.colorsPerSprite = (int) (long) data["cps"];
 
             if (data.ContainsKey("pages"))
-                spritChip.pages = (int) (long) data["pages"];
-            
+                spriteChip.pages = (int) (long) data["pages"];
+
             if (data.ContainsKey("unique"))
-                spritChip.unique = Convert.ToBoolean(data["unique"]);
+                spriteChip.unique = Convert.ToBoolean(data["unique"]);
 
-            spritChip.Resize(spritChip.pageWidth, spritChip.pageHeight * spritChip.pages);
+            spriteChip.Resize(spriteChip.pageWidth, spriteChip.pageHeight * spriteChip.pages);
 
-            //            if (data.ContainsKey("pixelData"))
-            //            {
-            //                var pixelData = (Dictionary<string, object>)data["pixelData"];
-            //
-            //                DataUtil.DeserializeTextureData(_texture, pixelData);
-            //            }
-
-            //            if (data.ContainsKey("serializePixelData"))
-            //            {
-            //                serializePixelData = Convert.ToBoolean((int)(long)data["serializePixelData"]);
-            //            }
         }
 
         public void ConfigureTilemapChip(Dictionary<string, object> data)
@@ -309,21 +285,17 @@ namespace PixelVisionRunner.Parsers
 
             var columns = tilemapChip.columns;
             var rows = tilemapChip.rows;
-            
+
             if (data.ContainsKey("columns"))
-            {
-                columns = (int)(long)data["columns"];
-            }
+                columns = (int) (long) data["columns"];
 
             if (data.ContainsKey("rows"))
-                rows = (int)(long)data["rows"];
+                rows = (int) (long) data["rows"];
 
             if (data.ContainsKey("totalFlags"))
-                tilemapChip.totalFlags = (int)(long)data["totalFlags"];
+                tilemapChip.totalFlags = (int) (long) data["totalFlags"];
 
             tilemapChip.Resize(columns, rows);
         }
-
     }
-
 }

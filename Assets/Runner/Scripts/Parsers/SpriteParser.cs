@@ -54,7 +54,7 @@ namespace PixelVisionRunner.Parsers
             this.chips = chips;
             spriteChip = chips.spriteChip;
             
-            Debug.Log("Unique " + spriteChip.unique);
+//            Debug.Log("Unique " + spriteChip.unique);
 
             CalculateSteps();
         }
@@ -169,8 +169,6 @@ namespace PixelVisionRunner.Parsers
                 }
                 else
                 {
-                    Debug.Log("Add any sprite");
-                    
                     spriteChip.UpdateSpriteAt(index, spriteData);
                     spritesAdded++;
                 }
