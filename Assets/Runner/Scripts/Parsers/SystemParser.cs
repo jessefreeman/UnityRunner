@@ -151,6 +151,9 @@ namespace PixelVisionRunner.Parsers
 
             if (data.ContainsKey("overscanY"))
                 displayChip.overscanY = (int) (long) data["overscanY"];
+            
+            if (data.ContainsKey("layers"))
+                displayChip.layers = (int) (long) data["layers"];
 
             displayChip.ResetResolution(_width, _height);
         }

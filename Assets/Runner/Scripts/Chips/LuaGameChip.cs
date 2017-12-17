@@ -105,6 +105,8 @@ namespace PixelVisionRunner.Chips
             luaScript.Globals["DrawPixel"] = (DrawPixelDelegate) DrawPixel;
             luaScript.Globals["DrawSprite"] = (DrawSpriteDelegate) DrawSprite;
             luaScript.Globals["DrawSprites"] = (DrawSpritesDelegate) DrawSprites;
+            luaScript.Globals["DrawSpriteBlock"] = (DrawSpriteBlockDelegate) DrawSpriteBlock;
+
             luaScript.Globals["DrawTile"] = (DrawTileDelegate) DrawTile;
             luaScript.Globals["DrawTiles"] = (DrawTilesDelegate) DrawTiles;
             luaScript.Globals["DrawText"] = (DrawTextDelegate) DrawText;
@@ -285,10 +287,12 @@ namespace PixelVisionRunner.Chips
 
         private delegate void DrawSpritesDelegate(int[] ids, int x, int y, int width, bool flipH = false, bool flipV = false, DrawMode drawMode = DrawMode.Sprite, int colorOffset = 0, bool onScreen = true, bool useScrollPos = true);
 
+        private delegate void DrawSpriteBlockDelegate(int id, int x, int y, int width, int height, bool flipH = false, bool flipV = false, DrawMode drawMode = DrawMode.Sprite, int colorOffset = 0, bool onScreen = true, bool useScrollPos = true);
+        
         private delegate int DrawTextDelegate(string text, int x, int y, DrawMode mode = DrawMode.Sprite,
             string font = "Default", int colorOffset = 0, int spacing = 0);
 
-        private delegate void DrawTilemapDelegate(int x = 0, int y = 0, int columns = 0, int rows = 0);
+        private delegate void DrawTilemapDelegate(int x = 0, int y = 0, int columns = 0, int rows = 0, int? offsetX = null, int? offsetY = null);
 
         private delegate void DrawRectDelegate(int x, int y, int width, int height, int color = -1, DrawMode drawMode = DrawMode.UI);
         private delegate bool MouseButtonDelegate(int button, InputState state = InputState.Down);
