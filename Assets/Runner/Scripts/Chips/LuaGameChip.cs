@@ -71,6 +71,17 @@ namespace PixelVisionRunner.Chips
 
             luaScript.Call(luaScript.Globals["Draw"]);
         }
+        
+        public override void Shutdown()
+        {
+            if (luaScript == null)
+                return;
+
+            if (luaScript.Globals["Shutdown"] == null)
+                return;
+
+            luaScript.Call(luaScript.Globals["Shutdown"]);
+        }
 
         public override void Reset()
         {
@@ -101,6 +112,7 @@ namespace PixelVisionRunner.Chips
 
             luaScript.Globals["Clear"] = (ClearDelegate) Clear;
             luaScript.Globals["DisplaySize"] = (DisplayDelegate) DisplaySize;
+            luaScript.Globals["VisibleBounds"] = (VisibleBoundsDelegate) VisibleBounds;
             luaScript.Globals["DrawPixels"] = (DrawPixelsDelegate) DrawPixels;
             luaScript.Globals["DrawPixel"] = (DrawPixelDelegate) DrawPixel;
             luaScript.Globals["DrawSprite"] = (DrawSpriteDelegate) DrawSprite;
@@ -191,6 +203,9 @@ namespace PixelVisionRunner.Chips
             // Register PV8's vector type
             UserData.RegisterType<Vector>();
             
+            // Register PV8's rect type
+            UserData.RegisterType<Rect>();
+            
             // Load the deafult script
             LoadScript("code.lua");
 
@@ -201,7 +216,6 @@ namespace PixelVisionRunner.Chips
             if (luaScript.Globals["Reset"] != null)
                 luaScript.Call(luaScript.Globals["Reset"]);
         }
-
 
         public virtual void RegisterLuaServices()
         {
@@ -257,6 +271,21 @@ namespace PixelVisionRunner.Chips
             }
         }
 
+//        public void DrawSpritesRect(int[] ids, int x, int y, int width, bool flipH = false, bool flipV = false,
+//            DrawMode drawMode = DrawMode.Sprite, int colorOffset = 0, bool onScreen = true, bool useScrollPos = true,
+//            Table bounds = null)
+//        {
+//            Rect tmpRect = null;
+//            
+//            if (bounds != null)
+//            {
+//                tmpRect = new Rect(bounds, bounds[1], bounds[2], bounds[3]);
+//            }
+//            
+//            DrawSprites(ids, x, y, width, flipH, flipV, drawMode, colorOffset, onScreen, useScrollPos, tmpRect);
+//        }
+
+
         private delegate void DrawPixelDelegate(int x, int y, int colorRef, DrawMode drawMode = DrawMode.UI);
         
         private delegate int BackgroundColorDelegate(int? id = null);
@@ -270,6 +299,7 @@ namespace PixelVisionRunner.Chips
         private delegate void ClearDelegate(int x = 0, int y = 0, int? width = null, int? height = null);
 
         private delegate Vector DisplayDelegate(int? x = null, int? y = null);
+        private delegate Rect VisibleBoundsDelegate();
 
         private delegate Vector OverscanDelegate(int? x = null, int? y = null);
 
@@ -285,7 +315,7 @@ namespace PixelVisionRunner.Chips
 
         private delegate void DrawTilesDelegate(int[] ids, int c, int r, int width, DrawMode drawMode = DrawMode.Tile, int colorOffset = 0);
 
-        private delegate void DrawSpritesDelegate(int[] ids, int x, int y, int width, bool flipH = false, bool flipV = false, DrawMode drawMode = DrawMode.Sprite, int colorOffset = 0, bool onScreen = true, bool useScrollPos = true);
+        private delegate void DrawSpritesDelegate(int[] ids, int x, int y, int width, bool flipH = false, bool flipV = false, DrawMode drawMode = DrawMode.Sprite, int colorOffset = 0, bool onScreen = true, bool useScrollPos = true, Rect bounds = null);
 
         private delegate void DrawSpriteBlockDelegate(int id, int x, int y, int width, int height, bool flipH = false, bool flipV = false, DrawMode drawMode = DrawMode.Sprite, int colorOffset = 0, bool onScreen = true, bool useScrollPos = true);
         

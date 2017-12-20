@@ -24,6 +24,7 @@ using PixelVisionRunner.Parsers;
 using PixelVisionSDK;
 using PixelVisionSDK.Services;
 using UnityEngine;
+using Debug = UnityEngine.Debug;
 
 namespace PixelVisionRunner.Services
 {
@@ -161,6 +162,14 @@ namespace PixelVisionRunner.Services
             if ((saveFlags & SaveFlags.Music) == SaveFlags.Music)
             {
                 LoadMusic(files);
+//                if (parser != null)
+//                    parsers.Add(parser);
+            }
+            
+            // Step 11 (optional). Look for meta data and override the game
+            if ((saveFlags & SaveFlags.SaveData) == SaveFlags.SaveData)
+            {
+                LoadSaveData(files);
 //                if (parser != null)
 //                    parsers.Add(parser);
             }
@@ -426,6 +435,20 @@ namespace PixelVisionRunner.Services
             {
                 var fileContents = Encoding.UTF8.GetString(files[fileName]);
 
+                var jsonParser = new SystemParser(fileContents, targetEngine);
+                while (jsonParser.completed == false)
+                    jsonParser.NextStep();
+            }
+
+        }
+        
+        private void LoadSaveData(Dictionary<string, byte[]> files)
+        {
+            var fileName = "saves.json";
+
+            if (files.ContainsKey(fileName))
+            {
+                var fileContents = Encoding.UTF8.GetString(files[fileName]);
                 var jsonParser = new SystemParser(fileContents, targetEngine);
                 while (jsonParser.completed == false)
                     jsonParser.NextStep();

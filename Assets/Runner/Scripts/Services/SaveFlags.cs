@@ -34,7 +34,8 @@ namespace PixelVisionOS
         Music = 512,
         Sounds = 1024,
         SpriteCache = 2048,
-        TilemapCache = 4096
+        TilemapCache = 4096,
+        SaveData = 8192
 
     }
 
