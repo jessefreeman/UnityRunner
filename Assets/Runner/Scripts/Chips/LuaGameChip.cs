@@ -20,6 +20,7 @@ using MoonSharp.Interpreter;
 using PixelVisionOS;
 using PixelVisionSDK;
 using PixelVisionSDK.Chips;
+using PixelVisionSDK.Utils;
 
 namespace PixelVisionRunner.Chips
 {
@@ -186,6 +187,14 @@ namespace PixelVisionRunner.Chips
             luaScript.Globals["UpdateTiles"] = (UpdateTilesDelegate) UpdateTiles;
             luaScript.Globals["Flag"] = (FlagDelegate) Flag;
             #endregion
+            
+            #region Utils
+            luaScript.Globals["WordWrap"] = (WordWrapDelegate) TextUtil.WordWrap;
+            luaScript.Globals["SplitLines"] = (SplitLinesDelegate) TextUtil.SplitLines;
+
+            
+            
+            #endregion
 
             // Enums
             UserData.RegisterType<DrawMode>();
@@ -317,7 +326,7 @@ namespace PixelVisionRunner.Chips
 
         private delegate void DrawSpritesDelegate(int[] ids, int x, int y, int width, bool flipH = false, bool flipV = false, DrawMode drawMode = DrawMode.Sprite, int colorOffset = 0, bool onScreen = true, bool useScrollPos = true, Rect bounds = null);
 
-        private delegate void DrawSpriteBlockDelegate(int id, int x, int y, int width, int height, bool flipH = false, bool flipV = false, DrawMode drawMode = DrawMode.Sprite, int colorOffset = 0, bool onScreen = true, bool useScrollPos = true);
+        private delegate void DrawSpriteBlockDelegate(int id, int x, int y, int width = 1, int height = 1, bool flipH = false, bool flipV = false, DrawMode drawMode = DrawMode.Sprite, int colorOffset = 0, bool onScreen = true, bool useScrollPos = true);
         
         private delegate int DrawTextDelegate(string text, int x, int y, DrawMode mode = DrawMode.Sprite,
             string font = "Default", int colorOffset = 0, int spacing = 0);
@@ -383,6 +392,10 @@ namespace PixelVisionRunner.Chips
         private delegate int CalculateIndexDelegate(int x, int y, int width);
 
         private delegate Vector CalculatePositionDelegate(int index, int width);
+        
+        private delegate string WordWrapDelegate(string text, int width);
+        
+        private delegate string[] SplitLinesDelegate(string txt);
         
         
         
