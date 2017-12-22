@@ -13,6 +13,7 @@
 // Pedro Medeiros - @saint11
 // Shawn Rakowski - @shwany
 
+using MoonSharp.Interpreter;
 using PixelVisionSDK;
 
 namespace PixelVisionRunner.Parsers
@@ -39,6 +40,14 @@ namespace PixelVisionRunner.Parsers
             foreach (var d in data)
             {
                 engine.SetMetaData(d.Key, d.Value as string);
+
+                if (d.Key == "name")
+                {
+                    engine.gameChip.name = d.Value as string;
+                }else if (d.Key == "ext")
+                {
+                    engine.gameChip.ext = d.Value as string;
+                }
             }
 
             currentStep++;
