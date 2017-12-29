@@ -55,6 +55,11 @@ namespace GameCreator.Services
             File.Move(sourceFileName, destFileName);
         }
 
+        public void CopyFile(string src, string dest)
+        {
+            File.Copy(src, dest);
+        }
+
         public virtual void WriteAllBytes(string name, byte[] byteData)
         {
             File.WriteAllBytes(name, byteData);
@@ -397,6 +402,11 @@ namespace GameCreator.Services
             zip.Close();
 
 
+        }
+
+        public void MoveDirectory(string src, string dest)
+        {
+            Directory.Move(src, dest);
         }
 
 

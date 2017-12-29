@@ -64,6 +64,10 @@ namespace GameCreator.Services
         /// <param name="destFileName"></param>
         void FileMove(string sourceFileName, string destFileName);
 
+        void CopyFile(string src, string dest);
+
+        void MoveDirectory(string src, string dest);
+        
         /// <summary>
         /// </summary>
         /// <param name="name"></param>
