@@ -22,7 +22,9 @@ using UnityEngine;
 
 namespace GameCreator.Services
 {
-
+    
+    
+    
     public class FileSystemService : IFileSystem
     {
 
@@ -280,6 +282,8 @@ namespace GameCreator.Services
             CopyAll(new DirectoryInfo(source), new DirectoryInfo(target));
         }
 
+        
+
         protected void CopyAll(DirectoryInfo source, DirectoryInfo target)
         {
             Directory.CreateDirectory(target.FullName);
@@ -408,7 +412,21 @@ namespace GameCreator.Services
         {
             Directory.Move(src, dest);
         }
+        
+        
 
+//        public string FindType(string filename)
+//        {
+//
+//            var split = filename.Split('.').Skip(1).ToArray();
+//
+//
+//            var ext = String.Join(".", split.Select(o => o.ToString()).ToArray());
+//            
+//            Debug.Log("filename "+ filename + " type "+ ext);
+//            
+//            return ext;
+//        }
 
     }
 

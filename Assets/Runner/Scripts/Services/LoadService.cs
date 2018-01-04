@@ -24,7 +24,6 @@ using PixelVisionRunner.Parsers;
 using PixelVisionSDK;
 using PixelVisionSDK.Services;
 using UnityEngine;
-using Debug = UnityEngine.Debug;
 
 namespace PixelVisionRunner.Services
 {

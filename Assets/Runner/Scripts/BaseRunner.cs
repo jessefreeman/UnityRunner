@@ -180,7 +180,14 @@ public class BaseRunner : MonoBehaviour
                 var fileName = fileSystem.GetFileName(filePath);
                 var data = fileSystem.ReadAllBytes(filePath);
 
-                files.Add(fileName, data);
+                if (files.ContainsKey(fileName))
+                {
+                    files[fileName] = data;
+                }
+                else
+                {
+                    files.Add(fileName, data);
+                }
             }
         }
     }

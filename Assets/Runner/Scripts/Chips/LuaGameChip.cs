@@ -262,9 +262,14 @@ namespace PixelVisionRunner.Chips
         public void AddScript(string name, string script)
         {
             if (scripts.ContainsKey(name))
+            {
                 scripts[name] = script;
+            }
             else
+            {
                 scripts.Add(name, script);
+            }
+                
         }
         
         public void PlayRawSound(string data, int channel = 0, float frequency = 0.1266f)
