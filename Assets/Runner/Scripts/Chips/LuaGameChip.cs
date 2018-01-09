@@ -28,12 +28,6 @@ namespace PixelVisionRunner.Chips
     public class LuaGameChip : GameChip, ILuaGameChipAPI
     {
 
-//        private readonly Dictionary<string, int> tmpPos = new Dictionary<string, int>
-//        {
-//            {"x", 0},
-//            {"y", 0}
-//        };
-
         public Dictionary<string, string> scripts = new Dictionary<string, string>();
         public Script luaScript { get; protected set; }
 
