@@ -24,7 +24,6 @@ using PixelVisionRunner.Parsers;
 using PixelVisionSDK;
 using PixelVisionSDK.Services;
 using UnityEngine;
-using Debug = UnityEngine.Debug;
 
 namespace PixelVisionRunner.Services
 {
@@ -117,15 +116,7 @@ namespace PixelVisionRunner.Services
                     parsers.Add(parser);
             }
 
-            // Step 7 (optional). Look for tile map flags to load
-//            if ((saveFlags & SaveFlags.TilemapFlags) == SaveFlags.TilemapFlags)
-//            {
-//                parser = LoadTilemapFlags(files);
-//                if (parser != null)
-//                    parsers.Add(parser);
-//            }
-
-            // Step 8 (optional). Look for fonts to load
+            // Step 7 (optional). Look for fonts to load
             if ((saveFlags & SaveFlags.Fonts) == SaveFlags.Fonts)
             {
                 var fontExtension = ".font.png";
@@ -142,7 +133,7 @@ namespace PixelVisionRunner.Services
                 }
             }
 
-            // Step 9 (optional). Look for meta data and override the game
+            // Step 8 (optional). Look for meta data and override the game
             if ((saveFlags & SaveFlags.Meta) == SaveFlags.Meta)
             {
                 parser = LoadMetaData(files);
@@ -150,7 +141,7 @@ namespace PixelVisionRunner.Services
                     parsers.Add(parser);
             }
             
-            // Step 10 (optional). Look for meta data and override the game
+            // Step 9 (optional). Look for meta data and override the game
             if ((saveFlags & SaveFlags.Sounds) == SaveFlags.Sounds)
             {
                 LoadSounds(files);
@@ -158,7 +149,7 @@ namespace PixelVisionRunner.Services
 //                    parsers.Add(parser);
             }
             
-            // Step 11 (optional). Look for meta data and override the game
+            // Step 10 (optional). Look for meta data and override the game
             if ((saveFlags & SaveFlags.Music) == SaveFlags.Music)
             {
                 LoadMusic(files);
@@ -229,24 +220,6 @@ namespace PixelVisionRunner.Services
                 return new MetaDataParser(fileContents, targetEngine);
             }
 
-//            else
-//            {
-//                throw new Exception("Can't find 'data.json' file");
-//            }
-
-//            var metaDataPath = path + "info.json";
-//
-//            // Test to see if file exists
-//            if (fileSystem.FileExists(metaDataPath))
-//            {
-//           
-//                // Load Texture
-//                var tex = fileSystem.ReadTextFromFile(metaDataPath);
-//
-//                return new ParseMetaData(tex, targetEngine);
-//
-//            }
-
             return null;
         }
 
@@ -258,20 +231,6 @@ namespace PixelVisionRunner.Services
             //fontName = fontName.Substring(0, fontName.Length - 5);
 
             return new FontParser(tex, targetEngine, fontName);
-        }
-
-        private AbstractParser LoadTilemapFlags(Dictionary<string, byte[]> files)
-        {
-            var fileName = "tilemap-flags.png";
-
-            if (files.ContainsKey(fileName))
-            {
-                var tex = ReadTexture(files[fileName]);
-
-                return new TilemapFlagParser(tex, targetEngine);
-            }
-
-            return null;
         }
 
         private AbstractParser LoadTilemap(Dictionary<string, byte[]> files)

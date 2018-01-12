@@ -43,18 +43,20 @@ namespace PixelVisionRunner.Parsers
 
         public override void PrepareSprites()
         {
-            
+            var realWidth = spriteChip.width * tilemapChip.columns;
+            var realHeight = spriteChip.height * tilemapChip.rows;
+
             // Test to see if the tilemap image is larger than the tilemap chip can allow
-            if (tex.GetPixels32().Length > (tilemapChip.realWidth * tilemapChip.realHeight))
+            if (tex.GetPixels32().Length > (realWidth * realHeight))
             {
-                var newWidth = Math.Min(tex.width, tilemapChip.realWidth);
-                var newHeight = Math.Min(tex.width, tilemapChip.realHeight);
+                var newWidth = Math.Min(tex.width, realWidth);
+                var newHeight = Math.Min(tex.width, realHeight);
                 
                 // Need to resize the texture so we only parse what can fit into the tilemap chip's memory
                 var pixelData = tex.GetPixels(0, 0, newWidth, Math.Min(tex.width, newHeight));
                 
                 // Resize the texture
-                tex.Resize(tilemapChip.realWidth, tilemapChip.realHeight);
+                tex.Resize(realWidth, realHeight);
                 
                 // Set the pixels back into the texture
                 tex.SetPixels(0, 0, newWidth, newHeight, pixelData);

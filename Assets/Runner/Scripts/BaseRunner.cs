@@ -135,7 +135,7 @@ public class BaseRunner : MonoBehaviour
         // By setting the Texture2D filter mode to Point, we ensure that it will look crisp at any size. 
         // Since the Texture will be scaled based on the resolution, we want it always to look pixel perfect.
         
-        fileSystem = new UnityFileSystemService();
+        fileSystem = new FileSystemService();
         loadService = new LoadService();
 //        workspace = new UnityWorkspaceService(fileSystem, loadService);
     }
@@ -180,7 +180,14 @@ public class BaseRunner : MonoBehaviour
                 var fileName = fileSystem.GetFileName(filePath);
                 var data = fileSystem.ReadAllBytes(filePath);
 
-                files.Add(fileName, data);
+                if (files.ContainsKey(fileName))
+                {
+                    files[fileName] = data;
+                }
+                else
+                {
+                    files.Add(fileName, data);
+                }
             }
         }
     }
@@ -199,7 +206,9 @@ public class BaseRunner : MonoBehaviour
     /// <returns></returns>
     public bool LoadGameResource(string resourceName, Dictionary<string, string> metaData = null)
     {
-        fileSystem = new UnityFileSystemService();
+        //TODO this couuld probably be removed
+        fileSystem = new FileSystemService();
+        
         loadService = new LoadService();
         ConfigureEngine(metaData);
 			
@@ -389,7 +398,6 @@ public class BaseRunner : MonoBehaviour
     /// </summary>
     public virtual void RunGame()
     {
-
         ActivateEngine(tmpEngine);
 
         tmpEngine = null;

@@ -25,14 +25,8 @@ using PixelVisionSDK.Utils;
 namespace PixelVisionRunner.Chips
 {
 
-    public class LuaGameChip : GameChip
+    public class LuaGameChip : GameChip, ILuaGameChipAPI
     {
-
-//        private readonly Dictionary<string, int> tmpPos = new Dictionary<string, int>
-//        {
-//            {"x", 0},
-//            {"y", 0}
-//        };
 
         public Dictionary<string, string> scripts = new Dictionary<string, string>();
         public Script luaScript { get; protected set; }
@@ -92,8 +86,7 @@ namespace PixelVisionRunner.Chips
             // Get the Lua service
             var luaService = engine.chipManager.GetService(typeof(LuaService).FullName) as LuaService;
 
-//            if (luaService == null)
-//                return;
+
             luaScript = luaService.script;
 
             if (luaScript == null)
@@ -112,8 +105,7 @@ namespace PixelVisionRunner.Chips
             #region Display APIs
 
             luaScript.Globals["Clear"] = (ClearDelegate) Clear;
-            luaScript.Globals["DisplaySize"] = (DisplayDelegate) DisplaySize;
-            luaScript.Globals["VisibleBounds"] = (VisibleBoundsDelegate) VisibleBounds;
+            luaScript.Globals["Display"] = (DisplayDelegate) Display;
             luaScript.Globals["DrawPixels"] = (DrawPixelsDelegate) DrawPixels;
             luaScript.Globals["DrawPixel"] = (DrawPixelDelegate) DrawPixel;
             luaScript.Globals["DrawSprite"] = (DrawSpriteDelegate) DrawSprite;
@@ -126,7 +118,6 @@ namespace PixelVisionRunner.Chips
             luaScript.Globals["DrawTilemap"] = (DrawTilemapDelegate) DrawTilemap;
 
             luaScript.Globals["DrawRect"] = (DrawRectDelegate) DrawRect;
-            luaScript.Globals["OverscanBorder"] = (OverscanDelegate) OverscanBorder;
             luaScript.Globals["RedrawDisplay"] = (RedrawDisplayDelegate) RedrawDisplay;
             luaScript.Globals["ScrollPosition"] = (ScrollPositionDelegate) ScrollPosition;
 
@@ -191,8 +182,6 @@ namespace PixelVisionRunner.Chips
             #region Utils
             luaScript.Globals["WordWrap"] = (WordWrapDelegate) TextUtil.WordWrap;
             luaScript.Globals["SplitLines"] = (SplitLinesDelegate) TextUtil.SplitLines;
-
-            
             
             #endregion
 
@@ -211,9 +200,11 @@ namespace PixelVisionRunner.Chips
 
             // Register PV8's vector type
             UserData.RegisterType<Vector>();
-            
+            luaScript.Globals["NewVector"] = (NewVectorDelegator)NewVector;
+
             // Register PV8's rect type
             UserData.RegisterType<Rect>();
+            luaScript.Globals["NewRect"] = (NewRectDelegator)NewRect;
             
             // Load the deafult script
             LoadScript("code.lua");
@@ -265,9 +256,14 @@ namespace PixelVisionRunner.Chips
         public void AddScript(string name, string script)
         {
             if (scripts.ContainsKey(name))
+            {
                 scripts[name] = script;
+            }
             else
+            {
                 scripts.Add(name, script);
+            }
+                
         }
         
         public void PlayRawSound(string data, int channel = 0, float frequency = 0.1266f)
@@ -279,21 +275,19 @@ namespace PixelVisionRunner.Chips
                 soundChip.PlayRawSound(data, channel, frequency);
             }
         }
+        
+        public Rect NewRect(int x = 0, int y = 0, int w = 0, int h = 0)
+        {
+            return new Rect(x, y, w, h);
+        }
+        
+        public Vector NewVector(int x = 0, int y = 0)
+        {
+            return new Vector(x, y);
+        }
 
-//        public void DrawSpritesRect(int[] ids, int x, int y, int width, bool flipH = false, bool flipV = false,
-//            DrawMode drawMode = DrawMode.Sprite, int colorOffset = 0, bool onScreen = true, bool useScrollPos = true,
-//            Table bounds = null)
-//        {
-//            Rect tmpRect = null;
-//            
-//            if (bounds != null)
-//            {
-//                tmpRect = new Rect(bounds, bounds[1], bounds[2], bounds[3]);
-//            }
-//            
-//            DrawSprites(ids, x, y, width, flipH, flipV, drawMode, colorOffset, onScreen, useScrollPos, tmpRect);
-//        }
-
+        private delegate Rect NewRectDelegator(int x = 0, int y = 0, int w = 0, int h = 0);
+        private delegate Vector NewVectorDelegator(int x = 0, int y = 0);
 
         private delegate void DrawPixelDelegate(int x, int y, int colorRef, DrawMode drawMode = DrawMode.UI);
         
@@ -307,10 +301,7 @@ namespace PixelVisionRunner.Chips
 
         private delegate void ClearDelegate(int x = 0, int y = 0, int? width = null, int? height = null);
 
-        private delegate Vector DisplayDelegate(int? x = null, int? y = null);
-        private delegate Rect VisibleBoundsDelegate();
-
-        private delegate Vector OverscanDelegate(int? x = null, int? y = null);
+        private delegate Vector DisplayDelegate(bool visible = true);
 
         private delegate void LoadScriptDelegate(string name);
 
