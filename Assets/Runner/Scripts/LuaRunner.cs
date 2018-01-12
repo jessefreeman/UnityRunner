@@ -53,7 +53,7 @@ public class LuaRunner : BaseRunner
 
     public virtual void LoadDefaultGame()
     {
-        fileSystem = new UnityFileSystemService();
+        fileSystem = new FileSystemService();
         loadService = new LoadService();
         ConfigureEngine();
 //        

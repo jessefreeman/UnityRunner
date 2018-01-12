@@ -16,25 +16,12 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.IO.Compression;
 using System.Linq;
-using UnityEngine;
 
 namespace GameCreator.Services
 {
-    
-    
-    
     public class FileSystemService : IFileSystem
     {
-
-        public virtual string clipboard
-        {
-            get { throw new NotImplementedException(); }
-
-            set { throw new NotImplementedException(); }
-        }
-
         public virtual void CreateDirectory(string path)
         {
             // Only create the directory if it doesn't exist
@@ -62,9 +49,9 @@ namespace GameCreator.Services
             File.Copy(src, dest);
         }
 
-        public virtual void WriteAllBytes(string name, byte[] byteData)
+        public virtual void WriteAllBytes(string path, byte[] byteData)
         {
-            File.WriteAllBytes(name, byteData);
+            File.WriteAllBytes(path, byteData);
         }
 
         public virtual bool FileExists(string path)
@@ -99,7 +86,7 @@ namespace GameCreator.Services
         public virtual string ReadTextFromFile(string path)
         {
             // Create a new steam reader
-            
+
             var stream = new StreamReader(File.OpenRead(path));
 
             // Read file contents
@@ -122,11 +109,11 @@ namespace GameCreator.Services
 
         /// <summary>
         /// </summary>
-        /// <param name="file"></param>
+        /// <param name="path"></param>
         /// <returns></returns>
-        public virtual DateTime GetLastWriteTime(string file)
+        public virtual DateTime GetLastWriteTime(string path)
         {
-            return File.GetLastWriteTime(file);
+            return File.GetLastWriteTime(path);
         }
 
         public virtual string[] FileNamesInDir(string path, string[] files, bool dropExtension = true)
@@ -137,18 +124,6 @@ namespace GameCreator.Services
 
             return names;
         }
-
-//        public virtual void SaveTextToFile(string path, string name, string data, string ext = "txt")
-//        {
-//            CreateDirectory(path);
-//
-//            var fullPath = path + name + "." + ext;
-//
-//            if (!FileExists(fullPath))
-//                File.CreateText(path + fullPath);
-//
-//            SaveTextToFile(path, data);
-//        }
 
         public virtual void SaveTextToFile(string fullPath, string data)
         {
@@ -219,103 +194,14 @@ namespace GameCreator.Services
         {
             long size = -1;
 
-            if (FileExists(path))
-            {
-                size = GetFileInfo(path).Length;
-            }
+            if (FileExists(path)) size = GetFileInfo(path).Length;
 
             return size;
-        }
-
-        public virtual string ConvertSizeToString(long size)
-        {
-            string[] sizes = {"B", "K", "M", "G"};
-            var order = 0;
-            while (size >= 1024 && ++order < sizes.Length)
-                size = size / 1024;
-
-            if (size == 0)
-                return "0";
-
-            // Adjust the format string to your preferences. For example "{0:0.#}{1}" would
-            // show a single decimal place, and no space.
-            //TODO make sure are correctly converting the long to a double and back to an int here?
-            var result = string.Format("{0:0}{1}", (int)Math.Ceiling((double)size), sizes[order]);
-
-            return result;
-        }
-
-        //TODO this need to be some kind of internal file type and remove Texture2D Dependancy
-        public virtual Texture2D ReadTextureFromFile(string path)
-        {
-            throw new NotImplementedException();
-        }
-
-        public virtual void SaveTextureToFile(string path, string name, Texture2D tex)
-        {
-            throw new NotImplementedException();
-        }
-
-        public virtual string[] DirNamesFromPaths(string[] dirs, bool dropExtension = true)
-        {
-            var names = new string[dirs.Length];
-
-            for (var i = 0; i < dirs.Length; i++)
-                names[i] = dropExtension ? GetFileNameWithoutExtension(dirs[i]) : Path.GetFileName(dirs[i]);
-
-            return names;
-        }
-
-
-        public virtual string ReadLocalStorage(string key, string defaultValue)
-        {
-            throw new NotImplementedException();
-        }
-
-        public virtual void SaveLocalStorage(string key, string value)
-        {
-            throw new NotImplementedException();
         }
 
         public void CopyAll(string source, string target)
         {
             CopyAll(new DirectoryInfo(source), new DirectoryInfo(target));
-        }
-
-        
-
-        protected void CopyAll(DirectoryInfo source, DirectoryInfo target)
-        {
-            Directory.CreateDirectory(target.FullName);
-
-            // Copy each file into the new directory.
-            foreach (FileInfo fi in source.GetFiles())
-            {
-                fi.CopyTo(Path.Combine(target.FullName, fi.Name), true);
-            }
-
-            // Copy each subdirectory using recursion.
-            foreach (DirectoryInfo diSourceSubDir in source.GetDirectories())
-            {
-                DirectoryInfo nextTargetSubDir =
-                    target.CreateSubdirectory(diSourceSubDir.Name);
-                CopyAll(diSourceSubDir, nextTargetSubDir);
-            }
-        }
-
-        public void GetFilePaths(DirectoryInfo source, List<string> filePaths)
-        {
-            // Copy each file into the new directory.
-            foreach (FileInfo fi in source.GetFiles())
-            {
-                filePaths.Add(fi.FullName);
-            }
-
-            // Copy each subdirectory using recursion.
-            foreach (DirectoryInfo diSourceSubDir in source.GetDirectories())
-            {
-                GetFilePaths(diSourceSubDir, filePaths);
-            }
         }
 
         public DirectoryInfo DirectoryInfo(string path)
@@ -348,86 +234,72 @@ namespace GameCreator.Services
             return File.OpenText(path);
         }
 
-        public void ArchiveDirectory(string filename, string sourcePath, string destinationPath, string comment = "A Pixel Vision 8 Archive")
-        {
-            // zip path isn't being normalized
-            var zipPath = destinationPath + filename;
-            
-            ZipStorer zip = ZipStorer.Create(zipPath, comment);
-
-            var filePaths = GetFilePaths(sourcePath);
-
-            foreach (var filePath in filePaths)
-            {
-                var tmpName = Path.GetFileName(filePath);
-                var newPath = filePath.Replace(sourcePath, "");
-
-                zip.AddFile(ZipStorer.Compression.Store, filePath, newPath, "Adding " + tmpName);
-            }
-
-            zip.Close();
-        }
-
         public List<string> GetFilePaths(string path)
         {
             var filePaths = new List<string>();
             var source = new DirectoryInfo(path);
-            
+
             // Copy each file into the new directory.
-            foreach (FileInfo fi in source.GetFiles())
-            {
-                filePaths.Add(fi.FullName);
-            }
+            foreach (var fi in source.GetFiles()) filePaths.Add(fi.FullName);
 
             // Copy each subdirectory using recursion.
-            foreach (DirectoryInfo diSourceSubDir in source.GetDirectories())
-            {
-                GetFilePaths(diSourceSubDir, filePaths);
-            }
+            foreach (var diSourceSubDir in source.GetDirectories()) GetFilePaths(diSourceSubDir, filePaths);
 
             return filePaths;
-        }
-
-        public void Unarchive(string source, string destination)
-        {
-            // Open an existing zip file for reading
-            var zip = ZipStorer.Open(source, FileAccess.Read);
-
-            // Read the central directory collection
-            var dir = zip.ReadCentralDir();
-
-            if (!DirectoryExists(destination))
-                CreateDirectory(destination);
-
-            // Look for the desired file
-            foreach (var entry in dir)
-                zip.ExtractFile(entry, destination + "/" + entry.FilenameInZip);
-
-            zip.Close();
-
-
         }
 
         public void MoveDirectory(string src, string dest)
         {
             Directory.Move(src, dest);
         }
-        
-        
 
-//        public string FindType(string filename)
-//        {
-//
-//            var split = filename.Split('.').Skip(1).ToArray();
-//
-//
-//            var ext = String.Join(".", split.Select(o => o.ToString()).ToArray());
-//            
-//            Debug.Log("filename "+ filename + " type "+ ext);
-//            
-//            return ext;
-//        }
+        public bool IsDirectory(string path)
+        {
+            // get the file attributes for file or directory
+            var attr = File.GetAttributes(path);
 
+            //detect whether its a directory or file
+            return (attr & FileAttributes.Directory) == FileAttributes.Directory;
+        }
+
+        public virtual string[] DirNamesFromPaths(string[] dirs, bool dropExtension = true)
+        {
+            var names = new string[dirs.Length];
+
+            for (var i = 0; i < dirs.Length; i++)
+                names[i] = dropExtension ? GetFileNameWithoutExtension(dirs[i]) : Path.GetFileName(dirs[i]);
+
+            return names;
+        }
+
+        protected void CopyAll(DirectoryInfo source, DirectoryInfo target)
+        {
+            CreateDirectory(target.FullName);
+
+            // Copy each file into the new directory.
+            foreach (var fi in source.GetFiles()) fi.CopyTo(Path.Combine(target.FullName, fi.Name), true);
+
+            // Copy each subdirectory using recursion.
+            foreach (var diSourceSubDir in source.GetDirectories())
+            {
+                var nextTargetSubDir =
+                    target.CreateSubdirectory(diSourceSubDir.Name);
+                CopyAll(diSourceSubDir, nextTargetSubDir);
+            }
+        }
+
+        public void GetFilePaths(DirectoryInfo source, List<string> filePaths)
+        {
+            // Copy each file into the new directory.
+            foreach (var fi in source.GetFiles()) filePaths.Add(fi.FullName);
+
+            // Copy each subdirectory using recursion.
+            foreach (var diSourceSubDir in source.GetDirectories()) GetFilePaths(diSourceSubDir, filePaths);
+        }
+
+        public string ReadAllText(string path)
+        {
+            return File.ReadAllText(path);
+        }
     }
-
 }

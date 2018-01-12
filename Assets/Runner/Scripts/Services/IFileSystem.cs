@@ -16,7 +16,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using UnityEngine;
 
 namespace GameCreator.Services
 {
@@ -24,7 +23,7 @@ namespace GameCreator.Services
     public interface IFileSystem
     {
 
-        string clipboard { get; set; }
+//        string clipboard { get; set; }
 
 //        /// <summary>
 //        /// 
@@ -70,9 +69,9 @@ namespace GameCreator.Services
         
         /// <summary>
         /// </summary>
-        /// <param name="name"></param>
+        /// <param name="path"></param>
         /// <param name="byteData"></param>
-        void WriteAllBytes(string name, byte[] byteData);
+        void WriteAllBytes(string path, byte[] byteData);
 
         /// <summary>
         /// </summary>
@@ -80,6 +79,13 @@ namespace GameCreator.Services
         /// <returns></returns>
         bool FileExists(string path);
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        bool IsDirectory(string path);
+            
         /// <summary>
         /// </summary>
         /// <param name="path"></param>
@@ -114,7 +120,7 @@ namespace GameCreator.Services
         /// <param name="path"></param>
         /// <returns></returns>
         //TODO need to remove dependency on Texture2D
-        Texture2D ReadTextureFromFile(string path);
+//        Texture2D ReadTextureFromFile(string path);
 
         /// <summary>
         /// </summary>
@@ -125,19 +131,18 @@ namespace GameCreator.Services
 
         /// <summary>
         /// </summary>
-        /// <param name="file"></param>
+        /// <param name="path"></param>
         /// <returns></returns>
-        DateTime GetLastWriteTime(string file);
+        DateTime GetLastWriteTime(string path);
 
         string[] FileNamesInDir(string path, string[] files, bool dropExtension = true);
         //void SaveTextToFile(string path, string name, string data, string ext = "txt");
         void SaveTextToFile(string path, string data);
-        string ConvertSizeToString(long size);
 
         // TODO this type should be abstracted?
         FileInfo GetFileInfo(string path);
 
-        void SaveTextureToFile(string path, string name, Texture2D tex);
+//        void SaveTextureToFile(string path, string name, Texture2D tex);
 
         string[] GetDirectories(string path);
 
@@ -152,11 +157,12 @@ namespace GameCreator.Services
         string GetFileName(string path);
         byte[] ReadAllBytes(string path);
         StreamReader OpenText(string path);
-        void ArchiveDirectory(string filename, string sourcePath, string destinationPath, string comment = "A Pixel Vision 8 Archive");
+//        void ArchiveDirectory(string filename, string sourcePath, string destinationPath, string comment = "A Pixel Vision 8 Archive");
         List<string> GetFilePaths(string path);
         long GetFileSize(string path);
 
         void CopyAll(string source, string target);
+            string ReadAllText(string path);
 
     }
 
