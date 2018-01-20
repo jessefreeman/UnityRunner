@@ -31,6 +31,12 @@ namespace PixelVisionRunner.Chips
         public Dictionary<string, string> scripts = new Dictionary<string, string>();
         public Script luaScript { get; protected set; }
 
+        #region Lifecycle
+        
+        /// <summary>
+        ///     Init() is called when a game is loaded into memory and is ready to be played. Use this hook to initialize
+        ///     your game's logic. It is only called once. 
+        /// </summary>
         public override void Init()
         {
             if (luaScript == null)
@@ -55,7 +61,7 @@ namespace PixelVisionRunner.Chips
 
             luaScript.Call(luaScript.Globals["Update"], timeDelta);
         }
-
+        
         public override void Draw()
         {
             if (luaScript == null)
@@ -77,7 +83,7 @@ namespace PixelVisionRunner.Chips
 
             luaScript.Call(luaScript.Globals["Shutdown"]);
         }
-
+        
         public override void Reset()
         {
             // Setup the GameChip
@@ -180,8 +186,8 @@ namespace PixelVisionRunner.Chips
             #endregion
             
             #region Utils
-            luaScript.Globals["WordWrap"] = (WordWrapDelegate) TextUtil.WordWrap;
-            luaScript.Globals["SplitLines"] = (SplitLinesDelegate) TextUtil.SplitLines;
+            luaScript.Globals["WordWrap"] = (WordWrapDelegate) WordWrap;
+            luaScript.Globals["SplitLines"] = (SplitLinesDelegate) SplitLines;
             
             #endregion
 
@@ -216,12 +222,146 @@ namespace PixelVisionRunner.Chips
             if (luaScript.Globals["Reset"] != null)
                 luaScript.Call(luaScript.Globals["Reset"]);
         }
+        
+
+        #endregion
+        
 
         public virtual void RegisterLuaServices()
         {
             // Override to add your own Lua services before the game starts
         }
 
+        #region Math
+
+        /// <summary>
+        ///     Limits a value between a minimum and maximum.
+        /// </summary>
+        /// <param name="val">
+        ///     The value to clamp.
+        /// </param>
+        /// <param name="min">
+        ///     The minimum the value can be.
+        /// </param>
+        /// <param name="max">
+        ///     The maximum the value can be.
+        /// </param>
+        /// <returns>
+        ///     Returns an int within the min and max range.
+        /// </returns>
+        public int Clamp(int val, int min, int max)
+        {
+            return val.Clamp(min, max);
+        }
+
+        /// <summary>
+        ///     Repeats a value based on the max. When the value is greater than the max, it starts
+        ///     over at 0 plus the remaining value.
+        /// </summary>
+        /// <param name="val">
+        ///     The value to repeat.
+        /// </param>
+        /// <param name="max">
+        ///     The maximum the value can be.
+        /// </param>
+        /// <returns>
+        ///     Returns an int that is never less than 0 or greater than the max.
+        /// </returns>
+        public int Repeat(int val, int max)
+        {
+            return MathUtil.Repeat(val, max);
+        }
+
+        /// <summary>
+        ///     Converts an X and Y position into an index. This is useful for finding positions in 1D
+        ///     arrays that represent 2D data.
+        /// </summary>
+        /// <param name="x">
+        ///     The x position.
+        /// </param>
+        /// <param name="y">
+        ///     The y position.
+        /// </param>
+        /// <param name="width">
+        ///     The width of the data if it was represented as a 2D array.
+        /// </param>
+        /// <returns>
+        ///     Returns an int value representing the X and Y position in a 1D array.
+        /// </returns>
+        public int CalculateIndex(int x, int y, int width)
+        {
+            int index;
+            index = x + y * width;
+            return index;
+        }
+
+        /// <summary>
+        ///     Converts an index into an X and Y position to help when working with 1D arrays that
+        ///     represent 2D data.
+        /// </summary>
+        /// <param name="index">
+        ///     The position of the 1D array.
+        /// </param>
+        /// <param name="width">
+        ///     The width of the data if it was a 2D array.
+        /// </param>
+        /// <returns>
+        ///     Returns a vector representing the X and Y position of an index in a 1D array.
+        /// </returns>
+        public Vector CalculatePosition(int index, int width)
+        {
+            int x, y;
+
+            x = index % width;
+            y = index / width;
+
+            return new Vector(x, y);
+        }
+
+        #endregion
+        
+        #region Utils
+        
+        /// <summary>
+        ///     This allows you to call the TextUtil's WordWrap helper to wrap a string of text to a specified character
+        ///     width. Since the FontChip only knows how to render characters as sprites, this can be used to calculate
+        ///     blocks of text then each line can be rendered with a DrawText() call.
+        /// </summary>
+        /// <param name="text">The string of text to wrap.</param>
+        /// <param name="width">The width of characters to wrap each line of text.</param>
+        /// <returns></returns>
+        public string WordWrap(string text, int width)
+        {
+            return TextUtil.WordWrap(text, width);
+        }
+        
+        /// <summary>
+        ///     This calls the TextUtil's SplitLines() helper to convert text with line breaks (\n) into a collection of
+        ///     lines. This can be used in conjunction with the WordWrap() helper to render large blocks of text line by
+        ///     line with the DrawText() API.
+        /// </summary>
+        /// <param name="str">The string of text to split.</param>
+        /// <returns>Returns an array of strings representing each line of text.</returns>
+        public string[] SplitLines(string str)
+        {
+            return TextUtil.SplitLines(str);
+        }
+
+        #endregion
+        
+        #region Scripts
+        
+        /// <summary>
+        ///     This allows you to load a script into memory. External scripts can be located in the System/Libs/,
+        ///     Workspace/Libs/ or Workspace/Sandbox/ directory. All scripts, including built-in ones from the Game
+        ///     Creator, are accessible via their file name (with or without the extension). You can keep additional
+        ///     scripts in your game folder and load them up. Call this method before Init() in your game's Lua file to
+        ///     have access to any external code loaded by the Game Creator or Runner.
+        /// </summary>
+        /// <param name="name">
+        ///     Name of the Lua file. You can drop the .lua extension since only Lua files will be accessible to this
+        ///     method.
+        /// </param>
         public void LoadScript(string name)
         {
 
@@ -252,7 +392,15 @@ namespace PixelVisionRunner.Chips
                 }
             }
         }
-
+        
+        /// <summary>
+        ///     This allows you to add your Lua scripts at runtime to a game from a string. This could be useful for
+        ///     dynamically generating code such as level data or other custom Lua objects in memory. Simply give the
+        ///     script a name and pass in a string with valid Lua code. If a script with the same name exists, this will
+        ///     override it. Make sure to call LoadScript() after to parse it.
+        /// </summary>
+        /// <param name="name">Name of the script. This should contain the .lua extension.</param>
+        /// <param name="script">The string text representing the Lua script data.</param>
         public void AddScript(string name, string script)
         {
             if (scripts.ContainsKey(name))
@@ -265,7 +413,24 @@ namespace PixelVisionRunner.Chips
             }
                 
         }
+
+        #endregion
+
+        #region Sound
         
+        /// <summary>
+        ///     This helper method allows you to pass raw SFXR string data to the sound chip for playback. It works just
+        ///     like the normal PlaySound() API but accepts a string instead of a sound ID. Calling PlayRawSound() could
+        ///     be expensive since the sound effect data is not cached by the engine. It is mostly used for sound effects
+        ///     in tools and shouldn't be called when playing a game.
+        /// </summary>
+        /// <param name="data">Raw string data representing SFXR sound properties in a comma-separated list.</param>
+        /// <param name="channel">
+        ///     The channel the sound should play back on. Channel 0 is set by default.
+        /// </param>
+        /// <param name="frequency">
+        ///     An optional float argument to change the frequency of the raw sound. The default setting is 0.1266.
+        /// </param>
         public void PlayRawSound(string data, int channel = 0, float frequency = 0.1266f)
         {
             var soundChip = engine.soundChip as SfxrSoundChip;
@@ -275,17 +440,38 @@ namespace PixelVisionRunner.Chips
                 soundChip.PlayRawSound(data, channel, frequency);
             }
         }
+
+        #endregion
         
+        #region Geometry
+        
+        /// <summary>
+        ///     A Rect is a Pixel Vision 8 primitive used for defining the bounds of an object on the display. It
+        ///     contains an x, y, width and height property. The Rect class also has some additional methods to aid with
+        ///     collision detection such as Intersect(rect, rect), IntersectsWidth(rect) and Contains(x,y).
+        /// </summary>
+        /// <param name="x">The x position of the rect as an int.</param>
+        /// <param name="y">The y position of the rect as an int.</param>
+        /// <param name="w">The width value of the rect as an int.</param>
+        /// <param name="h">The height value of the rect as an int.</param>
+        /// <returns>Returns a new instance of a Rect to be used as a Lua object.</returns>
         public Rect NewRect(int x = 0, int y = 0, int w = 0, int h = 0)
         {
             return new Rect(x, y, w, h);
         }
         
+        /// <summary>
+        ///     A Vector is a Pixel Vision 8 primitive used for defining a position on the display as an x,y value.
+        /// </summary>
+        /// <param name="x">The x position of the Vector as an int.</param>
+        /// <param name="y">The y position of the Vector as an int.</param>
+        /// <returns>Returns a new instance of a Vector to be used as a Lua object.</returns>
         public Vector NewVector(int x = 0, int y = 0)
         {
             return new Vector(x, y);
         }
-
+        #endregion
+        
         private delegate Rect NewRectDelegator(int x = 0, int y = 0, int w = 0, int h = 0);
         private delegate Vector NewVectorDelegator(int x = 0, int y = 0);
 

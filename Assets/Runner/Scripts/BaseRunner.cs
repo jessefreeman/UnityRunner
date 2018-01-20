@@ -282,10 +282,6 @@ public class BaseRunner : MonoBehaviour
 
         if (!displayProgress)
         {
-//            //PreloaderStart();
-//        }
-//        else
-//        {
             loadService.LoadAll();
             RunGame();
         }
@@ -315,17 +311,6 @@ public class BaseRunner : MonoBehaviour
     
     protected bool preloading;
 
-//    public virtual void PreloaderStart()
-//    {
-//        if (preloading)
-//            return;
-//
-//        preloading = true;
-//        //preloadProgress = 0;
-//
-//        StartCoroutine(PreloaderNextStep());
-//    }
-    
     public virtual IEnumerator PreloaderNextStep()
     {
 

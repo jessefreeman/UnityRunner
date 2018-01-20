@@ -27,3 +27,5 @@ Assets/Plugins/JetBrains.meta
 sysinfo.txt
 
 *.DS_Store
+
+/ProjectSettings/*.meta
