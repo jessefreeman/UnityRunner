@@ -21,7 +21,7 @@ namespace PixelVisionOS
     [Flags]
     public enum SaveFlags
     {
-
+        None = 0,
         System = 1,
         Code = 2,
         Colors = 4,
