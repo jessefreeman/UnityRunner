@@ -13,6 +13,7 @@
 // Pedro Medeiros - @saint11
 // Shawn Rakowski - @shwany
 
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -278,7 +279,7 @@ namespace PixelVisionRunner.Chips
         /// </returns>
         public int Repeat(int val, int max)
         {
-            return MathUtil.Repeat(val, max);
+            return (int) (val - Math.Floor(val / (float) max) * max);
         }
 
         /// <summary>
