@@ -218,9 +218,13 @@ namespace PixelVisionRunner.Chips
             UserData.RegisterType<Rect>();
             luaScript.Globals["NewRect"] = (NewRectDelegator)NewRect;
             
+//            // Register PV8's rect type
+//            UserData.RegisterType<TextureData>();
+//            luaScript.Globals["NewTextureData"] = (NewTextureDataDelegate)NewTextureData;
+            
             // Register PV8's rect type
-            UserData.RegisterType<TextureData>();
-            luaScript.Globals["NewTextureData"] = (NewTextureDataDelegate)NewTextureData;
+            UserData.RegisterType<Canvas>();
+            luaScript.Globals["NewCanvas"] = (NewCanvasDelegator)NewCanvas;
             
             // Load the deafult script
             LoadScript("code.lua");
@@ -493,13 +497,27 @@ namespace PixelVisionRunner.Chips
             return new Vector(x, y);
         }
 
-        public TextureData NewTextureData(int width, int height, bool wrapMode = true)
-        {
-            return new TextureData(width, height, wrapMode);
-        }
+//        public TextureData NewTextureData(int width, int height, bool wrapMode = true)
+//        {
+//            return new TextureData(width, height, wrapMode);
+//        }
         
         #endregion
 
+        #region Graphics
+
+        /// <summary>
+        ///     Creates a new canvas instance.
+        /// </summary>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
+        /// <returns></returns>
+        public Canvas NewCanvas(int width, int height)
+        {
+            return new Canvas(this, width, height);
+        }
+
+        #endregion
         
         private delegate Rect NewRectDelegator(int x = 0, int y = 0, int w = 0, int h = 0);
         private delegate Vector NewVectorDelegator(int x = 0, int y = 0);
@@ -606,7 +624,9 @@ namespace PixelVisionRunner.Chips
         private delegate int[] BitArrayDelegate(int value);
 
 
-        private delegate TextureData NewTextureDataDelegate(int width, int height, bool wrapMode = true);
+//        private delegate TextureData NewTextureDataDelegate(int width, int height, bool wrapMode = true);
+        
+        protected delegate Canvas NewCanvasDelegator(int width, int height);
 
 
     }
