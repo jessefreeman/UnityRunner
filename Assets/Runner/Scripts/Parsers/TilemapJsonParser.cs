@@ -77,7 +77,7 @@ namespace PixelVisionRunner.Parsers
 							
 							Array.Resize(ref dataValues, tilemapChip.total);
 							
-							tmpPixelData.GetPixels(0, 0, tilemapChip.columns, tilemapChip.rows, ref dataValues);
+							tmpPixelData.CopyPixels(ref dataValues, 0, 0, tilemapChip.columns, tilemapChip.rows);
 						}
 						
 						Array.Copy(dataValues, tilemapChip.layers[(int)layerType], dataValues.Length); 
