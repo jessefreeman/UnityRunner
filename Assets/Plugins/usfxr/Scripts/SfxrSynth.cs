@@ -168,7 +168,11 @@ public class SfxrSynth {
 
 	private System.Random randomGenerator = new System.Random();	// Used to generate random numbers safely
 
-
+	// Added by Christer Kaitila
+	public float[] cachedWave {
+		get { return _cachedWave; }
+	}
+	
 	// ================================================================================================================
 	// ACCESSOR INTERFACE ---------------------------------------------------------------------------------------------
 
