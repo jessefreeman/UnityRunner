@@ -14,6 +14,7 @@
 // Shawn Rakowski - @shwany
 
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using GameCreator.Services;
 using PixelVisionRunner.Chips;
 using PixelVisionRunner.Services;
