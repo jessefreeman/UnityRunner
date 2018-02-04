@@ -194,6 +194,14 @@ namespace PixelVisionRunner.Chips
 
             #endregion
 
+            #region Pixel Data
+            
+            luaScript.Globals["ConvertTextToSprites"] = (ConvertTextToSpritesDelegate) ConvertTextToSprites;
+            luaScript.Globals["ConvertCharacterToPixelData"] = (ConvertCharacterToPixelDataDelegate) ConvertCharacterToPixelData;
+            
+
+            #endregion
+
             // Enums
             UserData.RegisterType<DrawMode>();
             luaScript.Globals["DrawMode"] = UserData.CreateStatic<DrawMode>();
@@ -622,6 +630,9 @@ namespace PixelVisionRunner.Chips
         private delegate string[] SplitLinesDelegate(string txt);
 
         private delegate int[] BitArrayDelegate(int value);
+
+        private delegate int[] ConvertTextToSpritesDelegate(string text, string fontName = "default");
+        private delegate int[] ConvertCharacterToPixelDataDelegate(char character, string fontName);
 
 
 //        private delegate TextureData NewTextureDataDelegate(int width, int height, bool wrapMode = true);
