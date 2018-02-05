@@ -191,6 +191,7 @@ namespace PixelVisionRunner.Chips
             luaScript.Globals["WordWrap"] = (WordWrapDelegate) WordWrap;
             luaScript.Globals["SplitLines"] = (SplitLinesDelegate) SplitLines;
             luaScript.Globals["BitArray"] = (BitArrayDelegate) BitArray;
+            luaScript.Globals["CalcualteDistance"] = (CalcualteDistanceDelegate) CalcualteDistance;
 
             #endregion
 
@@ -368,7 +369,13 @@ namespace PixelVisionRunner.Chips
         {
             return TextUtil.SplitLines(str);
         }
-
+        
+        //TODO need to write a commment for this
+        public int CalcualteDistance(int x0, int y0, int x1, int y1)
+        {
+            return MathUtil.CalcualteDistance(x0, y0, x1, y1);
+        }
+        
         public int[] BitArray(int value)
         {
             
@@ -630,6 +637,7 @@ namespace PixelVisionRunner.Chips
         private delegate string[] SplitLinesDelegate(string txt);
 
         private delegate int[] BitArrayDelegate(int value);
+        private delegate int CalcualteDistanceDelegate(int x0, int y0, int x1, int y1);
 
         private delegate int[] ConvertTextToSpritesDelegate(string text, string fontName = "default");
         private delegate int[] ConvertCharacterToPixelDataDelegate(char character, string fontName);
