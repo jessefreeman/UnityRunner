@@ -19,8 +19,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
-using GameCreator.Services;
-using PixelVisionOS;
+using MonoGameRunner;
+using PixelVisionRunner;
 using PixelVisionRunner.Services;
 using PixelVisionSDK;
 using PixelVisionSDK.Chips;
@@ -36,6 +36,15 @@ using Debug = UnityEngine.Debug;
 public class BaseRunner : MonoBehaviour
 {
 
+    protected Runner runner;
+    
+
+    protected DisplayTarget displayTarget;
+    protected ITextureFactory textureFactory;
+    protected IColorFactory colorFactory;
+    protected InputFactory inputFactory;
+    
+    
     protected IFileSystem fileSystem;
 
     public readonly string[] validExtensions =
@@ -60,7 +69,7 @@ public class BaseRunner : MonoBehaviour
     // To display our game, we'll need a reference to a RawImage from Unity. We are using a 
     // RawImage so that we can leverage some of Unity's new UI scaling options to keep the 
     // display at a fixed aspect ratio no matter what the screen resolution is at.
-    public RawImage displayTarget;
+    public RawImage rawImage;
 
     //public FileSystemService fileSystem { get; protected set; }
     public LoadService loadService { get; protected set; }
@@ -130,14 +139,31 @@ public class BaseRunner : MonoBehaviour
         // Before we set up the PixelVisionEngine we'll want to configure the renderTexture. 
         // We'll create a new 256 x 240 Texture2D instance and set it as the displayTarget.texture.
         renderTexture = new Texture2D(256, 240, TextureFormat.ARGB32, false) {filterMode = FilterMode.Point};
-        displayTarget.texture = renderTexture;
+        rawImage.texture = renderTexture;
 
         // By setting the Texture2D filter mode to Point, we ensure that it will look crisp at any size. 
         // Since the Texture will be scaled based on the resolution, we want it always to look pixel perfect.
         
         fileSystem = new FileSystemService();
-        loadService = new LoadService();
-//        workspace = new UnityWorkspaceService(fileSystem, loadService);
+        loadService = new LoadService(new TextureFactory(), new ColorFactory());
+        
+        
+//        displayTarget = new DisplayTarget(rawImage, renderTexture);
+//        textureFactory = new TextureFactory();
+//        colorFactory = new ColorFactory();
+//        inputFactory = new InputFactory(displayTarget);
+//
+//        runner = new Runner(OpenPV8File, displayTarget, textureFactory, colorFactory, inputFactory);
+//
+//        runner.Initialize();
+    }
+    
+    private void OpenPV8File(Action<Stream> resolve)
+    {
+        //resolve(File.OpenRead("./Content/SpriteStressDemo.pv8"));
+        // resolve(File.OpenRead("./Content/UIFrameworkDemo.pv8"));
+        // resolve(File.OpenRead("./Content/SampleLuaGame.pv8"));
+//        resolve(File.OpenRead("./Content/MicroPlatformer.pv8"));
     }
     
     public LuaService luaService;
@@ -146,7 +172,7 @@ public class BaseRunner : MonoBehaviour
     {
         //fileSystem = new UnityFileSystemService();
         if(loadService == null)
-            loadService = new LoadService();
+            loadService = new LoadService(new TextureFactory(), new ColorFactory());
 
         if(luaService == null)
             luaService = new LuaService();
@@ -209,7 +235,7 @@ public class BaseRunner : MonoBehaviour
         //TODO this couuld probably be removed
         fileSystem = new FileSystemService();
         
-        loadService = new LoadService();
+        loadService = new LoadService(new TextureFactory(), new ColorFactory());
         ConfigureEngine(metaData);
 			
         try
@@ -470,7 +496,7 @@ public class BaseRunner : MonoBehaviour
         }
 
         // Register mouse input
-        activeControllerChip.RegisterMouseInput(new MouseInput(displayTarget.rectTransform));
+        activeControllerChip.RegisterMouseInput(new MouseInput(rawImage.rectTransform));
     }
 
     /// <summary>
@@ -569,15 +595,15 @@ public class BaseRunner : MonoBehaviour
         Screen.fullScreen = fullScreen;
 
         // We need to make sure our displayTarget, which is our RawImage in the Unity scene,  exists before trying to update it. 
-        if (displayTarget != null)
+        if (rawImage != null)
         {
             // The first thing we'll do to update the displayTarget recalculate the correct aspect ratio. Here we get a reference 
             // to the AspectRatioFitter component then set the aspectRatio property to the value of the width divided by the height. 
-            var fitter = displayTarget.GetComponent<AspectRatioFitter>();
+            var fitter = rawImage.GetComponent<AspectRatioFitter>();
             fitter.aspectRatio = (float) width / height;
 
             // Next we need to update the CanvasScaler's referenceResolution value.
-            var canvas = displayTarget.canvas;
+            var canvas = rawImage.canvas;
             var scaler = canvas.GetComponent<CanvasScaler>();
             scaler.referenceResolution = new Vector2(width, height);
 
@@ -601,7 +627,7 @@ public class BaseRunner : MonoBehaviour
             var overscanXPixels = (width - activeEngine.displayChip.overscanXPixels) / (float) width;
             var overscanYPixels = (height - activeEngine.displayChip.overscanYPixels) / (float) height;
             var offsetY = 1 - overscanYPixels;
-            displayTarget.uvRect = new UnityEngine.Rect(0, offsetY, overscanXPixels, overscanYPixels);
+            rawImage.uvRect = new UnityEngine.Rect(0, offsetY, overscanXPixels, overscanYPixels);
 
             // When copying over the DisplayChip's pixel data to the cachedPixels, we only focus on the RGB value. While we could reset the 
             // alpha during that step, it would also slow down the renderer. Since Pixel Vision 8 simply ignores the alpha value of a color, 

@@ -14,8 +14,7 @@
 // Shawn Rakowski - @shwany
 
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
-using GameCreator.Services;
+using MonoGameRunner;
 using PixelVisionRunner.Chips;
 using PixelVisionRunner.Services;
 using UnityEngine;
@@ -52,7 +51,7 @@ public class LuaRunner : BaseRunner
     public virtual void LoadDefaultGame()
     {
         fileSystem = new FileSystemService();
-        loadService = new LoadService();
+        loadService = new LoadService(new TextureFactory(), new ColorFactory());
         ConfigureEngine();
 //        
         var path = "file://" + Application.streamingAssetsPath + "/SampleLuaGame.pv8";

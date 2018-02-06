@@ -97,30 +97,4 @@ public class MouseInput : IMouseInput
         return mousePos;
     }
 
-//    }
-//        throw new NotImplementedException();
-//    {
-//    public bool ReadMouseButtonDown(int button)
-//
-//    }
-//        throw new NotImplementedException();
-//    {
-
-//    public bool ReadMouseButton(int button)
-//
-//    public bool ReadMouseButtonUp(int button)
-//    {
-//        throw new NotImplementedException();
-//    }
-//
-//    public int ReadMouseX()
-//    {
-//        throw new NotImplementedException();
-//    }
-//
-//    public int ReadMouseY()
-//    {
-//        throw new NotImplementedException();
-//    }
-
 }
