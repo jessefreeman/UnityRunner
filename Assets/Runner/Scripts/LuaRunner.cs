@@ -50,8 +50,8 @@ public class LuaRunner : BaseRunner
 
     public virtual void LoadDefaultGame()
     {
-        fileSystem = new FileSystemService();
-        loadService = new LoadService(new TextureFactory(), new ColorFactory());
+//        fileSystem = new FileSystemService();
+//        loadService = new LoadService(new TextureFactory(), new ColorFactory());
         ConfigureEngine();
 //        
         var path = "file://" + Application.streamingAssetsPath + "/SampleLuaGame.pv8";
@@ -66,4 +66,26 @@ public class LuaRunner : BaseRunner
         LoadFromZip(path);
     }
 
+    public LuaService luaService;
+
+    public virtual void ConfigureServices()
+    {
+
+        if(luaService == null)
+            luaService = new LuaService();
+        
+#if !UNITY_WEBGL
+        luaService.script.Options.DebugPrint = s => Debug.Log(s);
+#endif
+
+        // Register Lua Service
+        tmpEngine.chipManager.AddService(typeof(LuaService).FullName, luaService);
+    }
+
+    public override void ConfigureEngine(Dictionary<string, string> metaData = null)
+    {
+        base.ConfigureEngine(metaData);
+        
+        ConfigureServices();
+    }
 }

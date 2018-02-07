@@ -36,12 +36,10 @@ namespace MonoGameRunner
             this.rawImage.texture = this.renderTexture;
         }
 
-        public void ResetResolution(int width, int height, bool fullScreen)
+        public void ResetResolution(int width, int height)
         {
-// The first thing we need to do is resize the DisplayChip's own resolution.
+            // The first thing we need to do is resize the DisplayChip's own resolution.
             runner.activeEngine.displayChip.ResetResolution(width, height);
-
-            Screen.fullScreen = fullScreen;
 
             // We need to make sure our displayTarget, which is our RawImage in the Unity scene,  exists before trying to update it. 
             if (rawImage != null)
@@ -76,7 +74,7 @@ namespace MonoGameRunner
                 var overscanXPixels = (width - runner.activeEngine.displayChip.overscanXPixels) / (float) width;
                 var overscanYPixels = (height - runner.activeEngine.displayChip.overscanYPixels) / (float) height;
                 var offsetY = 1 - overscanYPixels;
-                rawImage.uvRect = new UnityEngine.Rect(0, offsetY, overscanXPixels, overscanYPixels);
+                rawImage.uvRect = new Rect(0, offsetY, overscanXPixels, overscanYPixels);
 
                 // When copying over the DisplayChip's pixel data to the cachedPixels, we only focus on the RGB value. While we could reset the 
                 // alpha during that step, it would also slow down the renderer. Since Pixel Vision 8 simply ignores the alpha value of a color, 
@@ -133,7 +131,7 @@ namespace MonoGameRunner
         }
 
 
-/// <summary>
+        /// <summary>
         ///     To optimize the Runner, we need to save a reference to each color in the ColorChip as native Unity Colors. The
         ///     cached
         ///     colors will improve rendering performance later when we cover the DisplayChip's pixel data into a format the
@@ -163,6 +161,11 @@ namespace MonoGameRunner
                 if (colorData.flag != 0)
                     cachedColors[i] = new Color(colorData.r, colorData.g, colorData.b);
             }
+        }
+
+        public Color[] GetPixels(int x, int y, int width, int height)
+        {
+            return renderTexture.GetPixels(x, y, width, height);
         }
     }
 }

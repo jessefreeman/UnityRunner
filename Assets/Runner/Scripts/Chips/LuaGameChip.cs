@@ -30,7 +30,7 @@ namespace PixelVisionRunner.Chips
     public class LuaGameChip : GameChip, ILuaGameChipAPI
     {
 
-        public Dictionary<string, string> scripts = new Dictionary<string, string>();
+//        public Dictionary<string, string> scripts = new Dictionary<string, string>();
         public Script luaScript { get; protected set; }
 
         #region Lifecycle
@@ -406,14 +406,16 @@ namespace PixelVisionRunner.Chips
         public void LoadScript(string name)
         {
 
-            var split = name.Split('.');
-            
-            if (split.Last() != "lua")
+            if (!name.EndsWith(".lua"))
                 name += ".lua";
+//            var split = name.Split('.');
+//            
+//            if (split.Last() != "lua")
+//                name += ".lua";
             
-            if (scripts.ContainsKey(name))
+            if (textFiles.ContainsKey(name))
             {
-                var script = scripts[name];
+                var script = textFiles[name];
                 if (script != "")
                 {
                     // Patch script to run in vanilla lua vm
@@ -444,13 +446,17 @@ namespace PixelVisionRunner.Chips
         /// <param name="script">The string text representing the Lua script data.</param>
         public void AddScript(string name, string script)
         {
-            if (scripts.ContainsKey(name))
+            
+            if (!name.EndsWith(".lua"))
+                name += ".lua";
+            
+            if (textFiles.ContainsKey(name))
             {
-                scripts[name] = script;
+                textFiles[name] = script;
             }
             else
             {
-                scripts.Add(name, script);
+                textFiles.Add(name, script);
             }
                 
         }
