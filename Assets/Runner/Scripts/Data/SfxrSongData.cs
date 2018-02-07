@@ -22,7 +22,7 @@ using PixelVisionSDK;
 namespace PixelVisionRunner.Data
 {
 
-    public class SfxrSongData : SongData, ISave, ILoad
+    public class SfxrSongData : SongData, ISave
     {
 
         public SfxrSongData(string name = "Untitled", int tracks = 4) : base(name, tracks)
@@ -32,31 +32,31 @@ namespace PixelVisionRunner.Data
         /// <summary>
         /// </summary>
         /// <param name="data"></param>
-        public void DeserializeData(Dictionary<string, object> data)
-        {
-            if (data.ContainsKey("songName"))
-                songName = (string) data["songName"];
-
-            if (data.ContainsKey("speedInBPM"))
-                speedInBPM = Convert.ToInt32((long) data["speedInBPM"]);
-
-            if (data.ContainsKey("tracks"))
-            {
-                var tracksData = (List<object>) data["tracks"];
-                totalTracks = tracksData.Count;
-
-                for (var i = 0; i < totalTracks; i++)
-                {
-                    var trackData = tracksData[i];
-                    var track = tracks[i] as SfxrTrackData;
-                    if (track != null)
-                    {
-                        track.DeserializeData((Dictionary<string, object>) trackData);
-                        tracks[i] = track;
-                    }
-                }
-            }
-        }
+//        public void DeserializeData(Dictionary<string, object> data)
+//        {
+//            if (data.ContainsKey("songName"))
+//                songName = (string) data["songName"];
+//
+//            if (data.ContainsKey("speedInBPM"))
+//                speedInBPM = Convert.ToInt32((long) data["speedInBPM"]);
+//
+//            if (data.ContainsKey("tracks"))
+//            {
+//                var tracksData = (List<object>) data["tracks"];
+//                totalTracks = tracksData.Count;
+//
+//                for (var j = 0; j < totalTracks; j++)
+//                {
+//                    var trackData = tracksData[j];
+//                    var track = tracks[j] as SfxrTrackData;
+//                    if (track != null)
+//                    {
+//                        track.DeserializeData((Dictionary<string, object>) trackData);
+//                        tracks[j] = track;
+//                    }
+//                }
+//            }
+//        }
 
         public bool ignore { get; private set; }
 

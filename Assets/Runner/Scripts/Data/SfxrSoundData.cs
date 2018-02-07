@@ -21,7 +21,7 @@ using PixelVisionSDK;
 namespace PixelVisionRunner.Data
 {
 
-    public class SfxrSoundData : ISoundData, ISave, ILoad
+    public class SfxrSoundData : ISoundData, ISave
     {
 
         protected SfxrSynth synth;
@@ -48,14 +48,14 @@ namespace PixelVisionRunner.Data
         ///     A Dictionary with a string as the key and a generic object as the
         ///     value.
         /// </param>
-        public void DeserializeData(Dictionary<string, object> data)
-        {
-            if (data.ContainsKey("name"))
-                name = data["name"] as string;
-
-            if (data.ContainsKey("settings"))
-                UpdateSettings(data["settings"] as string);
-        }
+//        public void DeserializeData(Dictionary<string, object> data)
+//        {
+//            if (data.ContainsKey("name"))
+//                name = data["name"] as string;
+//
+//            if (data.ContainsKey("settings"))
+//                UpdateSettings(data["settings"] as string);
+//        }
 
         public bool ignore { get; private set; }
 

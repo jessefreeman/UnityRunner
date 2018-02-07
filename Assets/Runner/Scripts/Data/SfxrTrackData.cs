@@ -23,26 +23,26 @@ using PixelVisionSDK;
 namespace PixelVisionRunner.Data
 {
 
-    public class SfxrTrackData : TrackData, ISave, ILoad
+    public class SfxrTrackData : TrackData, ISave
     {
 
-        /// <summary>
-        /// </summary>
-        /// <param name="data"></param>
-        public void DeserializeData(Dictionary<string, object> data)
-        {
-            if (data.ContainsKey("sfxID"))
-                sfxID = Convert.ToInt32((long) data["sfxID"]);
-
-            if (data.ContainsKey("notes"))
-            {
-                var noteData = (List<object>) data["notes"];
-                var total = noteData.Count;
-                notes = new int[total];
-                for (var i = 0; i < total; i++)
-                    notes[i] = (int) (long) noteData[i];
-            }
-        }
+//        /// <summary>
+//        /// </summary>
+//        /// <param name="data"></param>
+//        public void DeserializeData(Dictionary<string, object> data)
+//        {
+//            if (data.ContainsKey("sfxID"))
+//                sfxID = Convert.ToInt32((long) data["sfxID"]);
+//
+//            if (data.ContainsKey("notes"))
+//            {
+//                var noteData = (List<object>) data["notes"];
+//                var totalNotes = noteData.Count;
+//                notes = new int[totalNotes];
+//                for (var k = 0; k < totalNotes; k++)
+//                    notes[k] = (int) (long) noteData[k];
+//            }
+//        }
 
         public bool ignore { get; private set; }
 
