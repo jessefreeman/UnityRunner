@@ -28,18 +28,35 @@ using UnityEngine;
 using UnityEngine.UI;
 using Debug = UnityEngine.Debug;
 
+public interface IBaseRunner
+{
+    IEngine activeEngine { get;}
+    DisplayTarget displayTarget { get;}
+    /// <summary>
+    ///     It's important that we call the PixelVision8's Update() method on each frame. To do this, we'll use the
+    ///     GameObject's own Update() call.
+    /// </summary>
+    void Update();
+
+    /// <summary>
+    ///     In Unity we can use the LateUpdate() method on the MonoBehavior class to synchronize when the PixelVision8 engine
+    ///     should draw.
+    /// </summary>
+    void LateUpdate();
+}
+
 /// <summary>
 ///     The Runner will work just like any other Unity GameObject. By extending MonoBehavior,
 ///     we can attach the runner to a GameObject in the scene and leverage its own lifecycle
 ///     to run Pixel Vision 8.
 /// </summary>
-public class BaseRunner : MonoBehaviour
+public class BaseRunner : MonoBehaviour, IBaseRunner
 {
 
     protected Runner runner;
     
 
-    protected DisplayTarget displayTarget;
+//    protected DisplayTarget displayTarget;
     protected ITextureFactory textureFactory;
     protected IColorFactory colorFactory;
     protected InputFactory inputFactory;
@@ -92,6 +109,8 @@ public class BaseRunner : MonoBehaviour
 
     // We'll use this field to store a reference to our PixelVisionEngine class. 
     public IEngine activeEngine { get; set; }
+    
+    public DisplayTarget displayTarget { get; private set; }
 
     protected IEngine _tmpEngine;
 
@@ -121,7 +140,7 @@ public class BaseRunner : MonoBehaviour
             return chips;
         }
     }
-
+    
     /// <summary>
     ///     We'll use the Start method to configure our PixelVisionEngin and load a game.
     /// </summary>
@@ -135,7 +154,10 @@ public class BaseRunner : MonoBehaviour
         // By changing Unity's Cursor.visible property to false we'll be able to hide the mouse 
         // while the game is running.
         Cursor.visible = false;
-
+        
+        
+        
+        
         // Before we set up the PixelVisionEngine we'll want to configure the renderTexture. 
         // We'll create a new 256 x 240 Texture2D instance and set it as the displayTarget.texture.
         renderTexture = new Texture2D(256, 240, TextureFormat.ARGB32, false) {filterMode = FilterMode.Point};
@@ -146,8 +168,8 @@ public class BaseRunner : MonoBehaviour
         
         fileSystem = new FileSystemService();
         loadService = new LoadService(new TextureFactory(), new ColorFactory());
-        
-        
+//        
+//        
 //        displayTarget = new DisplayTarget(rawImage, renderTexture);
 //        textureFactory = new TextureFactory();
 //        colorFactory = new ColorFactory();
@@ -589,6 +611,7 @@ public class BaseRunner : MonoBehaviour
     /// </summary>
     protected virtual void ResetResolution(int width, int height, bool fullScreen = false)
     {
+        
         // The first thing we need to do is resize the DisplayChip's own resolution.
         activeEngine.displayChip.ResetResolution(width, height);
 

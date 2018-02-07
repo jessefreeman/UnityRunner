@@ -53,7 +53,7 @@ namespace MonoGameRunner
 
         public IMouseInput CreateMouseInput()
         {
-            return new MouseInput(displayTarget.displayTarget.rectTransform);
+            return new MouseInput(displayTarget.rawImage.rectTransform);
         }
     }
 }
