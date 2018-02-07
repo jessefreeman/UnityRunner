@@ -1,6 +1,5 @@
 ﻿using System;
 using PixelVisionRunner;
-using PixelVisionSDK;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -27,14 +26,6 @@ namespace MonoGameRunner
 
         protected IBaseRunner runner;
 
-//        private GraphicsDeviceManager graphics;
-
-//        private Texture2D renderTexture;
-
-//        private SpriteBatch spriteBatch;
-
-//        public ViewportAdapter ViewportAdapter { get; private set; }
-
         public DisplayTarget(RawImage rawImage, IBaseRunner runner)
         {
             this.runner = runner;
@@ -43,9 +34,6 @@ namespace MonoGameRunner
             ;
 
             this.rawImage.texture = this.renderTexture;
-//            this.graphics = graphics;
-//            this.spriteBatch = new SpriteBatch(graphics.GraphicsDevice);
-//            this.ViewportAdapter = new ViewportAdapter(window, graphics.GraphicsDevice, 256, 240);
         }
 
         public void ResetResolution(int width, int height, bool fullScreen)

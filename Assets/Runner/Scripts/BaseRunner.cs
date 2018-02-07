@@ -19,6 +19,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
+using System.Linq;
 using MonoGameRunner;
 using PixelVisionRunner;
 using PixelVisionRunner.Services;
@@ -32,6 +33,7 @@ public interface IBaseRunner
 {
     IEngine activeEngine { get;}
     DisplayTarget displayTarget { get;}
+    
     /// <summary>
     ///     It's important that we call the PixelVision8's Update() method on each frame. To do this, we'll use the
     ///     GameObject's own Update() call.
@@ -168,33 +170,20 @@ public class BaseRunner : MonoBehaviour, IBaseRunner
         
         fileSystem = new FileSystemService();
         loadService = new LoadService(new TextureFactory(), new ColorFactory());
-//        
-//        
-//        displayTarget = new DisplayTarget(rawImage, renderTexture);
-//        textureFactory = new TextureFactory();
-//        colorFactory = new ColorFactory();
-//        inputFactory = new InputFactory(displayTarget);
-//
-//        runner = new Runner(OpenPV8File, displayTarget, textureFactory, colorFactory, inputFactory);
-//
-//        runner.Initialize();
-    }
-    
-    private void OpenPV8File(Action<Stream> resolve)
-    {
-        //resolve(File.OpenRead("./Content/SpriteStressDemo.pv8"));
-        // resolve(File.OpenRead("./Content/UIFrameworkDemo.pv8"));
-        // resolve(File.OpenRead("./Content/SampleLuaGame.pv8"));
-//        resolve(File.OpenRead("./Content/MicroPlatformer.pv8"));
+        
+        displayTarget = new DisplayTarget(rawImage, this);
+        
+        inputFactory = new InputFactory(displayTarget);
+
     }
     
     public LuaService luaService;
 
     public virtual void ConfigureServices()
     {
-        //fileSystem = new UnityFileSystemService();
-        if(loadService == null)
-            loadService = new LoadService(new TextureFactory(), new ColorFactory());
+//        //fileSystem = new UnityFileSystemService();
+//        if(loadService == null)
+//            loadService = new LoadService(new TextureFactory(), new ColorFactory());
 
         if(luaService == null)
             luaService = new LuaService();
@@ -446,79 +435,58 @@ public class BaseRunner : MonoBehaviour, IBaseRunner
         activeEngine = engine;
         
         // Update the resolution
-        ResetResolution(activeEngine.displayChip.width, activeEngine.displayChip.height);
+        displayTarget.ResetResolution(activeEngine.displayChip.width, activeEngine.displayChip.height, Screen.fullScreen);
 
         // Configure the input
         ConfigureInput();
 
         // This method handles caching the colors from the ColorChip to help speed up rendering.
-        CacheColors();
+        displayTarget.CacheColors();
         
         // After loading the game, we are ready to run it.
         activeEngine.RunGame();
-    }
-    
-    /// <summary>
-    ///     To optimize the Runner, we need to save a reference to each color in the ColorChip as native Unity Colors. The
-    ///     cached
-    ///     colors will improve rendering performance later when we cover the DisplayChip's pixel data into a format the
-    ///     Texture2D
-    ///     can display.
-    /// </summary>
-    public void CacheColors()
-    {
-        // The ColorChip can return an array of ColorData. ColorData is an internal data structure that Pixel Vision 8 uses to store 
-        // color information. It has properties for a Hex representation as well as RGB.
-        var colorsData = activeEngine.colorChip.colors;
-
-        // To improve performance, we'll save a reference to the total cashed colors directly to the Runner's totalCachedColors field. 
-        // Also, we'll create a new array to store native Unity Color classes.
-        totalCachedColors = colorsData.Length;
-
-        if (cachedColors.Length != totalCachedColors)
-            Array.Resize(ref cachedColors, totalCachedColors);
-
-        // Now it's time to loop through each of the colors and convert them from ColorData to Color instances. 
-        for (var i = 0; i < totalCachedColors; i++)
-        {
-            // Converting ColorData to Unity Colors is relatively straight forward by simply passing the ColorData's RGB properties into 
-            // the Unity Color class's constructor and saving it  to the cachedColors array.
-            var colorData = colorsData[i];
-
-            if (colorData.flag != 0)
-                cachedColors[i] = new Color(colorData.r, colorData.g, colorData.b);
-        }
     }
 
     protected virtual void ConfigureInput()
     {
         activeControllerChip = activeEngine.controllerChip;
+        
+        activeControllerChip.RegisterKeyInput(inputFactory.CreateKeyInput());
 
-        // This allows the engine to access Unity keyboard input and the inputString
-        activeControllerChip.RegisterKeyInput(new KeyInput());
-
-        // Map Controller and Keyboard
-        var keys1 = new[]
+        var buttons = Enum.GetValues(typeof(Buttons)).Cast<Buttons>();
+        foreach (var button in buttons)
         {
-            KeyCode.UpArrow, KeyCode.DownArrow, KeyCode.LeftArrow, KeyCode.RightArrow, KeyCode.X, KeyCode.C,
-            KeyCode.A, KeyCode.S
-        };
-
-        var keys2 = new[]
-        {
-            KeyCode.I, KeyCode.K, KeyCode.J, KeyCode.L, KeyCode.Quote, KeyCode.Return,
-            KeyCode.Y, KeyCode.U
-        };
-
-        var total = keys1.Length;
-        for (var i = 0; i < total; i++)
-        {
-            activeControllerChip.UpdateControllerKey(0, new KeyboardButtonInput((Buttons) i, (int) keys1[i]));
-            activeControllerChip.UpdateControllerKey(1, new KeyboardButtonInput((Buttons) i, (int) keys2[i]));
+            activeControllerChip.UpdateControllerKey(0, inputFactory.CreateButtonBinding(0, button));
+            activeControllerChip.UpdateControllerKey(1, inputFactory.CreateButtonBinding(1, button));
         }
 
-        // Register mouse input
-        activeControllerChip.RegisterMouseInput(new MouseInput(rawImage.rectTransform));
+        activeControllerChip.RegisterMouseInput(inputFactory.CreateMouseInput());
+//
+//        // This allows the engine to access Unity keyboard input and the inputString
+//        activeControllerChip.RegisterKeyInput(new KeyInput());
+//
+//        // Map Controller and Keyboard
+//        var keys1 = new[]
+//        {
+//            KeyCode.UpArrow, KeyCode.DownArrow, KeyCode.LeftArrow, KeyCode.RightArrow, KeyCode.X, KeyCode.C,
+//            KeyCode.A, KeyCode.S
+//        };
+//
+//        var keys2 = new[]
+//        {
+//            KeyCode.I, KeyCode.K, KeyCode.J, KeyCode.L, KeyCode.Quote, KeyCode.Return,
+//            KeyCode.Y, KeyCode.U
+//        };
+//
+//        var total = keys1.Length;
+//        for (var i = 0; i < total; i++)
+//        {
+//            activeControllerChip.UpdateControllerKey(0, new KeyboardButtonInput((Buttons) i, (int) keys1[i]));
+//            activeControllerChip.UpdateControllerKey(1, new KeyboardButtonInput((Buttons) i, (int) keys2[i]));
+//        }
+//
+//        // Register mouse input
+//        activeControllerChip.RegisterMouseInput(new MouseInput(rawImage.rectTransform));
     }
 
     /// <summary>
@@ -527,8 +495,6 @@ public class BaseRunner : MonoBehaviour, IBaseRunner
     /// </summary>
     public virtual void Update()
     {
-//        if (preloading)
-//            Debug.Log("Loading Percent " + loadService.percent);
 
         // Before trying to update the PixelVisionEngine instance, we need to make sure it exists. The guard clause protects us from throwing an 
         // error when the Runner loads up and starts before we've had a chance to instantiate the new engine instance.
@@ -561,101 +527,12 @@ public class BaseRunner : MonoBehaviour, IBaseRunner
         // Now it's time to call the PixelVisionEngine's Draw() method. This Draw() call propagates throughout all of the Chips that have 
         // registered themselves as being able to draw such as the GameChip and the DisplayChip.
         activeEngine.Draw();
-
-        // The first part of rendering Pixel Vision 8's DisplayChip is to get all of the current pixel data during the current frame. Each 
-        // Integer in this Array contains an ID we can use to match up to the cached colors we created when setting up the Runner.
-        var pixelData = activeEngine.displayChip.displayPixels; //.displayPixelData;
-        var total = pixelData.Length;
-        int colorRef;
-
-        // Need to make sure we are using the latest colors.
-        if (activeEngine.colorChip.invalid)
-            CacheColors();
-
-        // We also want to cache the ScreenBufferChip's background color. The background color is an ID that references one of the ColorChip's colors.
-        var bgColor = activeEngine.colorChip.backgroundColor;
-
-        // The cachedTransparentColor is what shows when a color ID is out of range. Pixel Vision 8 doesn't support transparency, so this 
-        // color shows instead. Here we test to see if the bgColor is an ID within the length of the bgColor variable. If not, we set it to 
-        // Unity's default magenta color. If the bgColor is within range, we'll use that for transparency.
-        cacheTransparentColor = bgColor > cachedColors.Length || bgColor < 0 ? Color.magenta : cachedColors[activeEngine.colorChip.backgroundColor];
-
-        // Now it's time to loop through all of the DisplayChip's pixel data.
-        for (var i = 0; i < total; i++)
-        {
-            // Here we get a reference to the color we are trying to look up from the pixelData array. Then we compare that ID to what we 
-            // have in the cachedPixels. If the color is out of range, we use the cachedTransparentColor. If the color exists in the cache we use that.
-            colorRef = pixelData[i];
-
-            // Replace transparent colors with bg for next pass
-            if (colorRef == -1)
-                pixelData[i] = bgColor;
-
-            cachedPixels[i] = colorRef < 0 || colorRef >= totalCachedColors ? cacheTransparentColor : cachedColors[colorRef];
-
-            // As you can see, we are using a protected field called cachedPixels. When we call ResetResolution, we resize this array to make sure that 
-            // it matches the length of the DisplayChip's pixel data. By keeping a reference to this Array and updating each color instead of rebuilding 
-            // it, we can significantly increase the render performance of the Runner.
-        }
-
-        // At this point, we have all the color data we need to update the renderTexture. We'll set the cachedPixels on the renderTexture and call 
-        // Apply() to re-render the Texture.
-        renderTexture.SetPixels(cachedPixels);
-        renderTexture.Apply();
-    }
-
-    /// <summary>
-    ///     The ResetResolution() method manages Unity-specific logic we need to make sure that our rednerTexture displays
-    ///     correctly in its UI container
-    ///     as well as making sure the cachedPixel array matches up to DisplayChip's pixel data length.
-    /// </summary>
-    protected virtual void ResetResolution(int width, int height, bool fullScreen = false)
-    {
         
-        // The first thing we need to do is resize the DisplayChip's own resolution.
-        activeEngine.displayChip.ResetResolution(width, height);
+        
+        
+        displayTarget.Render();
 
-        Screen.fullScreen = fullScreen;
-
-        // We need to make sure our displayTarget, which is our RawImage in the Unity scene,  exists before trying to update it. 
-        if (rawImage != null)
-        {
-            // The first thing we'll do to update the displayTarget recalculate the correct aspect ratio. Here we get a reference 
-            // to the AspectRatioFitter component then set the aspectRatio property to the value of the width divided by the height. 
-            var fitter = rawImage.GetComponent<AspectRatioFitter>();
-            fitter.aspectRatio = (float) width / height;
-
-            // Next we need to update the CanvasScaler's referenceResolution value.
-            var canvas = rawImage.canvas;
-            var scaler = canvas.GetComponent<CanvasScaler>();
-            scaler.referenceResolution = new Vector2(width, height);
-
-            // Now we can resize the redenerTexture to also match the new resolution.
-            renderTexture.Resize(width, height);
-			
-            // At this point, the Unity-specific UI is correctly configured. The CanvasScaler and AspectRetioFitter will ensure that 
-            // the Texture we use to show the DisplayChip's pixel data will always maintain it's aspect ratio no matter what the game's 
-            // real resolution is.
-
-            // Now it's time to resize our cahcedPixels array. We calculate the total number of pixels by multiplying the width by the 
-            // height. We'll use this array to make sure we have enough pixels to correctly render the DisplayChip's own pixel data.
-            var totalPixels = width * height;
-            Array.Resize(ref cachedPixels, totalPixels);
-
-            // The last this we need to do is make sure that all of the cachedPixels are not transparent. Since Pixel Vision 8 doesn't 
-            // support transparency it's important to make sure we can modify these colors before attempting to render the DisplayChip's pixel data.
-            for (var i = 0; i < totalPixels; i++)
-                cachedPixels[i].a = 1;
-
-            var overscanXPixels = (width - activeEngine.displayChip.overscanXPixels) / (float) width;
-            var overscanYPixels = (height - activeEngine.displayChip.overscanYPixels) / (float) height;
-            var offsetY = 1 - overscanYPixels;
-            rawImage.uvRect = new UnityEngine.Rect(0, offsetY, overscanXPixels, overscanYPixels);
-
-            // When copying over the DisplayChip's pixel data to the cachedPixels, we only focus on the RGB value. While we could reset the 
-            // alpha during that step, it would also slow down the renderer. Since Pixel Vision 8 simply ignores the alpha value of a color, 
-            // we can just do this once when changing the resolution and help speed up the Runner.
-        }
     }
+
 
 }
