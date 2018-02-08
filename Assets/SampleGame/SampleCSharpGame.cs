@@ -3,8 +3,7 @@ using PixelVisionSDK.Utils;
 
 public class SampleCSharpGame : GameChip
 {
-    private readonly string message =
-        @"EMPTY GAME\n\n\nThis is an empty game template. Press Ctrl + 1 to open the editor or modify the files found in your workspace game folder.\n\n\nVisit 'bit.ly/PV8GitBook' for the docs on how to use PV8.";
+    private readonly string message = "EMPTY GAME\n\n\nThis is an empty game template. Press Ctrl + 1 to open the editor or modify the files found in your workspace game folder.\n\n\nVisit 'bit.ly/PV8GitBook' for the docs on how to use PV8.";
 
     public override void Init()
     {
@@ -15,8 +14,8 @@ public class SampleCSharpGame : GameChip
 
         // We are going to render the message in a box as tiles. To do this, we need to wrap the
         // text, then split it into lines and draw each line.
-        var wrap = TextUtil.WordWrap(message, display.x / 8 - 2);
-        var lines = TextUtil.SplitLines(wrap);
+        var wrap = WordWrap(message, display.x / 8 - 2);
+        var lines = SplitLines(wrap);
 
         var total = lines.Length;
         var startY = display.y / 8 - 1 - total;

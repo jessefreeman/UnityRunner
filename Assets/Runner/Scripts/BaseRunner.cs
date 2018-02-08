@@ -19,7 +19,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
-using MonoGameRunner;
+using PixelVisionRunner.Unity;
 using PixelVisionRunner;
 using PixelVisionRunner.Services;
 using PixelVisionSDK;
@@ -28,24 +28,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Debug = UnityEngine.Debug;
 
-public interface IBaseRunner
-{
-    
-    IEngine activeEngine { get;}
-    DisplayTarget displayTarget { get;}
-    
-    /// <summary>
-    ///     It's important that we call the PixelVision8's Update() method on each frame. To do this, we'll use the
-    ///     GameObject's own Update() call.
-    /// </summary>
-    void Update();
 
-    /// <summary>
-    ///     In Unity we can use the LateUpdate() method on the MonoBehavior class to synchronize when the PixelVision8 engine
-    ///     should draw.
-    /// </summary>
-    void LateUpdate();
-}
 
 /// <summary>
 ///     The Runner will work just like any other Unity GameObject. By extending MonoBehavior,
@@ -86,7 +69,7 @@ public class BaseRunner : MonoBehaviour, IBaseRunner
 
     }
     
-    public DisplayTarget displayTarget { get; private set; }
+    public IDisplayTarget displayTarget { get; private set; }
 
     protected IEngine tmpEngine;
 
@@ -134,7 +117,7 @@ public class BaseRunner : MonoBehaviour, IBaseRunner
         
         fileSystem = new FileSystemService();
         displayTarget = new DisplayTarget(rawImage, this);
-        inputFactory = new InputFactory(displayTarget);
+        inputFactory = new InputFactory((DisplayTarget) displayTarget);
 
         runner = new Runner(new TextureFactory(), new ColorFactory());
         
@@ -180,13 +163,13 @@ public class BaseRunner : MonoBehaviour, IBaseRunner
     protected IEnumerator WaitForRequest(WWW www)
     {
         
-        print("Wait for www");
+//        print("Wait for www");
         yield return www;
 
         // check for errors
         if (string.IsNullOrEmpty(www.error))
         {
-            print("extracting zip");
+            //print("extracting zip");
 
             var mStream = new MemoryStream(www.bytes);
             ExtractZipFromMemoryStream(mStream);
@@ -300,5 +283,6 @@ public class BaseRunner : MonoBehaviour, IBaseRunner
         ProcessFiles(files);
         
     }
+    
 
 }

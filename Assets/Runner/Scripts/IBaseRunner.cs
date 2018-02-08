@@ -13,15 +13,20 @@
 // Pedro Medeiros - @saint11
 // Shawn Rakowski - @shwany
 
-using UnityEngine;
+using PixelVisionSDK;
 
 namespace PixelVisionRunner.Unity
 {
-    class TextureFactory : ITextureFactory
-    {
-        public ITexture2D NewTexture2D(int width, int height)
+    
+    
+    /// <summary>
+    ///     This class exposes the active engine and the target display to external classes.
+    /// </summary>
+    public interface IBaseRunner
         {
-            return new Texture2DAdapter(new Texture2D(width, height));
+        
+            IEngine activeEngine { get;}
+            IDisplayTarget displayTarget { get;}
+        
         }
-    }
 }

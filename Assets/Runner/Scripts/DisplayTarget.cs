@@ -3,7 +3,7 @@ using PixelVisionRunner;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace MonoGameRunner
+namespace PixelVisionRunner.Unity
 {
     public class DisplayTarget : IDisplayTarget
     {
@@ -127,7 +127,7 @@ namespace MonoGameRunner
             // At this point, we have all the color data we need to update the renderTexture. We'll set the cachedPixels on the renderTexture and call 
             // Apply() to re-render the Texture.
             renderTexture.SetPixels(cachedPixels);
-            renderTexture.Apply();
+            renderTexture.Apply(false);
         }
 
 

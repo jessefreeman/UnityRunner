@@ -13,8 +13,6 @@
 // Pedro Medeiros - @saint11
 // Shawn Rakowski - @shwany
 
-using System;
-using System.Collections.Generic;
 using System.Text;
 using PixelVisionRunner.Utils;
 using PixelVisionSDK;

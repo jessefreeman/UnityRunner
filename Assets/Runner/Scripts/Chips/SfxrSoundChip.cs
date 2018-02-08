@@ -13,7 +13,6 @@
 // Pedro Medeiros - @saint11
 // Shawn Rakowski - @shwany
 
-using JetBrains.Annotations;
 using PixelVisionRunner.Data;
 using PixelVisionSDK;
 using PixelVisionSDK.Chips;

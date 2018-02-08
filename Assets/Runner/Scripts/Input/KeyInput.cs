@@ -16,27 +16,30 @@
 using PixelVisionSDK;
 using UnityEngine;
 
-public class KeyInput : IKeyInput
+namespace PixelVisionRunner.Unity
 {
-
-    public bool GetKey(int key)
+    public class KeyInput : IKeyInput
     {
-        return Input.GetKey((KeyCode) key);
-    }
 
-    public bool GetKeyDown(int key)
-    {
-        return Input.GetKeyDown((KeyCode) key);
-    }
+        public bool GetKey(int key)
+        {
+            return Input.GetKey((KeyCode) key);
+        }
 
-    public bool GetKeyUp(int key)
-    {
-        return Input.GetKeyUp((KeyCode) key);
-    }
+        public bool GetKeyDown(int key)
+        {
+            return Input.GetKeyDown((KeyCode) key);
+        }
 
-    public string ReadInputString()
-    {
-        return Input.inputString;
-    }
+        public bool GetKeyUp(int key)
+        {
+            return Input.GetKeyUp((KeyCode) key);
+        }
 
+        public string ReadInputString()
+        {
+            return Input.inputString;
+        }
+
+    }
 }

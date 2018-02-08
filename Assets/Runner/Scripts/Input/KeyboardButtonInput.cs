@@ -17,28 +17,31 @@ using PixelVisionSDK;
 using PixelVisionSDK.Chips;
 using UnityEngine;
 
-/// <summary>
-///     This class helps capture keyboard input and needs to be registered with the ControllerChip.
-/// </summary>
-/// <example>
-///     controllerChip.UpdateControllerKey(0, new KeyboardButtonInput(Button.A, 120);
-/// </example>
-public class KeyboardButtonInput : ButtonState
+namespace PixelVisionRunner.Unity
 {
-
-    protected int keyCode;
-
-    public KeyboardButtonInput(Buttons buttons, int keyCode)
+    /// <summary>
+    ///     This class helps capture keyboard input and needs to be registered with the ControllerChip.
+    /// </summary>
+    /// <example>
+    ///     controllerChip.UpdateControllerKey(0, new KeyboardButtonInput(Button.A, 120);
+    /// </example>
+    public class KeyboardButtonInput : ButtonState
     {
-        this.buttons = buttons;
-        mapping = keyCode;
-        this.keyCode = keyCode;
-    }
 
-    public override void Update(float timeDelta)
-    {
-        value = Input.GetKey((KeyCode) keyCode);
-        base.Update(timeDelta);
-    }
+        protected int keyCode;
 
+        public KeyboardButtonInput(Buttons buttons, int keyCode)
+        {
+            this.buttons = buttons;
+            mapping = keyCode;
+            this.keyCode = keyCode;
+        }
+
+        public override void Update(float timeDelta)
+        {
+            value = Input.GetKey((KeyCode) keyCode);
+            base.Update(timeDelta);
+        }
+
+    }
 }
