@@ -20,7 +20,7 @@ using PixelVisionSDK;
 namespace PixelVisionRunner.Data
 {
 
-    public class SfxrSongData : SongData, ISave
+    public class SfxrSongData : SongData//, ISave
     {
 
         public SfxrSongData(string name = "Untitled", int tracks = 4) : base(name, tracks)

@@ -23,7 +23,7 @@ using PixelVisionSDK;
 namespace PixelVisionRunner.Data
 {
 
-    public class SfxrTrackData : TrackData, ISave
+    public class SfxrTrackData : TrackData//, ISave
     {
 
 //        /// <summary>

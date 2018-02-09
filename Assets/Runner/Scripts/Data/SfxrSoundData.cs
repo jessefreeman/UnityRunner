@@ -13,7 +13,6 @@
 // Pedro Medeiros - @saint11
 // Shawn Rakowski - @shwany
 
-using System.Collections.Generic;
 using System.Text;
 using PixelVisionRunner.Utils;
 using PixelVisionSDK;
@@ -21,7 +20,7 @@ using PixelVisionSDK;
 namespace PixelVisionRunner.Data
 {
 
-    public class SfxrSoundData : ISoundData, ISave
+    public class SfxrSoundData : ISoundData//, ISave
     {
 
         protected SfxrSynth synth;
