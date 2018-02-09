@@ -27,7 +27,7 @@ public class SpriteStressDemoRunner : BaseRunner {
 		ConfigureEngine();
 			
 		// Use this all of the resources that the game needs
-		LoadFromDir(Application.streamingAssetsPath + "/Demos/MusicDemo/");
+		LoadFromDir(Application.streamingAssetsPath + "/Demos/SpriteStressDemo/");
 	}
 	
 }
@@ -69,7 +69,9 @@ public class SpriteStressDemoChip : GameChip
 // the background color.
 	public override void Update(float timeDelta)
 	{
-
+		// Call base Update to calculate FPS and reset sprite count.
+		base.Update(timeDelta);
+		
 		// We start by adding the time delta to the delay.
 		delay = delay + timeDelta;
 
@@ -110,7 +112,7 @@ public class SpriteStressDemoChip : GameChip
 
 		// Let's draw the FPS chars first since they will always be displayed. Any additional sprites over
 		// the max sprite count will simply be ignore.
-//		DrawText("SPRITES " + ReadTotalSprites() + " FPS " + ReadFPS(), 4, 4, DrawMode.UI, "large-font");
+		DrawText("SPRITES " + ReadTotalSprites() + " FPS " + ReadFPS(), 4, 4, DrawMode.UI, "large-font");
 
 	}
 

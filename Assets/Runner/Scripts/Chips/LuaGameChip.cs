@@ -13,6 +13,7 @@
 // Pedro Medeiros - @saint11
 // Shawn Rakowski - @shwany
 
+using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using MoonSharp.Interpreter;
@@ -190,11 +191,15 @@ namespace PixelVisionRunner.Chips
 
             #endregion
 
-            #region Pixel Data
+            #region Debug
+            luaScript.Globals["ReadFPS"] = new Func<int>(ReadFPS);
+            luaScript.Globals["ReadTotalSprites"] = new Func<int>(ReadTotalSprites);
+            #endregion
+
+            #region Text
             
             luaScript.Globals["ConvertTextToSprites"] = (ConvertTextToSpritesDelegate) ConvertTextToSprites;
             luaScript.Globals["ConvertCharacterToPixelData"] = (ConvertCharacterToPixelDataDelegate) ConvertCharacterToPixelData;
-            
 
             #endregion
 
