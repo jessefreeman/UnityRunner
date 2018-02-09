@@ -33,20 +33,19 @@ public class UnityRunner : BaseRunner {
 
 	public virtual void LoadDefaultGame()
 	{
-//		fileSystem = new FileSystemService();
-//		loadService = new LoadService(new TextureFactory(), new ColorFactory());
+
 		ConfigureEngine();
-//        
+        
 		var path = Application.streamingAssetsPath + "/SampleCSharpGame/";
-//        var path = "";
-		//TODO need to get any game in the default game folder
 
-#if UNITY_WEBGL && !UNITY_EDITOR
-        path = GetURL();
-#endif
-
-		// Use this to load a .pv8 file directly from the filesystem or from a url
-		LoadFromDir(path);
+		#if UNITY_WEBGL && !UNITY_EDITOR
+			path = GetURL();
+			LoadFromZip(path);
+		#else
+			// Use this to load a .pv8 file directly from the filesystem or from a url
+			LoadFromDir(path);
+		#endif
+		
 	}
 
 }
