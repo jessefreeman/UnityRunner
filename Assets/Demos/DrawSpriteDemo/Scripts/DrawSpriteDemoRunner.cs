@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
+using PixelVisionRunner.Chips;
+using PixelVisionSDK.Chips;
 using UnityEngine;
 
 
-public class ControllerDemoRunner : BaseRunner {
+public class DrawSpriteDemoRunner : BaseRunner {
 	
 	public override List<string> defaultChips
 	{
@@ -10,7 +12,7 @@ public class ControllerDemoRunner : BaseRunner {
 		{
 			var chips = base.defaultChips;
 	
-				chips.Add(typeof(ControllerDemoGameChip).FullName);
+				chips.Add(typeof(DrawSpriteDemoGameChip).FullName);
 
 			return chips;
 		}
@@ -23,7 +25,8 @@ public class ControllerDemoRunner : BaseRunner {
 		ConfigureEngine();
 			
 		// Use this all of the resources that the game needs
-		LoadFromDir(Application.streamingAssetsPath + "/Demos/ControllerDemo/");
+		LoadFromDir(Application.streamingAssetsPath + "/Demos/DrawSpriteDemo/");
 	}
 	
 }
+

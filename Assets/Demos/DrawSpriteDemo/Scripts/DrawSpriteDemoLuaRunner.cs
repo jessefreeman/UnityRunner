@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using PixelVisionRunner.Chips;
+using PixelVisionSDK.Chips;
 using UnityEngine;
 
-public class ControllerDemoLuaRunner : BaseRunner {
+public class DrawSpriteDemoLuaRunner : BaseRunner {
 	
 	public LuaService luaService;
 
@@ -24,7 +26,7 @@ public class ControllerDemoLuaRunner : BaseRunner {
         
 		ConfigureEngine();
 
-		LoadFromDir(Application.streamingAssetsPath + "/Demos/ControllerDemo/");
+		LoadFromDir(Application.streamingAssetsPath + "/Demos/DrawSpriteDemo/");
 	}
 
 	public override void ConfigureEngine(Dictionary<string, string> metaData = null)
