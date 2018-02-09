@@ -15,6 +15,7 @@
 
 using System.Collections.Generic;
 using PixelVisionRunner.Chips;
+using PixelVisionSDK.Chips;
 using UnityEngine;
 
 public class LuaRunner : BaseRunner
@@ -27,7 +28,7 @@ public class LuaRunner : BaseRunner
             var chips = base.defaultChips;
 
             chips.Add(typeof(LuaGameChip).FullName);
-            chips.Add(typeof(SfxrMusicChip).FullName);
+            chips.Add(typeof(MusicChip).FullName);
             chips.Add(typeof(SfxrSoundChip).FullName);
 
             return chips;

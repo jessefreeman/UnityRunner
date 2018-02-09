@@ -40,7 +40,8 @@ namespace PixelVisionRunner.Unity
         {
             // The first thing we need to do is resize the DisplayChip's own resolution.
             runner.activeEngine.displayChip.ResetResolution(width, height);
-
+            totalPixels = runner.activeEngine.displayChip.displayPixels.pixels.Length;
+            
             // We need to make sure our displayTarget, which is our RawImage in the Unity scene,  exists before trying to update it. 
             if (rawImage != null)
             {
@@ -63,7 +64,7 @@ namespace PixelVisionRunner.Unity
 
                 // Now it's time to resize our cahcedPixels array. We calculate the total number of pixels by multiplying the width by the 
                 // height. We'll use this array to make sure we have enough pixels to correctly render the DisplayChip's own pixel data.
-                var totalPixels = width * height;
+//                var totalPixels = width * height;
                 Array.Resize(ref cachedPixels, totalPixels);
 
                 // The last this we need to do is make sure that all of the cachedPixels are not transparent. Since Pixel Vision 8 doesn't 
@@ -80,14 +81,19 @@ namespace PixelVisionRunner.Unity
                 // alpha during that step, it would also slow down the renderer. Since Pixel Vision 8 simply ignores the alpha value of a color, 
                 // we can just do this once when changing the resolution and help speed up the Runner.
             }
+
+            
         }
 
+        private int totalPixels;
+        private Color clear = Color.magenta;
+            
         public void Render()
         {
             // The first part of rendering Pixel Vision 8's DisplayChip is to get all of the current pixel data during the current frame. Each 
             // Integer in this Array contains an ID we can use to match up to the cached colors we created when setting up the Runner.
-            var pixelData = runner.activeEngine.displayChip.displayPixels; //.displayPixelData;
-            var total = pixelData.Length;
+            var pixelData = runner.activeEngine.displayChip.displayPixels.pixels; //.displayPixelData;
+//            var total = pixelData.Length;
             int colorRef;
 
             // Need to make sure we are using the latest colors.
@@ -101,11 +107,11 @@ namespace PixelVisionRunner.Unity
             // color shows instead. Here we test to see if the bgColor is an ID within the length of the bgColor variable. If not, we set it to 
             // Unity's default magenta color. If the bgColor is within range, we'll use that for transparency.
             cacheTransparentColor = bgColor > cachedColors.Length || bgColor < 0
-                ? Color.magenta
+                ? clear
                 : cachedColors[runner.activeEngine.colorChip.backgroundColor];
 
             // Now it's time to loop through all of the DisplayChip's pixel data.
-            for (var i = 0; i < total; i++)
+            for (var i = 0; i < totalPixels; i++)
             {
                 // Here we get a reference to the color we are trying to look up from the pixelData array. Then we compare that ID to what we 
                 // have in the cachedPixels. If the color is out of range, we use the cachedTransparentColor. If the color exists in the cache we use that.

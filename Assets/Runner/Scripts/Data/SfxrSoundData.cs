@@ -13,14 +13,12 @@
 // Pedro Medeiros - @saint11
 // Shawn Rakowski - @shwany
 
-using System.Text;
-using PixelVisionRunner.Utils;
 using PixelVisionSDK;
 
 namespace PixelVisionRunner.Data
 {
 
-    public class SfxrSoundData : ISoundData//, ISave
+    public class SfxrSoundData : ISoundData
     {
 
         protected SfxrSynth synth;
@@ -36,54 +34,7 @@ namespace PixelVisionRunner.Data
             get { return synth.parameters; }
         }
 
-        /// <summary>
-        ///     The DeserializeData method allows you to pass in a
-        ///     Dictionary with a string as the key and a generic object for the
-        ///     value. This can be manually parsed to convert each key/value pair
-        ///     into data used to configure the class that
-        ///     implements this interface.
-        /// </summary>
-        /// <param name="data">
-        ///     A Dictionary with a string as the key and a generic object as the
-        ///     value.
-        /// </param>
-//        public void DeserializeData(Dictionary<string, object> data)
-//        {
-//            if (data.ContainsKey("name"))
-//                name = data["name"] as string;
-//
-//            if (data.ContainsKey("settings"))
-//                UpdateSettings(data["settings"] as string);
-//        }
-
         public bool ignore { get; private set; }
-
-        /// <summary>
-        ///     Use this method to create a new StringBuilder instance and wrap any
-        ///     custom serialized data by leveraging the CustomSerializedData()
-        ///     method.
-        /// </summary>
-        /// <returns>
-        /// </returns>
-        public string SerializeData()
-        {
-            var sb = new StringBuilder();
-            JsonUtil.GetLineBreak(sb);
-            sb.Append("{");
-            JsonUtil.GetLineBreak(sb, 1);
-            sb.Append("\"name\":\"");
-            sb.Append(name);
-            sb.Append("\",");
-            JsonUtil.GetLineBreak(sb, 1);
-
-            sb.Append("\"settings\":\"");
-            sb.Append(synth.parameters.GetSettingsString());
-            sb.Append("\"");
-            JsonUtil.GetLineBreak(sb, 0);
-            sb.Append("}");
-
-            return sb.ToString();
-        }
 
         public string name { get; set; }
 

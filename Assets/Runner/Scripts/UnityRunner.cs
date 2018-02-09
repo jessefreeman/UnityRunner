@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using PixelVisionRunner.Chips;
+using PixelVisionSDK.Chips;
 using UnityEngine;
 
 public class UnityRunner : BaseRunner {
@@ -11,7 +12,7 @@ public class UnityRunner : BaseRunner {
 			var chips = base.defaultChips;
 
 			chips.Add(typeof(SampleCSharpGame).FullName);
-			chips.Add(typeof(SfxrMusicChip).FullName);
+			chips.Add(typeof(MusicChip).FullName);
 			chips.Add(typeof(SfxrSoundChip).FullName);
 
 			return chips;
