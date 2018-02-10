@@ -1,0 +1,21 @@
+fileFormatVersion: 2
+guid: 3ebaee83c965747509e156cc5b7814da
+timeCreated: 1518281375
+licenseType: Pro
+TrueTypeFontImporter:
+  serializedVersion: 4
+  fontSize: 8
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontName: Minimal5
+  fontNames:
+  - Minimal5
+  fallbackFontReferences: []
+  customCharacters: 
+  fontRenderingMode: 2
+  ascentCalculationMode: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
