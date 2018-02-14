@@ -1,7 +1,9 @@
 ﻿using System;
 using PixelVisionRunner;
+using PixelVisionSDK;
 using UnityEngine;
 using UnityEngine.UI;
+using Rect = UnityEngine.Rect;
 
 namespace PixelVisionRunner.Unity
 {
@@ -30,9 +32,8 @@ namespace PixelVisionRunner.Unity
         {
             this.runner = runner;
             this.rawImage = rawImage;
-            this.renderTexture = new Texture2D(256, 240, TextureFormat.ARGB32, false) {filterMode = FilterMode.Point};
-            ;
-
+            renderTexture = new Texture2D(256, 240, TextureFormat.ARGB32, false) {filterMode = FilterMode.Point};
+            
             this.rawImage.texture = this.renderTexture;
         }
 
@@ -88,14 +89,16 @@ namespace PixelVisionRunner.Unity
         private int totalPixels;
         private Color clear = Color.magenta;
         private int bgColorID;
+        private int[] pixelData;
+        private int colorRef;
         
         public void Render()
         {
             // The first part of rendering Pixel Vision 8's DisplayChip is to get all of the current pixel data during the current frame. Each 
             // Integer in this Array contains an ID we can use to match up to the cached colors we created when setting up the Runner.
-            var pixelData = runner.activeEngine.displayChip.pixels; //.displayPixelData;
+            pixelData = runner.activeEngine.displayChip.pixels; //.displayPixelData;
 //            var total = pixelData.Length;
-            int colorRef;
+//            int colorRef;
 
             // Need to make sure we are using the latest colors.
             if (runner.activeEngine.colorChip.invalid)
@@ -109,7 +112,7 @@ namespace PixelVisionRunner.Unity
                 colorRef = pixelData[i];
 
                 // Replace transparent colors with bg for next pass
-                if (colorRef < 0 || (colorRef > totalCachedColors))
+                if (colorRef < 0 || (colorRef >= totalCachedColors))
                 {
                     pixelData[i] = bgColorID;
                 }
@@ -131,7 +134,10 @@ namespace PixelVisionRunner.Unity
             renderTexture.Apply(false);
         }
 
-
+        private ColorData[] colorsData;
+        private int i;
+        private ColorData colorData;
+        
         /// <summary>
         ///     To optimize the Runner, we need to save a reference to each color in the ColorChip as native Unity Colors. The
         ///     cached
@@ -154,7 +160,7 @@ namespace PixelVisionRunner.Unity
             
             // The ColorChip can return an array of ColorData. ColorData is an internal data structure that Pixel Vision 8 uses to store 
             // color information. It has properties for a Hex representation as well as RGB.
-            var colorsData = runner.activeEngine.colorChip.colors;
+            colorsData = runner.activeEngine.colorChip.colors;
 
             // To improve performance, we'll save a reference to the total cashed colors directly to the Runner's totalCachedColors field. 
             // Also, we'll create a new array to store native Unity Color classes.
@@ -164,11 +170,11 @@ namespace PixelVisionRunner.Unity
                 Array.Resize(ref cachedColors, totalCachedColors);
 
             // Now it's time to loop through each of the colors and convert them from ColorData to Color instances. 
-            for (var i = 0; i < totalCachedColors; i++)
+            for (i = 0; i < totalCachedColors; i++)
             {
                 // Converting ColorData to Unity Colors is relatively straight forward by simply passing the ColorData's RGB properties into 
                 // the Unity Color class's constructor and saving it  to the cachedColors array.
-                var colorData = colorsData[i];
+                colorData = colorsData[i];
 
                 if (colorData.flag != 0)
                     cachedColors[i] = new Color(colorData.r, colorData.g, colorData.b);
