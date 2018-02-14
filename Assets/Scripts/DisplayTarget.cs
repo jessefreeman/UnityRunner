@@ -40,7 +40,7 @@ namespace PixelVisionRunner.Unity
         {
             // The first thing we need to do is resize the DisplayChip's own resolution.
             runner.activeEngine.displayChip.ResetResolution(width, height);
-            totalPixels = runner.activeEngine.displayChip.displayPixels.pixels.Length;
+            totalPixels = runner.activeEngine.displayChip.totalPixels;//.pixels.Length;
             
             // We need to make sure our displayTarget, which is our RawImage in the Unity scene,  exists before trying to update it. 
             if (rawImage != null)
@@ -87,28 +87,19 @@ namespace PixelVisionRunner.Unity
 
         private int totalPixels;
         private Color clear = Color.magenta;
-            
+        private int bgColorID;
+        
         public void Render()
         {
             // The first part of rendering Pixel Vision 8's DisplayChip is to get all of the current pixel data during the current frame. Each 
             // Integer in this Array contains an ID we can use to match up to the cached colors we created when setting up the Runner.
-            var pixelData = runner.activeEngine.displayChip.displayPixels.pixels; //.displayPixelData;
+            var pixelData = runner.activeEngine.displayChip.pixels; //.displayPixelData;
 //            var total = pixelData.Length;
             int colorRef;
 
             // Need to make sure we are using the latest colors.
             if (runner.activeEngine.colorChip.invalid)
                 CacheColors();
-
-            // We also want to cache the ScreenBufferChip's background color. The background color is an ID that references one of the ColorChip's colors.
-            var bgColor = runner.activeEngine.colorChip.backgroundColor;
-
-            // The cachedTransparentColor is what shows when a color ID is out of range. Pixel Vision 8 doesn't support transparency, so this 
-            // color shows instead. Here we test to see if the bgColor is an ID within the length of the bgColor variable. If not, we set it to 
-            // Unity's default magenta color. If the bgColor is within range, we'll use that for transparency.
-            cacheTransparentColor = bgColor > cachedColors.Length || bgColor < 0
-                ? clear
-                : cachedColors[runner.activeEngine.colorChip.backgroundColor];
 
             // Now it's time to loop through all of the DisplayChip's pixel data.
             for (var i = 0; i < totalPixels; i++)
@@ -118,12 +109,16 @@ namespace PixelVisionRunner.Unity
                 colorRef = pixelData[i];
 
                 // Replace transparent colors with bg for next pass
-                if (colorRef == -1)
-                    pixelData[i] = bgColor;
-
-                cachedPixels[i] = colorRef < 0 || colorRef >= totalCachedColors
-                    ? cacheTransparentColor
-                    : cachedColors[colorRef];
+                if (colorRef < 0 || (colorRef > totalCachedColors))
+                {
+                    pixelData[i] = bgColorID;
+                }
+                
+                cachedPixels[i] = cachedColors[colorRef];
+//                
+//                cachedPixels[i] = colorRef < 0 || colorRef >= totalCachedColors
+//                    ? cacheTransparentColor
+//                    : cachedColors[colorRef];
 
                 // As you can see, we are using a protected field called cachedPixels. When we call ResetResolution, we resize this array to make sure that 
                 // it matches the length of the DisplayChip's pixel data. By keeping a reference to this Array and updating each color instead of rebuilding 
@@ -146,6 +141,17 @@ namespace PixelVisionRunner.Unity
         /// </summary>
         public void CacheColors()
         {
+            
+            // We also want to cache the ScreenBufferChip's background color. The background color is an ID that references one of the ColorChip's colors.
+            bgColorID = runner.activeEngine.colorChip.backgroundColor;
+            
+            // The cachedTransparentColor is what shows when a color ID is out of range. Pixel Vision 8 doesn't support transparency, so this 
+            // color shows instead. Here we test to see if the bgColor is an ID within the length of the bgColor variable. If not, we set it to 
+            // Unity's default magenta color. If the bgColor is within range, we'll use that for transparency.
+            cacheTransparentColor = bgColorID > cachedColors.Length || bgColorID < 0
+                ? clear
+                : cachedColors[runner.activeEngine.colorChip.backgroundColor];
+            
             // The ColorChip can return an array of ColorData. ColorData is an internal data structure that Pixel Vision 8 uses to store 
             // color information. It has properties for a Hex representation as well as RGB.
             var colorsData = runner.activeEngine.colorChip.colors;
