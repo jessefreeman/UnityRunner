@@ -154,7 +154,7 @@ namespace PixelVisionRunner.Unity
             // The cachedTransparentColor is what shows when a color ID is out of range. Pixel Vision 8 doesn't support transparency, so this 
             // color shows instead. Here we test to see if the bgColor is an ID within the length of the bgColor variable. If not, we set it to 
             // Unity's default magenta color. If the bgColor is within range, we'll use that for transparency.
-            cacheTransparentColor = bgColorID > cachedColors.Length || bgColorID < 0
+            cacheTransparentColor = bgColorID >= cachedColors.Length || bgColorID < 0
                 ? clear
                 : cachedColors[runner.activeEngine.colorChip.backgroundColor];
             
