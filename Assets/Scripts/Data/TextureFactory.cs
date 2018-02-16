@@ -21,7 +21,7 @@ namespace PixelVisionRunner.Unity
     {
         public ITexture2D NewTexture2D(int width, int height)
         {
-            return new Texture2DAdapter(new Texture2D(width, height));
+            return new Texture2DAdapter(width, height);
         }
     }
 }

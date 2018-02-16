@@ -144,7 +144,8 @@ function Draw()
   -- scroll the tilemap map down below the HUD which is 16 pixels hight. Also apply the new scrollX value
   ScrollPosition(newScrollX, newScrollY)
 
-  DrawTilemap(0, hudHeight, 20, 15, newScrollX, newScrollY + hudHeight)
+  -- DrawTilemap(0, hudHeight, 20, 15, newScrollX, newScrollY + hudHeight)
+  DrawTilemap(0, hudHeight, 20, 15, newScrollX, newScrollY + hudHeight)-- + hudHeight)
 
   -- Draw sprites
 

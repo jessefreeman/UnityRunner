@@ -14,6 +14,7 @@
 // Shawn Rakowski - @shwany
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -26,11 +27,13 @@ namespace PixelVisionRunner.Unity
         public int width { get { return texture.width; } }
 
         public int height { get { return texture.height; } }
-
-        public Texture2DAdapter(Texture2D texture)
+        
+        private bool flip;
+        
+        public Texture2DAdapter(int width = 0, int height = 0, bool flip = false)
         {
-            this.texture = texture;
-            FlipTexture();
+            texture = new Texture2D(width, height) {filterMode = FilterMode.Point};
+            this.flip = flip;
         }
 
         public IColor GetPixel(int x, int y)
@@ -64,16 +67,13 @@ namespace PixelVisionRunner.Unity
         public void LoadImage(byte[] data)
         {    
             texture.LoadImage(data);
-
-//            FlipTexture();
             
-//            var graphicsDevice = texture.GraphicsDevice;
-//            if (!texture.IsDisposed) texture.Dispose();
-//            using (var stream = new MemoryStream(data))
-//            {
-//                texture = Texture2D.FromStream(graphicsDevice, stream);
-//                FlipTexture();
-//            }
+            if (flip)
+            {
+                // Need to flip the way that Unity reads textures since 0,0 is the bottom left
+                FlipTexture();
+            }
+            
         }
 
         public void UsePointFiltering()
@@ -91,7 +91,26 @@ namespace PixelVisionRunner.Unity
             throw new NotImplementedException();
         }
 
-        private void FlipTexture()
+        public IColor[] IndexColors()
+        {
+
+            var pixels = GetPixels();
+            var colors = new List<IColor>();
+
+            var total = pixels.Length;
+            for (int i = 0; i < total; i++)
+            {
+                var color = pixels[i];
+                if (colors.IndexOf(color) == -1)
+                {
+                    colors.Add(color);
+                }
+            }
+
+            return colors.ToArray();
+        }
+        
+        public void FlipTexture()
         {
             var data = texture.GetPixels();//new Color[texture.width * texture.height]);
 //            texture.GetData(data);

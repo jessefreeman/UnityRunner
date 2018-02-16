@@ -65,7 +65,10 @@ public class BaseRunner : MonoBehaviour, IBaseRunner
     // We'll use this field to store a reference to our PixelVisionEngine class. 
     public IEngine activeEngine
     {
-        get { return runner.activeEngine; }
+        get
+        {
+            return runner == null ? null : runner.activeEngine;
+        }
 
     }
     

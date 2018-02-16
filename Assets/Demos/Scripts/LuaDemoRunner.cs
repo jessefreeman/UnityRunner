@@ -42,9 +42,7 @@ namespace PixelVisionRunner.Demos
         {
             base.Start();
 
-            ConfigureEngine();
-
-            LoadFromDir(Application.streamingAssetsPath + path);
+            RestartGame();
         }
 
         public override void ConfigureEngine(Dictionary<string, string> metaData = null)
@@ -59,6 +57,30 @@ namespace PixelVisionRunner.Demos
 
             // Register Lua Service
             tmpEngine.chipManager.AddService(typeof(LuaService).FullName, luaService);
+        }
+
+        private void RestartGame()
+        {
+            ConfigureEngine();
+
+            LoadFromDir(Application.streamingAssetsPath + path);
+        }
+
+        public override void Update()
+        {
+            base.Update();
+            
+            #if UNITY_EDITOR
+            
+            // Allows you to restart the game when running in the Unity IDE
+            
+            if (Input.GetKey(KeyCode.RightShift))
+            {
+                if(Input.GetKeyUp(KeyCode.Alpha1) || Input.GetKeyUp(KeyCode.Alpha4))
+                    RestartGame();
+            }
+            
+            #endif
         }
     }
 }

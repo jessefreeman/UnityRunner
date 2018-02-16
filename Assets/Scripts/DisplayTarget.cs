@@ -76,7 +76,9 @@ namespace PixelVisionRunner.Unity
                 var overscanXPixels = (width - runner.activeEngine.displayChip.overscanXPixels) / (float) width;
                 var overscanYPixels = (height - runner.activeEngine.displayChip.overscanYPixels) / (float) height;
                 var offsetY = 1 - overscanYPixels;
-                rawImage.uvRect = new Rect(0, offsetY, overscanXPixels, overscanYPixels);
+                
+                // Flip the offsetY and overscaneYPixels for Unity since the texture is upside down
+                rawImage.uvRect = new Rect(0, -offsetY, overscanXPixels, -overscanYPixels);
 
                 // When copying over the DisplayChip's pixel data to the cachedPixels, we only focus on the RGB value. While we could reset the 
                 // alpha during that step, it would also slow down the renderer. Since Pixel Vision 8 simply ignores the alpha value of a color, 

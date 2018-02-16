@@ -64,7 +64,7 @@ namespace PixelVisionRunner.Unity
         public Vector ReadMousePosition()
         {
             var pos = Input.mousePosition;
-
+            
             if (displayTarget == null)
             {
                 mousePos.x = (int) pos.x;
@@ -77,7 +77,7 @@ namespace PixelVisionRunner.Unity
 
                 mousePos.x = (int) temp.x;
                 mousePos.y = (int) temp.y;
-
+                
                 var width = (int) displayTarget.rect.width - overscanX;
                 var height = (int) displayTarget.rect.height - overscanY;
 
@@ -88,7 +88,10 @@ namespace PixelVisionRunner.Unity
                     mousePos.x = -1;
 
                 mousePos.y = height / 2 - mousePos.y;
-
+                
+                // Flip y position
+//                mousePos.y = height - 1 - mousePos.y;
+                
                 if (mousePos.y > height || mousePos.y < 0)
                     mousePos.y = -1;
 
