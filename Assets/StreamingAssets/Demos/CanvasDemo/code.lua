@@ -131,7 +131,8 @@ function Draw()
 	if(lastDrawing ~= nil) then
 
 		-- Draw the last canvas pixel data into the tilemap cache
-		DrawPixels(lastDrawing, 0, 0, canvas.width, canvas.height, DrawMode.TilemapCache, false, true)
+		canvas:DrawPixels(0, 0)
+		-- DrawPixels(lastDrawing, 0, 0, canvas.width, canvas.height, DrawMode.TilemapCache, false, true)
 
 		-- Clear the last drawing value
 		lastDrawing = nil
@@ -195,7 +196,7 @@ function Draw()
 		end
 
 		-- Draw the canvas to the UI layer.
-		canvas:DrawPixels(DrawMode.UI)
+		canvas:DrawPixels(0, 0, DrawMode.UI)
 
 	end
 
