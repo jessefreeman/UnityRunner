@@ -15,6 +15,7 @@
 
 using System;
 using PixelVisionSDK.Chips;
+using UnityEngine;
 
 namespace PixelVisionRunner.MicroPlatformer
 {
@@ -49,15 +50,10 @@ namespace PixelVisionRunner.MicroPlatformer
 
     public class MicroPlatformerChip : GameChip
     {
-//}
 
         private int flag; // stores the flag globally since it's used every frame
 
-
-//globals
-//g=
-//{
-        private readonly float grav = 0.1f; // gravity per frame
+        private readonly float grav = 0.13f; // gravity per frame
 
         /*
         Micro Platformer - Platforming Framework in 100 lines of code.
@@ -85,16 +81,16 @@ namespace PixelVisionRunner.MicroPlatformer
             miyamoto, its good enough for me!
         */
 
-//player information
-        protected Player p1 = new Player(72, 16, 3.0f);
+        //player information
+        private Player p1 = new Player(72, 16, 3.0f);
 
-//called once at the start of the program.
+        //called once at the start of the program.
         public override void Init()
         {
             BackgroundColor(0);
         }
 
-//called 60 times per second
+        //called 60 times per second
         public override void Update(float deltaTime)
         {
 
@@ -143,7 +139,7 @@ namespace PixelVisionRunner.MicroPlatformer
             p1.dy = p1.dy + grav;
 
             //apply gravity to the players position.
-            p1.y = (int) (p1.y + p1.dy); // TODO should this be an int?
+            p1.y = (int) Mathf.Floor(p1.y + p1.dy); // TODO should this be an int?
 
             //hit floor
             //
@@ -197,6 +193,7 @@ namespace PixelVisionRunner.MicroPlatformer
             //clear the screen so we start each frame
             //with a blank canvas to draw on.
             RedrawDisplay();
+            
             //draw the player, represented as sprite 1.
             DrawSprite(p1.spriteID, p1.x, p1.y); //draw player
         }

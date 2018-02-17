@@ -17,22 +17,21 @@ using System;
 using PixelVisionRunner.Demos;
 using PixelVisionSDK;
 using PixelVisionSDK.Chips;
+using UnityEngine;
 
 namespace PixelVisionRunner.ScreenWrapDemo
 {
     internal class Cloud
     {
-        public int speed;
         public int[] sprites;
         public int width;
-        public int x;
-        public int y;
+        public float x;
+        public float y;
 
-        public Cloud(int x, int y, int speed, int[] sprites, int width)
+        public Cloud(int x, int y, int[] sprites, int width)
         {
             this.x = x;
             this.y = y;
-            this.speed = speed;
             this.sprites = sprites;
             this.width = width;
         }
@@ -67,23 +66,22 @@ namespace PixelVisionRunner.ScreenWrapDemo
         }
     }
 
-/*
+    /*
     Modified Micro Platformer by Matt Hughson (@matthughson | http://www.matthughson.com/)
     */
     public class MicroPlatformerWrapper
     {
-        private readonly float grav = 0.1f; // gravity per frame
+        private readonly float grav = 0.13f; // gravity per frame
 
         public Vector bounds;
         private bool dir;
 
         private int flag; // stores the flag globally since it's used every frame
 
-//}
         public int flagID = 0;
         private readonly GameChip gameChip;
 
-//player information
+        //player information
         public Player p1 = new Player(72, 16, 3.0f);
 
         public MicroPlatformerWrapper(GameChip gameChip)
@@ -155,10 +153,6 @@ namespace PixelVisionRunner.ScreenWrapDemo
             //apply gravity to the players position.
             p1.y = (int) (p1.y + p1.dy);
 
-            //hit floor
-            //
-
-            var lastisgrounded = p1.isgrounded;
             //assume they are floating
             //until we determine otherwise
             p1.isgrounded = false;
@@ -182,11 +176,6 @@ namespace PixelVisionRunner.ScreenWrapDemo
                     //halt velocity
                     p1.dy = 0;
 
-//			if(lastisgrounded ~= true) {
-//				if(self.hitSound > - 1) {
-//					PlaySound(self.hitSound, 0)
-//				}
-//			}
                     //allow jumping again
                     p1.isgrounded = true;
 
@@ -222,9 +211,7 @@ namespace PixelVisionRunner.ScreenWrapDemo
                     p1.y = (int) Math.Floor(p1.y / 8f) * 8;
                     //halt upward velocity
                     p1.dy = 0;
-//			if(self.hitSound > - 1) {
-//				PlaySound(self.hitSound, 0)
-//			}
+
                 }
             }
 
@@ -246,12 +233,11 @@ namespace PixelVisionRunner.ScreenWrapDemo
         private readonly int cloudSpeed = 10;
 
         private readonly SpriteData largecloud = new SpriteData(3, 6, 6, new[] {6, 7, 8, 9, 10, 11});
+        private readonly SpriteData smallcloud = new SpriteData(2, 2, 2, new[] {4, 5});
 
-        private readonly string message =
-            "SCREEN WRAP DEMO\n\nThis demo shows off how sprites wrap around the edges of the screen.";
+        private readonly string message = "SCREEN WRAP DEMO\n\nThis demo shows off how sprites wrap around the edges of the screen.";
 
         private readonly SpriteData player = new SpriteData(1, 1, 1, new[] {0});
-        private readonly SpriteData smallcloud = new SpriteData(2, 2, 2, new[] {4, 5});
         private Cloud[] clouds;
         private MicroPlatformerWrapper platformerWrapper;
 
@@ -261,9 +247,9 @@ namespace PixelVisionRunner.ScreenWrapDemo
         {
             clouds = new[]
             {
-                new Cloud(112, 96 + 4, cloudSpeed, smallcloud.spriteIDs, smallcloud.width),
-                new Cloud(88, 80, cloudSpeed, largecloud.spriteIDs, largecloud.width),
-                new Cloud(16, 128, cloudSpeed, smallcloud.spriteIDs, smallcloud.width)
+                new Cloud(112, 96 + 4, smallcloud.spriteIDs, smallcloud.width),
+                new Cloud(88, 80, largecloud.spriteIDs, largecloud.width),
+                new Cloud(16, 128, smallcloud.spriteIDs, smallcloud.width)
             };
 
             // Here we are manually changing the background color
@@ -298,8 +284,11 @@ namespace PixelVisionRunner.ScreenWrapDemo
 
             // Update the clouds in the background
             var newCloudSpeed = cloudSpeed * timeDelta;
-
-            for (var i = 0; i < clouds.Length; i++) clouds[i].x = (int) (clouds[i].x + newCloudSpeed);
+            
+            for (var i = 0; i < clouds.Length; i++)
+            {
+                clouds[i].x = clouds[i].x + newCloudSpeed;
+            }
         }
 
         // The Draw() method is part of the game's life cycle. It is called after Update() and is where
@@ -320,11 +309,8 @@ namespace PixelVisionRunner.ScreenWrapDemo
                 var cloud = clouds[i];
 
                 // Draw clouds first since they are in the background layer
-                DrawSprites(cloud.sprites, cloud.x, cloud.y, cloud.width, false, false, DrawMode.SpriteBelow, 0, false);
+                DrawSprites(cloud.sprites, (int)cloud.x, (int)cloud.y, cloud.width, false, false, DrawMode.SpriteBelow, 0, false);
             }
-
-            // Need to draw the player last since the order of sprite draw calls matters
-//        base.Draw();
 
             platformerWrapper.Draw();
         }
