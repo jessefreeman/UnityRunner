@@ -16,7 +16,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using PixelVisionRunner.Unity;
@@ -26,7 +25,6 @@ using PixelVisionSDK;
 using PixelVisionSDK.Chips;
 using UnityEngine;
 using UnityEngine.UI;
-using Debug = UnityEngine.Debug;
 
 
 

@@ -1,5 +1,19 @@
-﻿using System;
-using PixelVisionRunner;
+﻿//   
+// Copyright (c) Jesse Freeman. All rights reserved.  
+//  
+// Licensed under the Microsoft Public License (MS-PL) License. 
+// See LICENSE file in the project root for full license information. 
+// 
+// Contributors
+// --------------------------------------------------------
+// This is the official list of Pixel Vision 8 contributors:
+//  
+// Jesse Freeman - @JesseFreeman
+// Christer Kaitila - @McFunkypants
+// Pedro Medeiros - @saint11
+// Shawn Rakowski - @shwany
+
+using System;
 using PixelVisionSDK;
 using UnityEngine;
 using UnityEngine.UI;
@@ -23,7 +37,7 @@ namespace PixelVisionRunner.Unity
         // DisplayChip's pixel data into color pixels our renderTexture can use.
         public Color[] cachedColors = new Color[0];
         protected Color[] cachedPixels = new Color[0];
-        protected Color cacheTransparentColor;
+//        protected Color cacheTransparentColor;
         protected int totalCachedColors;
 
         protected IBaseRunner runner;
@@ -34,7 +48,7 @@ namespace PixelVisionRunner.Unity
             this.rawImage = rawImage;
             renderTexture = new Texture2D(256, 240, TextureFormat.ARGB32, false) {filterMode = FilterMode.Point};
             
-            this.rawImage.texture = this.renderTexture;
+            this.rawImage.texture = renderTexture;
         }
 
         public void ResetResolution(int width, int height)
@@ -156,9 +170,9 @@ namespace PixelVisionRunner.Unity
             // The cachedTransparentColor is what shows when a color ID is out of range. Pixel Vision 8 doesn't support transparency, so this 
             // color shows instead. Here we test to see if the bgColor is an ID within the length of the bgColor variable. If not, we set it to 
             // Unity's default magenta color. If the bgColor is within range, we'll use that for transparency.
-            cacheTransparentColor = bgColorID >= cachedColors.Length || bgColorID < 0
-                ? clear
-                : cachedColors[runner.activeEngine.colorChip.backgroundColor];
+//            cacheTransparentColor = bgColorID >= cachedColors.Length || bgColorID < 0
+//                ? clear
+//                : cachedColors[runner.activeEngine.colorChip.backgroundColor];
             
             // The ColorChip can return an array of ColorData. ColorData is an internal data structure that Pixel Vision 8 uses to store 
             // color information. It has properties for a Hex representation as well as RGB.

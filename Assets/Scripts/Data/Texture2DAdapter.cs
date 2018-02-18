@@ -16,6 +16,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using PixelVisionSDK;
 using UnityEngine;
 
 namespace PixelVisionRunner.Unity
@@ -64,6 +65,11 @@ namespace PixelVisionRunner.Unity
             return data.Select(c => new ColorAdapter32(c) as IColor32).ToArray();
         }
 
+        public void SetPixels(IColor[] colorData)
+        {
+            SetPixels(0, 0, texture.width, texture.height, colorData);
+        }
+
         public void LoadImage(byte[] data)
         {    
             texture.LoadImage(data);
@@ -76,9 +82,73 @@ namespace PixelVisionRunner.Unity
             
         }
 
-        public void UsePointFiltering()
+        public byte[] EncodeToPNG()
         {
-            // set filter point if this was Unity
+            return texture.EncodeToPNG();
+        }
+        
+        private int[] tmpPixelData = new int[0];
+        
+        /// <summary>
+        ///     Converts Texture Data into a Texture
+        /// </summary>
+        /// <param name="textureData"></param>
+        /// <param name="colors"></param>
+        /// <param name="transColor"></param>
+        public void LoadTextureData(TextureData textureData, ColorData[] colors, string transColor = "#ff00ff")
+        {
+            
+            var tmpBGColor = new ColorData(transColor);
+            
+            var bgColor = new Color(tmpBGColor.r, tmpBGColor.g, tmpBGColor.b, 1);
+            
+            var w = textureData.width;
+            var h = textureData.height;
+            
+            if (texture.width != w || texture.height != h)
+                texture.Resize(w, h);
+            
+            // Get the source pixel data
+            var pixels = texture.GetPixels();
+            
+            // Copy over all the pixel data from the cache to the tmp pixel data array
+            textureData.CopyPixels(ref tmpPixelData, 0, 0, textureData.width, textureData.height);
+            
+            int total = pixels.Length;
+            
+            // Loop through the array and conver the colors
+            for (int i = 0; i < total; i++)
+            {
+                var colorIndex = tmpPixelData[i];
+                if (colorIndex < 0 || colorIndex >= colors.Length)
+                {
+                    pixels[i] = bgColor;
+                }
+                else
+                {
+                    var colorData = colors[colorIndex];
+
+                    pixels[i].r = colorData.r;
+                    pixels[i].g = colorData.g;
+                    pixels[i].b = colorData.b;
+                    pixels[i].a = 1;
+                }
+            }
+            
+            texture.SetPixels(pixels);
+            
+            if (flip)
+                FlipTexture();
+        }
+
+        
+        /// <summary>
+        ///     Apply changes back to texture in Unity.
+        /// </summary>
+        public void Apply()
+        {
+            // No need for mipmaps so pass in false by default
+            texture.Apply(false);
         }
 
         public void Resize(int width, int height)

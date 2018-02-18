@@ -13,8 +13,6 @@
 // Pedro Medeiros - @saint11
 // Shawn Rakowski - @shwany
 
-using UnityEngine;
-
 namespace PixelVisionRunner.Unity
 {
     class TextureFactory : ITextureFactory
