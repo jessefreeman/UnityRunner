@@ -28,13 +28,18 @@ namespace PixelVisionRunner.Unity
         public int width { get { return texture.width; } }
 
         public int height { get { return texture.height; } }
+        public IColor maskColor;
         
         private bool flip;
         
-        public Texture2DAdapter(int width = 0, int height = 0, bool flip = false)
+        public Texture2DAdapter(int width = 0, int height = 0, bool flip = false, IColor maskColor = null)
         {
+            this.maskColor = maskColor ?? new ColorData("#ff00ff"){a = 0};
+            
             texture = new Texture2D(width, height) {filterMode = FilterMode.Point};
             this.flip = flip;
+
+            Clear();
         }
 
         public IColor GetPixel(int x, int y)
@@ -153,12 +158,25 @@ namespace PixelVisionRunner.Unity
 
         public void Resize(int width, int height)
         {
-            throw new NotImplementedException();
+            texture.Resize(width, height);
+            Clear();
         }
 
         public void SetPixels(int x, int y, int width, int height, IColor[] pixelData)
         {
-            throw new NotImplementedException();
+            var total = pixelData.Length;
+
+            var colors = new Color[total];
+            
+            // Convert pixel data to Unity colors
+            for (int i = 0; i < total; i++)
+            {
+                var colorData = pixelData[i];
+                
+                colors[i] = new Color(colorData.r, colorData.g, colorData.b, 1);
+            }
+            
+            texture.SetPixels(x, y, width, height, colors);
         }
 
         public IColor[] IndexColors()
@@ -204,6 +222,23 @@ namespace PixelVisionRunner.Unity
                 }
             }
             return newData;
+        }
+
+        void Clear(IColor color = null)
+        {
+            if (color == null)
+            {
+                color = maskColor;
+            }
+
+            var total = width * height;
+            var pixels = new IColor[total];
+            for (int i = 0; i < total; i++)
+            {
+                pixels[i] = color;
+            }
+            
+            SetPixels(pixels);
         }
     }
 }
