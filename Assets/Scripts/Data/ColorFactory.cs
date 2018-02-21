@@ -18,7 +18,7 @@ using UnityEngine;
 
 namespace PixelVisionRunner.Unity
 {
-    class ColorFactory : IColorFactory
+    public class ColorFactory : IColorFactory
     {
         public IColor _magenta = new ColorAdapter(Color.magenta);
         

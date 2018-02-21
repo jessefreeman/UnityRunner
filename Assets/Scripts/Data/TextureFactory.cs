@@ -15,7 +15,7 @@
 
 namespace PixelVisionRunner.Unity
 {
-    class TextureFactory : ITextureFactory
+    public class TextureFactory : ITextureFactory
     {
         public ITexture2D NewTexture2D(int width, int height)
         {

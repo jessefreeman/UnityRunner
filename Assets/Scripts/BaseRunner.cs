@@ -18,6 +18,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
+using Assets.GameCreator.Scripts.GameCreator.Data;
 using PixelVisionRunner.Unity;
 using PixelVisionRunner;
 using PixelVisionRunner.Services;
@@ -119,8 +120,11 @@ public class BaseRunner : MonoBehaviour, IBaseRunner
         fileSystem = new FileSystemService();
         displayTarget = new DisplayTarget(rawImage, this);
         inputFactory = new InputFactory((DisplayTarget) displayTarget);
-
-        runner = new Runner(new TextureFactory(), new ColorFactory());
+        textureFactory = new TextureFactory();
+        colorFactory = new ColorFactory();
+        audioClipFactory = new AudioClipFactory();
+        
+        runner = new Runner(textureFactory, colorFactory);
         
     }
 
@@ -182,7 +186,10 @@ public class BaseRunner : MonoBehaviour, IBaseRunner
     }
     
     protected bool displayProgress;
-    
+    protected TextureFactory textureFactory;
+    protected ColorFactory colorFactory;
+    protected AudioClipFactory audioClipFactory;
+
     public virtual void ProcessFiles(Dictionary<string, byte[]> files)
     {
         
