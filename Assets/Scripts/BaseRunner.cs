@@ -120,10 +120,10 @@ public class BaseRunner : MonoBehaviour, IBaseRunner
         displayTarget = new DisplayTarget(rawImage, this);
         inputFactory = new InputFactory((DisplayTarget) displayTarget);
         textureFactory = new TextureFactory();
-        colorFactory = new ColorFactory();
+//        colorFactory = new ColorFactory();
         audioClipFactory = new AudioClipFactory();
         
-        runner = new Runner(textureFactory, colorFactory);
+        runner = new Runner(textureFactory);
         
     }
 
@@ -186,7 +186,7 @@ public class BaseRunner : MonoBehaviour, IBaseRunner
     
     protected bool displayProgress;
     protected TextureFactory textureFactory;
-    protected ColorFactory colorFactory;
+//    protected ColorFactory colorFactory;
     protected AudioClipFactory audioClipFactory;
 
     public virtual void ProcessFiles(Dictionary<string, byte[]> files)

@@ -52,7 +52,7 @@ namespace PixelVisionRunner.Unity
             var data = texture.GetPixels();//new Color[texture.width * texture.height];
 //            texture.GetData(data);
             return data
-                .Select(c => new ColorAdapter(c) as IColor)
+                .Select(c => new ColorData(c.r, c.g, c.b) {a = c.a} as IColor)
                 .ToArray();
         }
 
@@ -60,15 +60,15 @@ namespace PixelVisionRunner.Unity
         {
             var data = texture.GetPixels(x, y, width, height);//new Color[width * height]);
 //            texture.GetData(0, new Rectangle(x, y, width, height), data, 0, data.Length);
-            return data.Select(c => new ColorAdapter(c) as IColor).ToArray();
+            return data.Select(c => new ColorData(c.r, c.g, c.b) {a = c.a} as IColor).ToArray();
         }
 
-        public IColor32[] GetPixels32()
-        {
-            var data = texture.GetPixels32();//new Color[texture.width * texture.height]);
-//            texture.GetData(data);
-            return data.Select(c => new ColorAdapter32(c) as IColor32).ToArray();
-        }
+//        public IColor32[] GetPixels32()
+//        {
+//            var data = texture.GetPixels32();//new Color[texture.width * texture.height]);
+////            texture.GetData(data);
+//            return data.Select(c => new ColorAdapter32(c) as IColor32).ToArray();
+//        }
 
         public void SetPixels(IColor[] colorData)
         {
@@ -136,7 +136,7 @@ namespace PixelVisionRunner.Unity
                     pixels[i].r = colorData.r;
                     pixels[i].g = colorData.g;
                     pixels[i].b = colorData.b;
-                    pixels[i].a = 1;
+                    pixels[i].a = colorData.a; // TODO should the engine hard code alpha to 1
                 }
             }
             
