@@ -119,7 +119,7 @@ public class BaseRunner : MonoBehaviour, IBaseRunner
         fileSystem = new FileSystemService();
         displayTarget = new DisplayTarget(rawImage, this);
         inputFactory = new InputFactory((DisplayTarget) displayTarget);
-        textureFactory = new TextureFactory();
+        textureFactory = new TextureFactory(true);
 //        colorFactory = new ColorFactory();
         audioClipFactory = new AudioClipFactory();
         
