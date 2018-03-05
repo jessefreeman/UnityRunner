@@ -23,7 +23,7 @@ namespace PixelVisionRunner.Unity
 
         public AudioClipAdaptor(string name, int lengthSamples, int channels, int frequency, bool stream)
         {
-            AudioClip.Create(name, lengthSamples, channels, frequency, stream);
+            audioClip = AudioClip.Create(name, lengthSamples, channels, frequency, stream);
         }
         
         public bool SetData(float[] data, int offsetSamples)
