@@ -222,6 +222,9 @@ namespace PixelVisionRunner.Chips
             // Register PV8's vector type
             UserData.RegisterType<Vector>();
             luaScript.Globals["NewVector"] = (NewVectorDelegator)NewVector;
+            
+            // Register PV8's TileData type
+            UserData.RegisterType<TileData>();
 
             // Register PV8's rect type
             UserData.RegisterType<Rect>();
@@ -424,7 +427,7 @@ namespace PixelVisionRunner.Chips
 
         private delegate Vector TilemapSizeDelegate(int? columns = null, int? rows = null);
 
-        private delegate Dictionary<string, int> TileDelegate(int column, int row, int? spriteID, int? colorOffset,
+        private delegate TileData TileDelegate(int column, int row, int? spriteID, int? colorOffset,
             int? flag);
 
         private delegate int[] SpriteDelegate(int id, int[] data = null);
