@@ -281,7 +281,7 @@ public class BaseRunner : MonoBehaviour, IBaseRunner
         ProcessFiles(files);
     }
     
-    public void LoadFromDir(string path)
+    public virtual void LoadFromDir(string path)
     {
         var files = new Dictionary<string, byte[]>();
 
