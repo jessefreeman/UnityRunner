@@ -1,3 +1,6 @@
 [submodule "Assets/PixelVisionSDK"]
 	path = Assets/PixelVisionSDK
 	url = https://github.com/PixelVision8/SDK.git
+[submodule "Assets/StreamingAssets/LuaDemos"]
+	path = Assets/StreamingAssets/LuaDemos
+	url = git@github.com:PixelVision8/LuaDemos.git
