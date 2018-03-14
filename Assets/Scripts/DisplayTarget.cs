@@ -130,7 +130,7 @@ namespace PixelVisionRunner.Unity
                 // Replace transparent colors with bg for next pass
                 if (colorRef < 0 || (colorRef >= totalCachedColors))
                 {
-                    pixelData[i] = bgColorID;
+                    colorRef = bgColorID;
                 }
                 
                 cachedPixels[i] = cachedColors[colorRef];

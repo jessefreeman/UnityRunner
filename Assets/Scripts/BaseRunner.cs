@@ -235,10 +235,10 @@ public class BaseRunner : MonoBehaviour, IBaseRunner
     /// <summary>
     ///     The LoadGame method will handle setting up the GameChip and configuring it.
     /// </summary>
-    public virtual void RunGame()
-    {
-        runner.ActivateEngine(tmpEngine);
-    }
+//    public virtual void RunGame()
+//    {
+//        runner.ActivateEngine(tmpEngine);
+//    }
 
     /// <summary>
     ///     It's important that we call the PixelVision8's Update() method on each frame. To do this, we'll use the

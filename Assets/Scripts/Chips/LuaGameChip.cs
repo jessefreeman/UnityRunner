@@ -176,7 +176,7 @@ namespace PixelVisionRunner.Chips
 
             #region Tilemap
 
-            luaScript.Globals["RebuildTilemap"] = (RebuildMapDelegate) RebuildTilemap;
+            luaScript.Globals["RebuildTilemap"] = (RebuildMapDelegate) ((columns, rows, spriteIDs1, colorOffsets, flags) => RebuildTilemap());
             luaScript.Globals["TilemapSize"] = (TilemapSizeDelegate) TilemapSize;
             luaScript.Globals["Tile"] = (TileDelegate) Tile;
             luaScript.Globals["UpdateTiles"] = (UpdateTilesDelegate) UpdateTiles;
