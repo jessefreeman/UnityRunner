@@ -21,8 +21,8 @@
 
 #hide Rider files
 .idea/*
-Assets/Plugins/JetBrains/*
-Assets/Plugins/JetBrains.meta
+/Assets/Plugins/Editor/JetBrains/*
+/Assets/Plugins/Editor/JetBrains.meta
 
 # Unity3D generated meta files
 *.pidb.meta
