@@ -62,9 +62,23 @@ namespace PixelVisionRunner.Demos
 			base.Start();
 
 			ConfigureEngine();
-
+			
 			// Use this all of the resources that the game needs
-			LoadFromDir(Application.streamingAssetsPath + path);
+			var fullPath = Application.streamingAssetsPath + path;
+
+			if (fullPath.EndsWith(".zip") || fullPath.EndsWith(".pv8"))
+			{
+
+				if (fullPath.StartsWith("/"))
+					fullPath = "file://" + fullPath;
+                
+				LoadFromZip(fullPath);
+			}
+			else
+			{
+				LoadFromDir(fullPath);
+			}
+			
 		}
 
 	}

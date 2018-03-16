@@ -63,7 +63,21 @@ namespace PixelVisionRunner.Demos
         {
             ConfigureEngine();
 
-            LoadFromDir(Application.streamingAssetsPath + path);
+            var fullPath = Application.streamingAssetsPath + path;
+
+            if (fullPath.EndsWith(".zip") || fullPath.EndsWith(".pv8"))
+            {
+
+                if (fullPath.StartsWith("/"))
+                    fullPath = "file://" + fullPath;
+                
+                LoadFromZip(fullPath);
+            }
+            else
+            {
+                LoadFromDir(fullPath);
+            }
+            
         }
 
         public override void Update()
