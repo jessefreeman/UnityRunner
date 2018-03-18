@@ -207,7 +207,7 @@ namespace PixelVisionRunner.Unity
             texture.SetPixels(data);
         }
 
-        private static Color[] FlipY(Color[] data, int width, int height)
+        public static Color[] FlipY(Color[] data, int width, int height)
         {
             var newData = new Color[data.Length];
             int i = 0;
