@@ -145,9 +145,9 @@ namespace PixelVisionRunner.Unity
             renderTexture.Apply(false);
         }
 
-        private ColorData[] colorsData;
+        private IColor[] colorsData;
         private int i;
-        private ColorData colorData;
+        private IColor colorData;
         
         /// <summary>
         ///     To optimize the Runner, we need to save a reference to each color in the ColorChip as native Unity Colors. The
