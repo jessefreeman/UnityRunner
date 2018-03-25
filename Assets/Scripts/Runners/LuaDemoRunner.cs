@@ -14,6 +14,7 @@
 // Shawn Rakowski - @shwany
 
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using PixelVisionRunner.Chips;
 using PixelVisionSDK.Chips;
 using UnityEngine;
@@ -24,7 +25,12 @@ namespace PixelVisionRunner.Demos
     {
         private LuaService luaService;
         public string path;
-
+        
+        #if UNITY_WEBGL
+            [DllImport("__Internal")]
+            protected static extern string GetURL();
+        #endif
+        
         public override List<string> defaultChips
         {
             get
@@ -59,17 +65,35 @@ namespace PixelVisionRunner.Demos
             tmpEngine.chipManager.AddService(typeof(LuaService).FullName, luaService);
         }
 
-        private void RestartGame()
+        protected virtual void RestartGame()
         {
             ConfigureEngine();
-
-            var fullPath = Application.streamingAssetsPath + path;
-
+            
+            #if UNITY_WEBGL && !UNITY_EDITOR
+                
+                // Remove the leading forward slash from the path
+                path = path.StartsWith("/") ? path.Substring(1) : path;
+    
+				var fullPath = string.Format(GetURL(), path);
+    
+            #else
+            
+                // Use this all of the resources that the game needs
+                var fullPath = Application.streamingAssetsPath + path;
+            
+			#endif
+            
             if (fullPath.EndsWith(".zip") || fullPath.EndsWith(".pv8"))
             {
-
-                if (fullPath.StartsWith("/"))
-                    fullPath = "file://" + fullPath;
+                
+                // If we are testing this out in the IDE we want to make sure the path resolves correctly.
+                #if !UNITY_WEBGL || UNITY_EDITOR
+                
+                    // This makes sure we always load a path using file:// which is used by the WWW loader, even for local files.
+                    if (fullPath.StartsWith("/"))
+                        fullPath = "file://" + fullPath;
+                
+                #endif
                 
                 LoadFromZip(fullPath);
             }
