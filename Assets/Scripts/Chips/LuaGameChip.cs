@@ -111,7 +111,7 @@ namespace PixelVisionRunner.Chips
             luaScript.Globals["Clear"] = (ClearDelegate) Clear;
             luaScript.Globals["Display"] = (DisplayDelegate) Display;
             luaScript.Globals["DrawPixels"] = (DrawPixelsDelegate) DrawPixels;
-            luaScript.Globals["DrawPixel"] = (DrawPixelDelegate) DrawPixel;
+            luaScript.Globals["DrawPixel"] = (DrawPixelDelegate) ((x, y, colorRef, drawMode) => DrawPixel(x, y, colorRef));
             luaScript.Globals["DrawSprite"] = (DrawSpriteDelegate) DrawSprite;
             luaScript.Globals["DrawSprites"] = (DrawSpritesDelegate) DrawSprites;
             luaScript.Globals["DrawSpriteBlock"] = (DrawSpriteBlockDelegate) DrawSpriteBlock;
