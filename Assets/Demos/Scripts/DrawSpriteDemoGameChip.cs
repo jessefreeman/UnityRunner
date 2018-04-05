@@ -52,23 +52,23 @@ namespace PixelVisionRunner.DrawSpriteDemo
     {
 
         // spritelib-start
-        private readonly SpriteData face1 = new SpriteData(1, 1, 1, new[] {24});
+        private readonly SpriteData face1 = new SpriteData(1, new[] {24});
 
-        private readonly SpriteData face2 = new SpriteData(1, 1, 1, new[] {25});
+        private readonly SpriteData face2 = new SpriteData(1, new[] {25});
 
-        private readonly SpriteData fireball1 = new SpriteData(1, 1, 1, new[] {6});
+        private readonly SpriteData fireball1 = new SpriteData(1, new[] {6});
 
-        private readonly SpriteData fireball2 = new SpriteData(1, 1, 1, new[] {7});
+        private readonly SpriteData fireball2 = new SpriteData(1, new[] {7});
 
-        private readonly SpriteData flower = new SpriteData(2, 4, 4, new[] {16, 17, 26, 27});
+        private readonly SpriteData flower = new SpriteData(2, new[] {16, 17, 26, 27});
 
-        private readonly SpriteData ghost = new SpriteData(2, 4, 4, new[] {4, 5, 14, 15});
+        private readonly SpriteData ghost = new SpriteData(2, new[] {4, 5, 14, 15});
 
-        private readonly SpriteData pipe = new SpriteData(2, 4, 4, new[] {8, 9, 18, 19});
+        private readonly SpriteData pipe = new SpriteData(2, new[] {8, 9, 18, 19});
 
-        private readonly SpriteData playerframe1 = new SpriteData(2, 6, 6, new[] {0, 1, 10, 11, 20, 21});
+        private readonly SpriteData playerframe1 = new SpriteData(2, new[] {0, 1, 10, 11, 20, 21});
 
-        private readonly SpriteData playerframe2 = new SpriteData(2, 6, 6, new[] {2, 3, 12, 13, 22, 23});
+        private readonly SpriteData playerframe2 = new SpriteData(2, new[] {2, 3, 12, 13, 22, 23});
 
         // create some references to the sprites we'll use based on the generated spritedata
 

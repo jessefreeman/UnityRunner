@@ -43,13 +43,13 @@ namespace PixelVisionRunner.TilemapDemo
 
     public class TilemapDemoChip : GameChip
     {
-        private readonly SpriteData chest = new SpriteData(2, 4, 4, new[] {4, 5, 21, 22});
+        private readonly SpriteData chest = new SpriteData(2, new[] {4, 5, 21, 22});
         private readonly float delayTime = .5f;
         private readonly Vector direction = new Vector();
         private readonly int hudHeight = 16;
-        private readonly SpriteData skeleton = new SpriteData(2, 6, 6, new[] {2, 3, 19, 20, 31, 32});
+        private readonly SpriteData skeleton = new SpriteData(2, new[] {2, 3, 19, 20, 31, 32});
         private readonly int speed = 24;
-        private readonly SpriteData watertile = new SpriteData(1, 1, 1, new[] {6});
+        private readonly SpriteData watertile = new SpriteData(1, new[] {6});
         private int bottomBorder;
         private Rect bounds;
 

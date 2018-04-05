@@ -232,12 +232,12 @@ namespace PixelVisionRunner.ScreenWrapDemo
     {
         private readonly int cloudSpeed = 10;
 
-        private readonly SpriteData largecloud = new SpriteData(3, 6, 6, new[] {6, 7, 8, 9, 10, 11});
-        private readonly SpriteData smallcloud = new SpriteData(2, 2, 2, new[] {4, 5});
+        private readonly SpriteData largecloud = new SpriteData(3, new[] {6, 7, 8, 9, 10, 11});
+        private readonly SpriteData smallcloud = new SpriteData(2, new[] {4, 5});
 
         private readonly string message = "SCREEN WRAP DEMO\n\nThis demo shows off how sprites wrap around the edges of the screen.";
 
-        private readonly SpriteData player = new SpriteData(1, 1, 1, new[] {0});
+        private readonly SpriteData player = new SpriteData(1, new[] {0});
         private Cloud[] clouds;
         private MicroPlatformerWrapper platformerWrapper;
 

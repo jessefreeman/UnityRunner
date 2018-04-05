@@ -14,7 +14,6 @@
 // Shawn Rakowski - @shwany
 
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
 using PixelVisionRunner.Chips;
 using PixelVisionSDK.Chips;
 using UnityEngine;
@@ -24,17 +23,13 @@ namespace PixelVisionRunner.Demos
 // This class can be used to convert SpriteBuilder data into usable C# game data
 	public class SpriteData
 	{
-		public SpriteData(int width, int unique, int total, int[] spriteIDs)
+		public SpriteData(int width, int[] spriteIDs)
 		{
 			this.spriteIDs = spriteIDs;
-			this.total = total;
-			this.unique = unique;
 			this.width = width;
 		}
 
 		public int[] spriteIDs;
-		public int total;
-		public int unique;
 		public int width;
 	}
 
