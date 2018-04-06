@@ -33,3 +33,6 @@ sysinfo.txt
 *.DS_Store
 
 /ProjectSettings/*.meta
+Assets.meta
+LICENSE.meta
+README.md.meta
