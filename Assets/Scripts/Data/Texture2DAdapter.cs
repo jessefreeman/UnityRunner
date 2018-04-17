@@ -21,7 +21,7 @@ using UnityEngine;
 
 namespace PixelVisionRunner.Unity
 {
-    class Texture2DAdapter : ITexture2D
+    public class Texture2DAdapter : ITexture2D
     {
         private Texture2D texture;
 
