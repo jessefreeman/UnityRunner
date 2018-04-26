@@ -34,7 +34,7 @@ namespace PixelVisionRunner.Unity
         
         public Texture2DAdapter(int width = 0, int height = 0, bool flip = false, IColor maskColor = null)
         {
-            this.maskColor = maskColor ?? new ColorData("#ff00ff"){a = 0};
+            this.maskColor = maskColor ?? new ColorData("#FF00FF"){a = 0};
             
             texture = new Texture2D(width, height) {filterMode = FilterMode.Point};
             this.flip = flip;
