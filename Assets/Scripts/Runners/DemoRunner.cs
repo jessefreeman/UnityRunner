@@ -14,6 +14,7 @@
 // Shawn Rakowski - @shwany
 
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using PixelVisionRunner.Chips;
 using PixelVisionSDK.Chips;
 using UnityEngine;

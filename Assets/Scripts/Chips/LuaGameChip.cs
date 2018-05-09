@@ -156,9 +156,9 @@ namespace PixelVisionRunner.Chips
 
             #region Sound APIs
 
-            luaScript.Globals["PlaySound"] = (PlaySoundDelegate) PlaySound;
+            luaScript.Globals["PlaySound"] = (PlaySoundDelegate) OnPlaySound;
             luaScript.Globals["PlayRawSound"] = (PlayRawSoundDelegate) PlayRawSound;
-            luaScript.Globals["PlaySong"] = (PlaySongDelegate) PlaySong;
+            luaScript.Globals["PlaySong"] = (PlaySongDelegate) OnPlaySong;
             luaScript.Globals["PauseSong"] = (PauseSongDelegate) PauseSong;
             luaScript.Globals["RewindSong"] = (RewindSongDelegate) RewindSong;
             luaScript.Globals["StopSong"] = (StopSongDelegate) StopSong;
@@ -356,7 +356,23 @@ namespace PixelVisionRunner.Chips
             }
         }
 
+        public void OnPlaySong(int[] trackIDs, bool loop = true)
+        {
+            #if !UNITY_WEBGL
+            PlaySong(trackIDs, loop);
+            #endif
+        }
+
+        public void OnPlaySound(int id, int channel = 0)
+        {
+            #if !UNITY_WEBGL
+            PlaySound(id, channel);
+            #endif
+        }
+        
         #endregion
+        
+        
         
         private delegate Rect NewRectDelegator(int x = 0, int y = 0, int w = 0, int h = 0);
         private delegate Vector NewVectorDelegator(int x = 0, int y = 0);
